@@ -185,16 +185,19 @@ class _CardForm extends StatefulWidget {
 class _CardFormState extends State<_CardForm> {
   var color = Colors.grey;
   var color2 = Colors.grey;
+  double tamanho = 400;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      height: tamanho,
       margin: EdgeInsets.all(64.0),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(15),
       ),
+      duration: Duration(seconds: 1),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -227,9 +230,7 @@ class _CardFormState extends State<_CardForm> {
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
-              onChanged: (text) {
-
-              },
+              onChanged: (text) {},
             ),
             TextField(
               obscureText: true,
@@ -243,11 +244,43 @@ class _CardFormState extends State<_CardForm> {
                   borderRadius: BorderRadius.circular(15),
                 ),
               ),
-              onChanged: (text) {
-
-              },
+              onChanged: (text) {},
             ),
+            Row(
+              children: [
+                Checkbox(
+                  value: lembreMe,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      lembreMe = value!;
+                    });
+                  },
+                ),
+                Text('Lembre-me'),
+              ],
+            ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(15),
+                onTap: () {},
+                child: Ink(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.black,
+                  ),
+                  height: 40,
+                  width: 500,
 
+                  child: Center(
+                    child: Text(
+                      'Logar',
+                      style: TextStyle(fontSize: 17, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Row(
               spacing: 14,
               children: [
@@ -257,9 +290,7 @@ class _CardFormState extends State<_CardForm> {
                       color = event ? Colors.lightBlue : Colors.grey;
                     });
                   },
-                  onTap: () {
-
-                  },
+                  onTap: () {},
                   child: Ink(
                     child: Text(
                       'Esqueceu sua senha?',
@@ -294,31 +325,13 @@ class _CardFormState extends State<_CardForm> {
                 ),
               ],
             ),
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(15),
-                onTap: () {},
-                child: Ink(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Colors.black,
-                  ),
-                  height: 40,
-                  width: 500,
-
-                  child: Center(
-                    child: Text(
-                      'Logar',
-                      style: TextStyle(fontSize: 17, color: Colors.white),
-                    ),
-                  ),
-                ),
-              ),
-            ),
           ],
         ),
       ),
     );
   }
+}
+
+void expandirContainer() {
+
 }

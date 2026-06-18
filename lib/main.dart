@@ -1,14 +1,10 @@
 import 'package:aplicativo_jobfy/screens/tela_Cadastro.dart';
 import 'package:aplicativo_jobfy/screens/tela_Login.dart';
+import 'package:aplicativo_jobfy/ui/util/headerPage.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-void main() async{
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFireBaseOptions.currentPlatform,
-  );
+void main() {
   runApp(MyApp());
 }
 
@@ -58,34 +54,7 @@ class homePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.white),
-          onPressed: () {},
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.settings, color: Colors.white),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.white),
-            onPressed: () {
-              context.go('/login');
-            },
-          ),
-        ],
-        title: Row(
-          spacing: 5,
-          children: <Widget>[
-            Icon(Icons.lightbulb_circle, color: Colors.white, size: 40),
-            Text('Jobfy', style: TextStyle(color: Colors.white, fontSize: 22)),
-          ],
-        ),
-      ),
-      body: webPage(),
-    );
+    return Scaffold(appBar: headerPage(), body: webPage());
   }
 }
 
