@@ -1,7 +1,6 @@
 import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
 
-/// Versão "de dados" da EmpresaEntity. No futuro, aqui entrariam
-/// fromJson/toJson para consumir uma API real.
+/// Usar Firebase dps
 class EmpresaModel extends EmpresaEntity {
   const EmpresaModel({
     required super.idEmpresa,

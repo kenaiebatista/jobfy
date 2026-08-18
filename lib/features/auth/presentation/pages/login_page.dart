@@ -236,6 +236,21 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+                  MouseRegion(
+                    onEnter: (_) => setState(() => _hoverCadastro = true),
+                    onExit: (_) => setState(() => _hoverCadastro = false),
+                    child: GestureDetector(
+                      onTap: () => context.go('/company'),
+                      child: Text(
+                        'Sou empresa',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ],

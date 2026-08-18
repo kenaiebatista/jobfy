@@ -2,7 +2,6 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../models/user_profile_model.dart';
 
-// Mock implementation — substitua por Firebase/API real
 class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserProfileEntity> getUserProfile(String userId) async {
