@@ -11,7 +11,7 @@ class UserRepositoryImpl implements UserRepository {
       nome: 'Victor hahaha',
       email: 'HenriqueDevJunior@email.com',
       cargo: 'Desenvolvedor Pro MAXXXX EM Flutter',
-      localizacao: 'São Paulo, SP',
+      localizacao: 'Gaspar, SC',
       perfilCompleto: 75,
       candidaturas: 12,
       matchScore: 89,
