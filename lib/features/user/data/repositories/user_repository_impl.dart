@@ -8,9 +8,9 @@ class UserRepositoryImpl implements UserRepository {
     await Future.delayed(const Duration(milliseconds: 600));
     return const UserProfileModel(
       id: 'usr_001',
-      nome: 'Caue Bueno',
-      email: 'caue@email.com',
-      cargo: 'Desenvolvedor Flutter',
+      nome: 'Victor hahaha',
+      email: 'HenriqueDevJunior@email.com',
+      cargo: 'Desenvolvedor Pro MAXXXX EM Flutter',
       localizacao: 'São Paulo, SP',
       perfilCompleto: 75,
       candidaturas: 12,
