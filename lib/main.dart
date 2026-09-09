@@ -1,5 +1,5 @@
-import 'package:aplicativo_jobfy/core/routes/app_router.dart';
-import 'package:aplicativo_jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/core/routes/app_router.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
