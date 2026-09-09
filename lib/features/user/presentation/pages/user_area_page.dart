@@ -9,6 +9,7 @@ import 'package:jobfy/features/user/presentation/widgets/job_match_card.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/features/user/presentation/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserAreaPage extends StatefulWidget {
   const UserAreaPage({super.key});
@@ -149,22 +150,26 @@ class _TopBar extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: colors.outlineVariant),
-            ),
-            child: Row(
-              spacing: 6,
-              children: [
-                Icon(Icons.search, size: 16, color: colors.onSurfaceVariant),
-                Text(
-                  l10n.searchJobsPlaceholder,
-                  style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
-                ),
-              ],
+          InkWell(
+            onTap: () => context.go('/jobs'),
+            borderRadius: BorderRadius.circular(20),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: colors.outlineVariant),
+              ),
+              child: Row(
+                spacing: 6,
+                children: [
+                  Icon(Icons.search, size: 16, color: colors.onSurfaceVariant),
+                  Text(
+                    l10n.searchJobsPlaceholder,
+                    style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+                  ),
+                ],
+              ),
             ),
           ),
           IconButton(
@@ -237,7 +242,7 @@ class _WelcomeBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.go('/jobs'),
                   icon: const Icon(Icons.bolt_outlined, size: 16),
                   label: Text(
                     l10n.viewRecommendedJobs,
@@ -461,7 +466,7 @@ class _JobsSection extends StatelessWidget {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context.go('/jobs'),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.accent,
                 ),

@@ -153,5 +153,14 @@
   "companyCandidateRateError": "Could not save the rating. Please try again.",
   "companyMessageSendError": "Could not send the message. Please try again.",
   "companyRatingSaved": "Rating saved.",
-  "companyMessageSent": "Message sent."
+  "companyMessageSent": "Message sent.",
+
+  "jobsPageTitle": "Jobs",
+  "jobsLocationHint": "Location...",
+  "jobsNoResults": "No jobs found for this search.",
+  "jobSearchError": "Could not load jobs. Please try again.",
+  "jobApplyError": "Could not submit your application. Please try again.",
+  "jobApplySuccess": "Application submitted!",
+  "jobAlreadyApplied": "Applied",
+  "jobViewDetails": "View details"
 }
