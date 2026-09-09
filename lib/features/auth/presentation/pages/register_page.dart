@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
@@ -76,11 +77,20 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // This screen's card-on-light-background design (and the terms dialog
+    // it opens) is intentionally fixed regardless of the device's theme.
+    return Theme(
+      data: AppTheme.light,
+      child: _buildScaffold(context, l10n),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, AppLocalizations l10n) {
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
           child: Column(
             spacing: 12,
             children: [
@@ -109,7 +119,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 20),
               Container(
-                width: 440,
+                width: double.infinity,
+                constraints: const BoxConstraints(maxWidth: 440),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -198,7 +209,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           ],
                         ),
                         const Divider(height: 8),
-                        Row(
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           spacing: 8,
                           children: [
                             SizedBox(
@@ -218,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               style: const TextStyle(fontSize: 13),
                             ),
                             GestureDetector(
-                              onTap: _showTerms,
+                              onTap: () => _showTerms(context),
                               child: Text(
                                 l10n.termsOfService,
                                 style: const TextStyle(
@@ -303,7 +315,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _showTerms() {
+  void _showTerms(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
