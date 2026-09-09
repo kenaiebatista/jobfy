@@ -31,6 +31,7 @@
 
   "authErrorInvalidCredentials": "Email ou senha inválidos.",
   "authErrorRegistrationFailed": "Erro ao criar conta. Tente novamente.",
+  "authErrorNetwork": "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
 
   "registerTitle": "Crie sua conta",
   "registerSubtitle": "Para o crescimento da sua carreira",
