@@ -37,7 +37,7 @@ class CandidateEntity {
 }
 
 class CompanyEntity {
-  final int companyId;
+  final String companyId;
   final String companyName;
   final String cnpj;
   final String email;

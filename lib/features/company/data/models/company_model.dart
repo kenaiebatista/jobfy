@@ -11,7 +11,7 @@ class CompanyModel extends CompanyEntity {
 
   factory CompanyModel.fromJson(Map<String, dynamic> json) {
     return CompanyModel(
-      companyId: json['company_id'] as int,
+      companyId: json['company_id'] as String,
       companyName: json['company_name'] as String,
       cnpj: json['cnpj'] as String,
       email: json['email'] as String,
