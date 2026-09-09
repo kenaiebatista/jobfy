@@ -1,12 +1,12 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/login_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/register_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
+import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
+import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-enum Genero { masculino, feminino, outro }
+enum Gender { male, female, other }
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,12 +16,12 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _nomeController = TextEditingController();
+  final _nameController = TextEditingController();
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-  Genero _genero = Genero.masculino;
-  bool _aceitoTermos = false;
+  final _passwordController = TextEditingController();
+  Gender _gender = Gender.male;
+  bool _acceptedTerms = false;
 
   late final AuthController _authController;
 
@@ -34,27 +34,32 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    _nomeController.dispose();
+    _nameController.dispose();
     _cpfController.dispose();
     _emailController.dispose();
-    _senhaController.dispose();
+    _passwordController.dispose();
     _authController.dispose();
     super.dispose();
   }
 
+  String _errorMessage(AuthErrorCode code) => switch (code) {
+        AuthErrorCode.invalidCredentials => 'Email ou senha inválidos.',
+        AuthErrorCode.registrationFailed => 'Erro ao criar conta. Tente novamente.',
+      };
+
   Future<void> _handleRegister() async {
-    if (!_aceitoTermos) {
+    if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Você precisa aceitar os termos.')),
       );
       return;
     }
     final ok = await _authController.register(
-      nome: _nomeController.text.trim(),
+      name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       cpf: _cpfController.text.trim(),
-      senha: _senhaController.text,
-      genero: _genero.name,
+      password: _passwordController.text,
+      gender: _gender.name,
     );
     if (ok && mounted) context.go('/user');
   }
@@ -67,12 +72,13 @@ class _RegisterPageState extends State<RegisterPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 48),
           child: Column(
+            spacing: 12,
             children: [
               const Row(
                 mainAxisSize: MainAxisSize.min,
+                spacing: 8,
                 children: [
                   Icon(Icons.lightbulb_circle, size: 36),
-                  SizedBox(width: 8),
                   Text(
                     'Jobfy',
                     style: TextStyle(
@@ -83,17 +89,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
               const Text(
                 'Crie sua conta',
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 6),
               const Text(
                 'Para o crescimento da sua carreira',
                 style: TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               Container(
                 width: 440,
                 padding: const EdgeInsets.all(32),
@@ -114,16 +118,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   builder: (context, _) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 16,
                       children: [
                         TextField(
-                          controller: _nomeController,
+                          controller: _nameController,
                           decoration: const InputDecoration(
                             labelText: 'Nome completo',
                             hintText: 'Seu nome...',
                             prefixIcon: Icon(Icons.person_outline, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
                           controller: _emailController,
                           decoration: const InputDecoration(
@@ -132,7 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: Icon(Icons.email_outlined, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
                           controller: _cpfController,
                           decoration: const InputDecoration(
@@ -141,9 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: Icon(Icons.badge_outlined, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
-                          controller: _senhaController,
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: const InputDecoration(
                             labelText: 'Senha',
@@ -151,59 +153,63 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: Icon(Icons.lock_outline, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Gênero',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 8,
+                          children: [
+                            const Text(
+                              'Gênero',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            // ignore: deprecated_member_use
+                            RadioGroup<Gender>(
+                              groupValue: _gender,
+                              onChanged: (v) => setState(() => _gender = v!),
+                              child: Row(
+                                children: Gender.values
+                                    .map((g) => Expanded(
+                                          child: RadioListTile<Gender>(
+                                            value: g,
+                                            dense: true,
+                                            contentPadding: EdgeInsets.zero,
+                                            title: Text(
+                                              g.name[0].toUpperCase() +
+                                                  g.name.substring(1),
+                                              style: const TextStyle(fontSize: 13),
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        // ignore: deprecated_member_use
-                        RadioGroup<Genero>(
-                          groupValue: _genero,
-                          onChanged: (v) => setState(() => _genero = v!),
-                          child: Row(
-                            children: Genero.values
-                                .map((g) => Expanded(
-                                      child: RadioListTile<Genero>(
-                                        value: g,
-                                        dense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(
-                                          g.name[0].toUpperCase() +
-                                              g.name.substring(1),
-                                          style: const TextStyle(fontSize: 13),
-                                        ),
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                        const Divider(height: 24),
+                        const Divider(height: 8),
                         Row(
+                          spacing: 8,
                           children: [
                             SizedBox(
                               width: 20,
                               height: 20,
                               child: Checkbox(
-                                value: _aceitoTermos,
+                                value: _acceptedTerms,
                                 onChanged: (v) =>
-                                    setState(() => _aceitoTermos = v!),
+                                    setState(() => _acceptedTerms = v!),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
                             const Text(
                               'Aceito os ',
                               style: TextStyle(fontSize: 13),
                             ),
                             GestureDetector(
-                              onTap: _showTermos,
+                              onTap: _showTerms,
                               child: const Text(
                                 'termos de serviço',
                                 style: TextStyle(
@@ -215,8 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             ),
                           ],
                         ),
-                        if (_authController.errorMessage.isNotEmpty) ...[
-                          const SizedBox(height: 12),
+                        if (_authController.errorCode != null)
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -227,15 +232,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             child: Text(
-                              _authController.errorMessage,
+                              _errorMessage(_authController.errorCode!),
                               style: const TextStyle(
                                 color: AppColors.danger,
                                 fontSize: 13,
                               ),
                             ),
                           ),
-                        ],
-                        const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -266,7 +269,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         Center(
                           child: GestureDetector(
                             onTap: () => context.go('/login'),
@@ -292,7 +294,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _showTermos() {
+  void _showTerms() {
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -303,6 +305,7 @@ class _RegisterPageState extends State<RegisterPage> {
           padding: const EdgeInsets.all(28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               Row(
                 children: [
@@ -323,7 +326,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
               const Divider(),
               const Expanded(
                 child: SingleChildScrollView(

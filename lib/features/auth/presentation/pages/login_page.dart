@@ -1,10 +1,10 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/login_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/register_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:aplicativo_jobfy/shared/widgets/app_chip.dart';
-import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
+import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
+import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/shared/widgets/app_chip.dart';
+import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -17,10 +17,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-  bool _lembreMe = false;
-  bool _hoverEsqueci = false;
-  bool _hoverCadastro = false;
+  final _passwordController = TextEditingController();
+  bool _rememberMe = false;
+  bool _hoverForgotPassword = false;
+  bool _hoverRegister = false;
+  bool _hoverCompany = false;
 
   late final AuthController _authController;
 
@@ -37,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _emailController.dispose();
-    _senhaController.dispose();
+    _passwordController.dispose();
     _authController.dispose();
     super.dispose();
   }
@@ -45,10 +46,15 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin() async {
     final ok = await _authController.login(
       _emailController.text.trim(),
-      _senhaController.text,
+      _passwordController.text,
     );
     if (ok && mounted) context.go('/user');
   }
+
+  String _errorMessage(AuthErrorCode code) => switch (code) {
+        AuthErrorCode.invalidCredentials => 'Email ou senha inválidos.',
+        AuthErrorCode.registrationFailed => 'Erro ao criar conta. Tente novamente.',
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -92,11 +98,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               const Row(
+                spacing: 8,
                 children: [
                   Icon(Icons.lightbulb_circle, size: 36),
-                  SizedBox(width: 8),
                   Text(
                     'Jobfy',
                     style: TextStyle(
@@ -107,17 +114,20 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'Bem-vindo de volta',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: const [
+                  Text(
+                    'Bem-vindo de volta',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Insira suas credenciais para acessar.',
+                    style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Insira suas credenciais para acessar.',
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
-              ),
-              const SizedBox(height: 28),
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(
@@ -126,9 +136,8 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: Icon(Icons.email_outlined, size: 18),
                 ),
               ),
-              const SizedBox(height: 16),
               TextField(
-                controller: _senhaController,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Senha',
@@ -137,26 +146,24 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 onSubmitted: (_) => _handleLogin(),
               ),
-              const SizedBox(height: 12),
               Row(
+                spacing: 8,
                 children: [
                   SizedBox(
                     width: 20,
                     height: 20,
                     child: Checkbox(
-                      value: _lembreMe,
-                      onChanged: (v) => setState(() => _lembreMe = v!),
+                      value: _rememberMe,
+                      onChanged: (v) => setState(() => _rememberMe = v!),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
                   const Text('Lembre-me', style: TextStyle(fontSize: 13)),
                 ],
               ),
-              if (_authController.errorMessage.isNotEmpty) ...[
-                const SizedBox(height: 12),
+              if (_authController.errorCode != null)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
@@ -165,18 +172,18 @@ class _LoginPageState extends State<LoginPage> {
                     border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
                   ),
                   child: Row(
+                    spacing: 8,
                     children: [
                       const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        _authController.errorMessage,
-                        style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                      Expanded(
+                        child: Text(
+                          _errorMessage(_authController.errorCode!),
+                          style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -202,50 +209,49 @@ class _LoginPageState extends State<LoginPage> {
                       : const Text('Entrar', style: TextStyle(fontSize: 15)),
                 ),
               ),
-              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   MouseRegion(
-                    onEnter: (_) => setState(() => _hoverEsqueci = true),
-                    onExit: (_) => setState(() => _hoverEsqueci = false),
+                    onEnter: (_) => setState(() => _hoverForgotPassword = true),
+                    onExit: (_) => setState(() => _hoverForgotPassword = false),
                     child: GestureDetector(
                       onTap: () {},
                       child: Text(
                         'Esqueceu a senha?',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _hoverEsqueci ? AppColors.accent : AppColors.textMuted,
+                          color: _hoverForgotPassword ? AppColors.accent : AppColors.textMuted,
                           decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ),
                   MouseRegion(
-                    onEnter: (_) => setState(() => _hoverCadastro = true),
-                    onExit: (_) => setState(() => _hoverCadastro = false),
+                    onEnter: (_) => setState(() => _hoverRegister = true),
+                    onExit: (_) => setState(() => _hoverRegister = false),
                     child: GestureDetector(
                       onTap: () => context.go('/register'),
                       child: Text(
                         'Criar conta',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
+                          color: _hoverRegister ? AppColors.accent : AppColors.textMuted,
                           decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
                   ),
                   MouseRegion(
-                    onEnter: (_) => setState(() => _hoverCadastro = true),
-                    onExit: (_) => setState(() => _hoverCadastro = false),
+                    onEnter: (_) => setState(() => _hoverCompany = true),
+                    onExit: (_) => setState(() => _hoverCompany = false),
                     child: GestureDetector(
                       onTap: () => context.go('/company'),
                       child: Text(
                         'Sou empresa',
                         style: TextStyle(
                           fontSize: 12,
-                          color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
+                          color: _hoverCompany ? AppColors.accent : AppColors.textMuted,
                           decoration: TextDecoration.underline,
                         ),
                       ),
@@ -296,9 +302,9 @@ class _LeftPanel extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: const [
               Row(
+                spacing: 10,
                 children: [
                   Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
-                  SizedBox(width: 10),
                   Text(
                     'Jobfy',
                     style: TextStyle(
