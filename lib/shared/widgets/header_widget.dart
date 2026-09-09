@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,19 +8,20 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AppBar(
       backgroundColor: AppColors.backgroundDark,
       leading: IconButton(
         icon: const Icon(Icons.menu, color: Colors.white),
         onPressed: () {},
       ),
-      title: const Row(
+      title: Row(
         spacing: 8,
         children: [
-          Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
+          const Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
           Text(
-            'Jobfy',
-            style: TextStyle(
+            l10n.appName,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -32,12 +34,12 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
         IconButton(
           icon: const Icon(Icons.settings_outlined, color: Colors.white),
           onPressed: () => context.go('/settings'),
-          tooltip: 'Configurações',
+          tooltip: l10n.headerSettingsTooltip,
         ),
         IconButton(
           icon: const Icon(Icons.account_circle_outlined, color: Colors.white),
           onPressed: () => context.go('/user'),
-          tooltip: 'Área do usuário',
+          tooltip: l10n.headerUserAreaTooltip,
         ),
         const SizedBox(width: 8),
       ],

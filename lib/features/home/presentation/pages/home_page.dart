@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:jobfy/shared/widgets/header_widget.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: const HeaderWidget(),
       body: Stack(
@@ -35,20 +37,20 @@ class HomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               spacing: 20,
               children: [
-                const Text(
-                  'Encontre o emprego\ndos seus sonhos.',
+                Text(
+                  l10n.homeHeadline,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 52,
                     fontWeight: FontWeight.bold,
                     height: 1.2,
                   ),
                 ),
-                const Text(
-                  'A Jobfy usa inteligência para conectar talentos\na oportunidades reais no mercado.',
+                Text(
+                  l10n.homeSubheadline,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textLight,
                     fontSize: 16,
                     height: 1.7,
@@ -73,9 +75,9 @@ class HomePage extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Começar agora',
-                        style: TextStyle(fontSize: 15),
+                      child: Text(
+                        l10n.homeCtaPrimary,
+                        style: const TextStyle(fontSize: 15),
                       ),
                     ),
                     OutlinedButton(
@@ -91,9 +93,9 @@ class HomePage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Já tenho conta',
-                        style: TextStyle(fontSize: 15),
+                      child: Text(
+                        l10n.homeCtaSecondary,
+                        style: const TextStyle(fontSize: 15),
                       ),
                     ),
                   ],

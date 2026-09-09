@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
@@ -48,7 +49,9 @@ class _UserAreaPageState extends State<UserAreaPage> {
 
           final profile = _controller.profile;
           if (profile == null) {
-            return const Center(child: Text('Erro ao carregar perfil.'));
+            return Center(
+              child: Text(AppLocalizations.of(context)!.userAreaLoadError),
+            );
           }
 
           return Row(
@@ -126,6 +129,7 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
       decoration: BoxDecoration(
@@ -137,7 +141,7 @@ class _TopBar extends StatelessWidget {
         children: [
           Icon(Icons.lightbulb_circle, size: 28, color: colors.onSurface),
           Text(
-            'Jobfy',
+            l10n.appName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -157,7 +161,7 @@ class _TopBar extends StatelessWidget {
               children: [
                 Icon(Icons.search, size: 16, color: colors.onSurfaceVariant),
                 Text(
-                  'Buscar vagas...',
+                  l10n.searchJobsPlaceholder,
                   style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
                 ),
               ],
@@ -195,6 +199,7 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final firstName = profile.name.trim().split(' ').first;
     return Container(
       padding: const EdgeInsets.all(24),
@@ -215,16 +220,16 @@ class _WelcomeBanner extends StatelessWidget {
               spacing: 6,
               children: [
                 Text(
-                  'Olá, $firstName! 👋',
+                  l10n.welcomeGreeting(firstName),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  'Você tem novas vagas compatíveis com seu perfil.',
-                  style: TextStyle(
+                Text(
+                  l10n.welcomeSubtitle,
+                  style: const TextStyle(
                     color: AppColors.textLight,
                     fontSize: 14,
                     height: 1.5,
@@ -234,9 +239,9 @@ class _WelcomeBanner extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.bolt_outlined, size: 16),
-                  label: const Text(
-                    'Ver vagas recomendadas',
-                    style: TextStyle(fontSize: 13),
+                  label: Text(
+                    l10n.viewRecommendedJobs,
+                    style: const TextStyle(fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accent,
@@ -273,9 +278,9 @@ class _WelcomeBanner extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  'Match médio',
-                  style: TextStyle(
+                Text(
+                  l10n.avgMatch,
+                  style: const TextStyle(
                     color: AppColors.textLight,
                     fontSize: 12,
                   ),
@@ -296,14 +301,15 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       spacing: 16,
       children: [
         Expanded(
           child: StatsCard(
             value: '${profile.applications}',
-            title: 'Candidaturas',
-            subtitle: 'este mês',
+            title: l10n.statApplications,
+            subtitle: l10n.statApplicationsSub,
             icon: Icons.send_outlined,
             iconColor: AppColors.accent,
             iconBg: AppColors.accent.withValues(alpha: 0.1),
@@ -312,8 +318,8 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: StatsCard(
             value: '${profile.matchScore}%',
-            title: 'Match Score',
-            subtitle: 'média geral',
+            title: l10n.statMatchScore,
+            subtitle: l10n.statMatchScoreSub,
             icon: Icons.bolt_outlined,
             iconColor: AppColors.warning,
             iconBg: AppColors.warning.withValues(alpha: 0.1),
@@ -322,8 +328,8 @@ class _StatsRow extends StatelessWidget {
         Expanded(
           child: StatsCard(
             value: '${profile.profileViews}',
-            title: 'Visualizações',
-            subtitle: 'do seu perfil',
+            title: l10n.statProfileViews,
+            subtitle: l10n.statProfileViewsSub,
             icon: Icons.visibility_outlined,
             iconColor: AppColors.success,
             iconBg: AppColors.success.withValues(alpha: 0.1),
@@ -342,6 +348,7 @@ class _SkillsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -361,7 +368,7 @@ class _SkillsRow extends StatelessWidget {
         children: [
           const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
           Text(
-            'Habilidades',
+            l10n.skillsTitle,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 14,
@@ -380,7 +387,7 @@ class _SkillsRow extends StatelessWidget {
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.add, size: 16),
-            label: const Text('Adicionar', style: TextStyle(fontSize: 13)),
+            label: Text(l10n.addSkill, style: const TextStyle(fontSize: 13)),
             style: TextButton.styleFrom(foregroundColor: AppColors.accent),
           ),
         ],
@@ -423,6 +430,7 @@ class _JobsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -444,7 +452,7 @@ class _JobsSection extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Vagas Recomendadas',
+                l10n.recommendedJobsTitle,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -457,9 +465,9 @@ class _JobsSection extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.accent,
                 ),
-                child: const Text(
-                  'Ver todas',
-                  style: TextStyle(fontSize: 13),
+                child: Text(
+                  l10n.viewAll,
+                  style: const TextStyle(fontSize: 13),
                 ),
               ),
             ],
@@ -482,6 +490,7 @@ class _ActivitySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -501,7 +510,7 @@ class _ActivitySection extends StatelessWidget {
         spacing: 12,
         children: [
           Text(
-            'Atividade Recente',
+            l10n.recentActivityTitle,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
