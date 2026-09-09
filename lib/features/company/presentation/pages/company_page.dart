@@ -1,4 +1,4 @@
-import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
@@ -51,7 +51,6 @@ class _CompanyPageState extends State<CompanyPage> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -67,7 +66,7 @@ class _CompanyPageState extends State<CompanyPage> {
           if (company == null) {
             return _CompanyRegistrationForm(controller: _controller);
           }
-          return _CompanyDashboard(controller: _controller, company: company, colors: colors);
+          return _CompanyDashboard(controller: _controller, company: company);
         },
       ),
     );
@@ -111,6 +110,7 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final isLoading = widget.controller.isLoading;
     final error = widget.controller.error;
 
@@ -129,7 +129,7 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
               ),
               Text(
                 l10n.companyRegisterSubtitle,
-                style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 14, color: colors.textMuted),
               ),
               TextField(
                 controller: _nameController,
@@ -166,7 +166,7 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
               if (error != null)
                 Text(
                   companyErrorMessage(l10n, error),
-                  style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                  style: TextStyle(color: colors.danger, fontSize: 13),
                 ),
               SizedBox(
                 width: double.infinity,
@@ -174,15 +174,15 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
                 child: ElevatedButton(
                   onPressed: isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.accent,
+                    foregroundColor: colors.onAccent,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   child: isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(color: colors.onAccent, strokeWidth: 2),
                         )
                       : Text(l10n.companyRegisterButton),
                 ),
@@ -198,13 +198,8 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
 class _CompanyDashboard extends StatefulWidget {
   final CompanyController controller;
   final CompanyEntity company;
-  final ColorScheme colors;
 
-  const _CompanyDashboard({
-    required this.controller,
-    required this.company,
-    required this.colors,
-  });
+  const _CompanyDashboard({required this.controller, required this.company});
 
   @override
   State<_CompanyDashboard> createState() => _CompanyDashboardState();
@@ -248,7 +243,7 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = widget.colors;
+    final colors = context.colors;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -264,14 +259,13 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                 style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               _Card(
-                colors: colors,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 12,
                   children: [
                     Text(
                       l10n.companyPublishJobTitle,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.onSurface),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.textPrimary),
                     ),
                     TextField(
                       controller: _titleController,
@@ -321,15 +315,15 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                     if (widget.controller.error == 'companyJobPublishError')
                       Text(
                         companyErrorMessage(l10n, widget.controller.error!),
-                        style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                        style: TextStyle(color: colors.danger, fontSize: 13),
                       ),
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed: _publishJob,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accent,
-                          foregroundColor: Colors.white,
+                          backgroundColor: colors.accent,
+                          foregroundColor: colors.onAccent,
                         ),
                         child: Text(l10n.companyPublishJobButton),
                       ),
@@ -343,17 +337,16 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                 children: [
                   Text(
                     l10n.companyJobsTitle,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.onSurface),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.textPrimary),
                   ),
                   if (widget.controller.jobs.isEmpty)
                     Text(
                       l10n.companyNoJobsYet,
-                      style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
+                      style: TextStyle(color: colors.textMuted, fontSize: 13),
                     )
                   else
                     ...widget.controller.jobs.map((job) => _JobCard(
                           job: job,
-                          colors: colors,
                           onViewCandidates: () => _showCandidates(context, job),
                         )),
                 ],
@@ -375,19 +368,19 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
 }
 
 class _Card extends StatelessWidget {
-  final ColorScheme colors;
   final Widget child;
 
-  const _Card({required this.colors, required this.child});
+  const _Card({required this.child});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: child,
     );
@@ -396,21 +389,21 @@ class _Card extends StatelessWidget {
 
 class _JobCard extends StatelessWidget {
   final JobEntity job;
-  final ColorScheme colors;
   final VoidCallback onViewCandidates;
 
-  const _JobCard({required this.job, required this.colors, required this.onViewCandidates});
+  const _JobCard({required this.job, required this.onViewCandidates});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Row(
         children: [
@@ -421,11 +414,11 @@ class _JobCard extends StatelessWidget {
               children: [
                 Text(
                   job.title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: colors.onSurface),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: colors.textPrimary),
                 ),
                 Text(
                   '${job.location} · ${job.contractType} · ${job.salary}',
-                  style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                  style: TextStyle(fontSize: 12, color: colors.textMuted),
                 ),
               ],
             ),
@@ -471,7 +464,7 @@ class _CandidatesDialogState extends State<_CandidatesDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -530,7 +523,7 @@ class _CandidatesDialogState extends State<_CandidatesDialog> {
                       return Center(
                         child: Text(
                           l10n.companyNoCandidates,
-                          style: TextStyle(color: colors.onSurfaceVariant, fontSize: 13),
+                          style: TextStyle(color: colors.textMuted, fontSize: 13),
                         ),
                       );
                     }
@@ -562,7 +555,7 @@ class _CandidateRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
 
     return Row(
       children: [
@@ -570,11 +563,11 @@ class _CandidateRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(candidate.name, style: TextStyle(fontWeight: FontWeight.w600, color: colors.onSurface)),
+              Text(candidate.name, style: TextStyle(fontWeight: FontWeight.w600, color: colors.textPrimary)),
               Text(
                 '${candidate.desiredRole} · ${candidate.matchPercent}%'
                 '${candidate.rating != null ? ' · ★ ${candidate.rating}' : ''}',
-                style: TextStyle(fontSize: 12, color: colors.onSurfaceVariant),
+                style: TextStyle(fontSize: 12, color: colors.textMuted),
               ),
             ],
           ),

@@ -1,3 +1,4 @@
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class StatsCard extends StatelessWidget {
@@ -20,13 +21,13 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -57,7 +58,7 @@ class StatsCard extends StatelessWidget {
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     height: 1,
-                    color: colors.onSurface,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -66,14 +67,14 @@ class StatsCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: colors.onSurface,
+                    color: colors.textPrimary,
                   ),
                 ),
                 Text(
                   subtitle,
                   style: TextStyle(
                     fontSize: 11,
-                    color: colors.onSurfaceVariant,
+                    color: colors.textMuted,
                   ),
                 ),
               ],

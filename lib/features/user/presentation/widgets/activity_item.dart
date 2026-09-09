@@ -1,4 +1,4 @@
-import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -15,17 +15,21 @@ class ActivityItem extends StatelessWidget {
         ActivityType.job => Icons.notifications_outlined,
       };
 
-  Color get _color => switch (activity.type) {
-        ActivityType.application => AppColors.accent,
-        ActivityType.profileView => AppColors.accentLight,
-        ActivityType.match => AppColors.warning,
-        ActivityType.profile => AppColors.success,
-        ActivityType.job => AppColors.textMuted,
-      };
+  Color _color(BuildContext context) {
+    final colors = context.colors;
+    return switch (activity.type) {
+      ActivityType.application => colors.accent,
+      ActivityType.profileView => colors.accent,
+      ActivityType.match => colors.warning,
+      ActivityType.profile => colors.success,
+      ActivityType.job => colors.textMuted,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
+    final color = _color(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -36,10 +40,10 @@ class ActivityItem extends StatelessWidget {
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: _color.withValues(alpha: 0.12),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(_icon, color: _color, size: 17),
+            child: Icon(_icon, color: color, size: 17),
           ),
           Expanded(
             child: Column(
@@ -51,14 +55,14 @@ class ActivityItem extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: colors.onSurface,
+                    color: colors.textPrimary,
                   ),
                 ),
                 Text(
                   activity.time,
                   style: TextStyle(
                     fontSize: 11,
-                    color: colors.onSurfaceVariant,
+                    color: colors.textMuted,
                   ),
                 ),
               ],

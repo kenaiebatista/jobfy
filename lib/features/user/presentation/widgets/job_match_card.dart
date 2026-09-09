@@ -1,4 +1,4 @@
-import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -15,16 +15,18 @@ class JobMatchCard extends StatefulWidget {
 class _JobMatchCardState extends State<JobMatchCard> {
   bool _hovered = false;
 
-  Color get _matchColor {
+  Color _matchColor(BuildContext context) {
+    final colors = context.colors;
     final p = widget.job.matchPercent;
-    if (p >= 90) return AppColors.success;
-    if (p >= 70) return AppColors.warning;
-    return AppColors.textMuted;
+    if (p >= 90) return colors.success;
+    if (p >= 70) return colors.warning;
+    return colors.textMuted;
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
+    final matchColor = _matchColor(context);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -32,15 +34,15 @@ class _JobMatchCardState extends State<JobMatchCard> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : colors.outlineVariant,
+            color: _hovered ? colors.accent.withValues(alpha: 0.4) : colors.surfaceBorder,
           ),
           boxShadow: [
             BoxShadow(
               color: _hovered
-                  ? AppColors.accent.withValues(alpha: 0.08)
+                  ? colors.accent.withValues(alpha: 0.08)
                   : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 8,
               offset: const Offset(0, 4),
@@ -58,12 +60,12 @@ class _JobMatchCardState extends State<JobMatchCard> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
+                    color: colors.accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.business_outlined,
-                    color: AppColors.accent,
+                    color: colors.accent,
                     size: 20,
                   ),
                 ),
@@ -76,7 +78,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
-                          color: colors.onSurface,
+                          color: colors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -84,7 +86,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                         widget.job.company,
                         style: TextStyle(
                           fontSize: 12,
-                          color: colors.onSurfaceVariant,
+                          color: colors.textMuted,
                         ),
                       ),
                     ],
@@ -93,7 +95,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _matchColor.withValues(alpha: 0.12),
+                    color: matchColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -101,7 +103,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: _matchColor,
+                      color: matchColor,
                     ),
                   ),
                 ),
@@ -121,7 +123,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: colors.onSurface,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -130,8 +132,8 @@ class _JobMatchCardState extends State<JobMatchCard> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
+                      backgroundColor: colors.accent,
+                      foregroundColor: colors.onAccent,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -161,22 +163,22 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: colors.background,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          Icon(icon, size: 11, color: colors.onSurfaceVariant),
+          Icon(icon, size: 11, color: colors.textMuted),
           Text(
             label,
-            style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
+            style: TextStyle(fontSize: 11, color: colors.textMuted),
           ),
         ],
       ),

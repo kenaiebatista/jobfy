@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
@@ -43,8 +44,8 @@ class _UserAreaPageState extends State<UserAreaPage> {
         listenable: _controller,
         builder: (context, _) {
           if (_controller.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.accent),
+            return Center(
+              child: CircularProgressIndicator(color: context.colors.accent),
             );
           }
 
@@ -129,24 +130,24 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+        color: colors.surface,
+        border: Border(bottom: BorderSide(color: colors.surfaceBorder)),
       ),
       child: Row(
         spacing: 8,
         children: [
-          Icon(Icons.lightbulb_circle, size: 28, color: colors.onSurface),
+          Icon(Icons.lightbulb_circle, size: 28, color: colors.textPrimary),
           Text(
             l10n.appName,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: colors.onSurface,
+              color: colors.textPrimary,
             ),
           ),
           const Spacer(),
@@ -156,36 +157,34 @@ class _TopBar extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
+                color: colors.background,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: colors.outlineVariant),
+                border: Border.all(color: colors.surfaceBorder),
               ),
               child: Row(
                 spacing: 6,
                 children: [
-                  Icon(Icons.search, size: 16, color: colors.onSurfaceVariant),
+                  Icon(Icons.search, size: 16, color: colors.textMuted),
                   Text(
                     l10n.searchJobsPlaceholder,
-                    style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+                    style: TextStyle(fontSize: 13, color: colors.textMuted),
                   ),
                 ],
               ),
             ),
           ),
           IconButton(
-            icon: Icon(Icons.notifications_outlined, color: colors.onSurface),
+            icon: Icon(Icons.notifications_outlined, color: colors.textPrimary),
             onPressed: () {},
-            style: IconButton.styleFrom(
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            ),
+            style: IconButton.styleFrom(backgroundColor: colors.background),
           ),
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.accent,
+            backgroundColor: colors.accent,
             child: Text(
               profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: colors.onAccent,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
@@ -204,6 +203,7 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     final firstName = profile.name.trim().split(' ').first;
     return Container(
@@ -249,8 +249,8 @@ class _WelcomeBanner extends StatelessWidget {
                     style: const TextStyle(fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.accent,
+                    foregroundColor: colors.onAccent,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 18, vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -306,6 +306,7 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Row(
       spacing: 16,
@@ -316,8 +317,8 @@ class _StatsRow extends StatelessWidget {
             title: l10n.statApplications,
             subtitle: l10n.statApplicationsSub,
             icon: Icons.send_outlined,
-            iconColor: AppColors.accent,
-            iconBg: AppColors.accent.withValues(alpha: 0.1),
+            iconColor: colors.accent,
+            iconBg: colors.accent.withValues(alpha: 0.1),
           ),
         ),
         Expanded(
@@ -326,8 +327,8 @@ class _StatsRow extends StatelessWidget {
             title: l10n.statMatchScore,
             subtitle: l10n.statMatchScoreSub,
             icon: Icons.bolt_outlined,
-            iconColor: AppColors.warning,
-            iconBg: AppColors.warning.withValues(alpha: 0.1),
+            iconColor: colors.warning,
+            iconBg: colors.warning.withValues(alpha: 0.1),
           ),
         ),
         Expanded(
@@ -336,8 +337,8 @@ class _StatsRow extends StatelessWidget {
             title: l10n.statProfileViews,
             subtitle: l10n.statProfileViewsSub,
             icon: Icons.visibility_outlined,
-            iconColor: AppColors.success,
-            iconBg: AppColors.success.withValues(alpha: 0.1),
+            iconColor: colors.success,
+            iconBg: colors.success.withValues(alpha: 0.1),
           ),
         ),
       ],
@@ -352,14 +353,14 @@ class _SkillsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -371,13 +372,13 @@ class _SkillsRow extends StatelessWidget {
       child: Row(
         spacing: 10,
         children: [
-          const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
+          Icon(Icons.auto_awesome, color: colors.accent, size: 20),
           Text(
             l10n.skillsTitle,
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 14,
-              color: colors.onSurface,
+              color: colors.textPrimary,
             ),
           ),
           Expanded(
@@ -393,7 +394,7 @@ class _SkillsRow extends StatelessWidget {
             onPressed: () {},
             icon: const Icon(Icons.add, size: 16),
             label: Text(l10n.addSkill, style: const TextStyle(fontSize: 13)),
-            style: TextButton.styleFrom(foregroundColor: AppColors.accent),
+            style: TextButton.styleFrom(foregroundColor: colors.accent),
           ),
         ],
       ),
@@ -408,17 +409,18 @@ class _SkillTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.colors.accent;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.08),
+        color: accent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
+        border: Border.all(color: accent.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: AppColors.accent,
+        style: TextStyle(
+          color: accent,
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
@@ -434,14 +436,14 @@ class _JobsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -461,15 +463,13 @@ class _JobsSection extends StatelessWidget {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: colors.onSurface,
+                  color: colors.textPrimary,
                 ),
               ),
               const Spacer(),
               TextButton(
                 onPressed: () => context.go('/jobs'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
-                ),
+                style: TextButton.styleFrom(foregroundColor: colors.accent),
                 child: Text(
                   l10n.viewAll,
                   style: const TextStyle(fontSize: 13),
@@ -494,14 +494,14 @@ class _ActivitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -519,14 +519,14 @@ class _ActivitySection extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
-              color: colors.onSurface,
+              color: colors.textPrimary,
             ),
           ),
-          Divider(height: 1, color: colors.outlineVariant),
+          Divider(height: 1, color: colors.surfaceBorder),
           ...activities.map((a) => Column(
                 children: [
                   ActivityItem(activity: a),
-                  Divider(height: 1, color: colors.outlineVariant),
+                  Divider(height: 1, color: colors.surfaceBorder),
                 ],
               )),
         ],
