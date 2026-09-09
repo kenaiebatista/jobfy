@@ -1,14 +1,19 @@
+import 'package:jobfy/core/config/app_config.dart';
 import 'package:jobfy/core/network/api_client.dart';
 import '../../domain/entities/company_entity.dart';
 import '../../domain/repositories/company_repository.dart';
 import '../datasources/company_data_source.dart';
+import '../datasources/company_fake_data_source.dart';
 import '../datasources/company_remote_data_source.dart';
 
 class CompanyRepositoryImpl implements CompanyRepository {
   final CompanyDataSource _dataSource;
 
   CompanyRepositoryImpl([CompanyDataSource? dataSource])
-      : _dataSource = dataSource ?? CompanyRemoteDataSource(ApiClient());
+      : _dataSource = dataSource ??
+            (AppConfig.useFakeBackend
+                ? CompanyFakeDataSource()
+                : CompanyRemoteDataSource(ApiClient()));
 
   @override
   Future<CompanyEntity> registerCompany(CompanyEntity company) {
