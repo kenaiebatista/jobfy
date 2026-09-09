@@ -133,5 +133,14 @@
   "companyCandidateRateError": "No se pudo guardar la calificación. Inténtalo de nuevo.",
   "companyMessageSendError": "No se pudo enviar el mensaje. Inténtalo de nuevo.",
   "companyRatingSaved": "Calificación guardada.",
-  "companyMessageSent": "Mensaje enviado."
+  "companyMessageSent": "Mensaje enviado.",
+
+  "jobsPageTitle": "Empleos",
+  "jobsLocationHint": "Ubicación...",
+  "jobsNoResults": "No se encontraron empleos para esta búsqueda.",
+  "jobSearchError": "No se pudieron cargar los empleos. Inténtalo de nuevo.",
+  "jobApplyError": "No se pudo enviar tu postulación. Inténtalo de nuevo.",
+  "jobApplySuccess": "¡Postulación enviada!",
+  "jobAlreadyApplied": "Postulado",
+  "jobViewDetails": "Ver detalles"
 }

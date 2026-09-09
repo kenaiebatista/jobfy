@@ -133,5 +133,14 @@
   "companyCandidateRateError": "Não foi possível salvar a avaliação. Tente novamente.",
   "companyMessageSendError": "Não foi possível enviar a mensagem. Tente novamente.",
   "companyRatingSaved": "Avaliação salva.",
-  "companyMessageSent": "Mensagem enviada."
+  "companyMessageSent": "Mensagem enviada.",
+
+  "jobsPageTitle": "Vagas",
+  "jobsLocationHint": "Localização...",
+  "jobsNoResults": "Nenhuma vaga encontrada para essa busca.",
+  "jobSearchError": "Não foi possível carregar as vagas. Tente novamente.",
+  "jobApplyError": "Não foi possível enviar sua candidatura. Tente novamente.",
+  "jobApplySuccess": "Candidatura enviada!",
+  "jobAlreadyApplied": "Candidatado",
+  "jobViewDetails": "Ver detalhes"
 }

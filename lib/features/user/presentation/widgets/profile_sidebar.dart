@@ -149,6 +149,8 @@ class ProfileSidebar extends StatelessWidget {
     );
   }
 
+  static const _jobsNavIndex = 1;
+
   Widget _buildNav(BuildContext context) {
     final items = _navItems(AppLocalizations.of(context)!);
     return ListView.builder(
@@ -161,7 +163,10 @@ class ProfileSidebar extends StatelessWidget {
           icon: item.icon,
           label: item.label,
           isSelected: isSelected,
-          onTap: () => onNavTap(i),
+          onTap: () {
+            onNavTap(i);
+            if (i == _jobsNavIndex) context.go('/jobs');
+          },
         );
       },
     );
