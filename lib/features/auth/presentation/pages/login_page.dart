@@ -1,4 +1,5 @@
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
@@ -58,21 +59,39 @@ class _LoginPageState extends State<LoginPage> {
         AuthErrorCode.network => l10n.authErrorNetwork,
       };
 
+  static const _wideLayoutBreakpoint = 900.0;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Row(
-        children: [
-          const Expanded(child: _LeftPanel()),
-          Expanded(
-            child: Center(
-              child: SizedBox(
-                width: 480,
-                child: _buildForm(),
+    // This screen's split dark-hero / light-form design is intentionally
+    // fixed regardless of the device's theme, so force the light theme here
+    // instead of letting text/icon colors drift with dark mode.
+    return Theme(
+      data: AppTheme.light,
+      child: Scaffold(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final form = Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: SingleChildScrollView(child: _buildForm()),
               ),
-            ),
-          ),
-        ],
+            );
+
+            if (constraints.maxWidth < _wideLayoutBreakpoint) {
+              // Narrow screens (phones, small windows): the side-by-side
+              // hero doesn't fit, so show the form alone.
+              return form;
+            }
+
+            return Row(
+              children: [
+                const Expanded(child: _LeftPanel()),
+                Expanded(child: form),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -212,8 +231,9 @@ class _LoginPageState extends State<LoginPage> {
                       : Text(l10n.loginButton, style: const TextStyle(fontSize: 15)),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                runSpacing: 8,
                 children: [
                   MouseRegion(
                     onEnter: (_) => setState(() => _hoverForgotPassword = true),
