@@ -3,16 +3,16 @@ import '../../domain/entities/user_profile_entity.dart';
 class UserProfileModel extends UserProfileEntity {
   const UserProfileModel({
     required super.id,
-    required super.nome,
+    required super.name,
     required super.email,
-    required super.cargo,
-    required super.localizacao,
-    required super.perfilCompleto,
-    required super.candidaturas,
+    required super.role,
+    required super.location,
+    required super.profileCompletion,
+    required super.applications,
     required super.matchScore,
-    required super.visualizacoes,
-    required super.habilidades,
-    required super.vagasRecomendadas,
-    required super.atividades,
+    required super.profileViews,
+    required super.skills,
+    required super.recommendedJobs,
+    required super.activities,
   });
 }

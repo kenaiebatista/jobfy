@@ -1,5 +1,5 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:flutter/material.dart';
 
 class ActivityItem extends StatelessWidget {
@@ -7,20 +7,20 @@ class ActivityItem extends StatelessWidget {
 
   const ActivityItem({super.key, required this.activity});
 
-  IconData get _icon => switch (activity.tipo) {
-        'candidatura' => Icons.send_outlined,
-        'visualizacao' => Icons.visibility_outlined,
-        'match' => Icons.bolt_outlined,
-        'perfil' => Icons.person_outline,
-        _ => Icons.notifications_outlined,
+  IconData get _icon => switch (activity.type) {
+        ActivityType.application => Icons.send_outlined,
+        ActivityType.profileView => Icons.visibility_outlined,
+        ActivityType.match => Icons.bolt_outlined,
+        ActivityType.profile => Icons.person_outline,
+        ActivityType.job => Icons.notifications_outlined,
       };
 
-  Color get _color => switch (activity.tipo) {
-        'candidatura' => AppColors.accent,
-        'visualizacao' => AppColors.accentLight,
-        'match' => AppColors.warning,
-        'perfil' => AppColors.success,
-        _ => AppColors.textMuted,
+  Color get _color => switch (activity.type) {
+        ActivityType.application => AppColors.accent,
+        ActivityType.profileView => AppColors.accentLight,
+        ActivityType.match => AppColors.warning,
+        ActivityType.profile => AppColors.success,
+        ActivityType.job => AppColors.textMuted,
       };
 
   @override
@@ -29,6 +29,7 @@ class ActivityItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
         children: [
           Container(
             width: 36,
@@ -39,22 +40,21 @@ class ActivityItem extends StatelessWidget {
             ),
             child: Icon(_icon, color: _color, size: 17),
           ),
-          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
               children: [
                 Text(
-                  activity.descricao,
+                  activity.description,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  activity.tempo,
+                  activity.time,
                   style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textMuted,
