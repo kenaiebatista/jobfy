@@ -92,5 +92,66 @@
   "settingsLanguage": "Language",
   "settingsLanguageDescription": "Choose the app language.",
   "settingsLanguageSystem": "System default",
-  "settingsBack": "Back"
+  "settingsBack": "Back",
+
+  "companyRegisterTitle": "Register your company",
+  "companyRegisterSubtitle": "Start publishing jobs and finding talent on Jobfy.",
+  "companyNameLabel": "Company name",
+  "companyNameHint": "Your company's name...",
+  "companyCnpjLabel": "CNPJ",
+  "companyCnpjHint": "00.000.000/0000-00",
+  "companyPhoneLabel": "Phone",
+  "companyPhoneHint": "(00) 00000-0000",
+  "companyRegisterButton": "Register company",
+  "companyRegisterError": "Could not register the company. Please try again.",
+
+  "companyWelcome": "Welcome, {companyName}",
+  "@companyWelcome": {
+    "placeholders": {
+      "companyName": { "type": "String" }
+    }
+  },
+  "companyPublishJobTitle": "Publish a job",
+  "jobTitleLabel": "Job title",
+  "jobTitleHint": "e.g. Flutter Developer",
+  "jobDescriptionLabel": "Description",
+  "jobDescriptionHint": "Responsibilities, requirements...",
+  "jobLocationLabel": "Location",
+  "jobLocationHint": "e.g. Remote, São Paulo",
+  "jobContractTypeLabel": "Contract type",
+  "jobContractTypeHint": "e.g. Full-time, Contract",
+  "jobSalaryLabel": "Salary range",
+  "jobSalaryHint": "e.g. $4,000 – $6,000",
+  "companyPublishJobButton": "Publish job",
+  "companyJobPublishError": "Could not publish the job. Please try again.",
+
+  "companyJobsTitle": "Published jobs",
+  "companyNoJobsYet": "No jobs published yet. Publish your first one above.",
+  "companyViewCandidates": "View candidates",
+
+  "companyCandidatesTitle": "Candidates for {jobTitle}",
+  "@companyCandidatesTitle": {
+    "placeholders": {
+      "jobTitle": { "type": "String" }
+    }
+  },
+  "companyRoleFilterLabel": "Filter by desired role",
+  "companyMinMatchLabel": "Minimum match: {percent}%",
+  "@companyMinMatchLabel": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "companyNoCandidates": "No candidates match this filter yet.",
+  "companyCandidateFilterError": "Could not load candidates. Please try again.",
+  "companyRateCandidate": "Rate",
+  "companyMessageCandidate": "Message",
+  "companyRatingLabel": "Rating (0-5)",
+  "companyMessageLabel": "Message",
+  "companyMessageHint": "Write a message to this candidate...",
+  "companySend": "Send",
+  "companyCandidateRateError": "Could not save the rating. Please try again.",
+  "companyMessageSendError": "Could not send the message. Please try again.",
+  "companyRatingSaved": "Rating saved.",
+  "companyMessageSent": "Message sent."
 }

@@ -57,8 +57,9 @@ class CompanyController extends ChangeNotifier {
     try {
       final created = await _publishJobUsecase(job);
       _jobs.add(created);
+      _error = null;
     } catch (_) {
-      _error = 'jobPublishError';
+      _error = 'companyJobPublishError';
     }
     notifyListeners();
   }
@@ -74,27 +75,36 @@ class CompanyController extends ChangeNotifier {
         roleFilter: roleFilter,
         minMatch: minMatch,
       );
+      _error = null;
     } catch (_) {
-      _error = 'candidateFilterError';
+      _error = 'companyCandidateFilterError';
     }
     notifyListeners();
   }
 
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) async {
+  Future<bool> rateCandidate(String candidateId, double rating, {String? comment}) async {
     try {
       await _rateCandidateUsecase(candidateId, rating, comment: comment);
+      _error = null;
+      notifyListeners();
+      return true;
     } catch (_) {
-      _error = 'candidateRateError';
+      _error = 'companyCandidateRateError';
+      notifyListeners();
+      return false;
     }
-    notifyListeners();
   }
 
-  Future<void> sendMessage(String candidateId, String message) async {
+  Future<bool> sendMessage(String candidateId, String message) async {
     try {
       await _sendMessageUsecase(candidateId, message);
+      _error = null;
+      notifyListeners();
+      return true;
     } catch (_) {
-      _error = 'messageSendError';
+      _error = 'companyMessageSendError';
+      notifyListeners();
+      return false;
     }
-    notifyListeners();
   }
 }
