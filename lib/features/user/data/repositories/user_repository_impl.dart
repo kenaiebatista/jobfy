@@ -1,7 +1,9 @@
+import 'package:jobfy/core/config/app_config.dart';
 import 'package:jobfy/core/network/api_client.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_data_source.dart';
+import '../datasources/user_fake_data_source.dart';
 import '../datasources/user_remote_data_source.dart';
 import '../models/user_profile_model.dart';
 
@@ -9,7 +11,10 @@ class UserRepositoryImpl implements UserRepository {
   final UserDataSource _dataSource;
 
   UserRepositoryImpl([UserDataSource? dataSource])
-      : _dataSource = dataSource ?? UserRemoteDataSource(ApiClient());
+      : _dataSource = dataSource ??
+            (AppConfig.useFakeBackend
+                ? UserFakeDataSource()
+                : UserRemoteDataSource(ApiClient()));
 
   @override
   Future<UserProfileEntity> getUserProfile(String userId) {
