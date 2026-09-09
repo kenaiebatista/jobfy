@@ -1,4 +1,5 @@
 import 'package:jobfy/core/settings/settings_controller.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +12,6 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<SettingsController>();
-    final colors = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +36,6 @@ class SettingsPage extends StatelessWidget {
                   description: l10n.settingsAppearanceDescription,
                   child: _ThemeModeSelector(
                     l10n: l10n,
-                    colors: colors,
                     value: settings.themeMode,
                     onChanged: settings.setThemeMode,
                   ),
@@ -46,7 +45,6 @@ class SettingsPage extends StatelessWidget {
                   description: l10n.settingsLanguageDescription,
                   child: _LanguageSelector(
                     l10n: l10n,
-                    colors: colors,
                     value: settings.locale,
                     onChanged: settings.setLocale,
                   ),
@@ -73,13 +71,13 @@ class _SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,12 +88,12 @@ class _SettingsSection extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
-              color: colors.onSurface,
+              color: colors.textPrimary,
             ),
           ),
           Text(
             description,
-            style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+            style: TextStyle(fontSize: 13, color: colors.textMuted),
           ),
           const SizedBox(height: 12),
           child,
@@ -107,13 +105,11 @@ class _SettingsSection extends StatelessWidget {
 
 class _ThemeModeSelector extends StatelessWidget {
   final AppLocalizations l10n;
-  final ColorScheme colors;
   final ThemeMode value;
   final ValueChanged<ThemeMode> onChanged;
 
   const _ThemeModeSelector({
     required this.l10n,
-    required this.colors,
     required this.value,
     required this.onChanged,
   });
@@ -144,13 +140,11 @@ class _ThemeModeSelector extends StatelessWidget {
 
 class _LanguageSelector extends StatelessWidget {
   final AppLocalizations l10n;
-  final ColorScheme colors;
   final Locale? value;
   final ValueChanged<Locale?> onChanged;
 
   const _LanguageSelector({
     required this.l10n,
-    required this.colors,
     required this.value,
     required this.onChanged,
   });
@@ -192,30 +186,30 @@ class _OptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: selected ? colors.primary.withValues(alpha: 0.1) : null,
+          color: selected ? colors.accent.withValues(alpha: 0.1) : null,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: selected ? colors.primary : colors.outlineVariant,
+            color: selected ? colors.accent : colors.surfaceBorder,
             width: selected ? 2 : 1,
           ),
         ),
         child: Column(
           spacing: 6,
           children: [
-            Icon(icon, color: selected ? colors.primary : colors.onSurfaceVariant),
+            Icon(icon, color: selected ? colors.accent : colors.textMuted),
             Text(
               label,
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
-                color: selected ? colors.primary : colors.onSurfaceVariant,
+                color: selected ? colors.accent : colors.textMuted,
               ),
             ),
           ],
@@ -238,17 +232,17 @@ class _RadioRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: selected ? colors.primary.withValues(alpha: 0.08) : null,
+          color: selected ? colors.accent.withValues(alpha: 0.08) : null,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: selected ? colors.primary : colors.outlineVariant,
+            color: selected ? colors.accent : colors.surfaceBorder,
           ),
         ),
         child: Row(
@@ -257,13 +251,13 @@ class _RadioRow extends StatelessWidget {
             Icon(
               selected ? Icons.radio_button_checked : Icons.radio_button_off,
               size: 18,
-              color: selected ? colors.primary : colors.onSurfaceVariant,
+              color: selected ? colors.accent : colors.textMuted,
             ),
             Text(
               label,
               style: TextStyle(
                 fontSize: 14,
-                color: colors.onSurface,
+                color: colors.textPrimary,
                 fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),

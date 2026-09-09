@@ -1,4 +1,4 @@
-import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:jobfy/features/jobs/domain/entities/job_listing_entity.dart';
 import 'package:jobfy/features/jobs/domain/usecases/apply_to_job_usecase.dart';
@@ -46,7 +46,7 @@ class _JobsPageState extends State<JobsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final colors = Theme.of(context).colorScheme;
+    final colors = context.colors;
 
     return Scaffold(
       appBar: AppBar(
@@ -105,7 +105,7 @@ class _JobsPageState extends State<JobsPage> {
                       return Center(
                         child: Text(
                           l10n.jobSearchError,
-                          style: const TextStyle(color: AppColors.danger),
+                          style: TextStyle(color: colors.danger),
                         ),
                       );
                     }
@@ -113,7 +113,7 @@ class _JobsPageState extends State<JobsPage> {
                       return Center(
                         child: Text(
                           l10n.jobsNoResults,
-                          style: TextStyle(color: colors.onSurfaceVariant),
+                          style: TextStyle(color: colors.textMuted),
                         ),
                       );
                     }
@@ -124,7 +124,6 @@ class _JobsPageState extends State<JobsPage> {
                       itemBuilder: (context, i) => _JobListingCard(
                         job: _controller.jobs[i],
                         controller: _controller,
-                        colors: colors,
                       ),
                     );
                   },
@@ -141,21 +140,21 @@ class _JobsPageState extends State<JobsPage> {
 class _JobListingCard extends StatelessWidget {
   final JobListingEntity job;
   final JobController controller;
-  final ColorScheme colors;
 
-  const _JobListingCard({required this.job, required this.controller, required this.colors});
+  const _JobListingCard({required this.job, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
     final applied = controller.hasApplied(job.id);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,11 +168,11 @@ class _JobListingCard extends StatelessWidget {
                   children: [
                     Text(
                       job.title,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colors.onSurface),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: colors.textPrimary),
                     ),
                     Text(
                       job.company,
-                      style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
+                      style: TextStyle(fontSize: 13, color: colors.textMuted),
                     ),
                   ],
                 ),
@@ -182,15 +181,15 @@ class _JobListingCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.12),
+                    color: colors.success.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
                     '${job.matchPercent}%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.success,
+                      color: colors.success,
                     ),
                   ),
                 ),
@@ -199,15 +198,15 @@ class _JobListingCard extends StatelessWidget {
           Row(
             spacing: 8,
             children: [
-              _Tag(icon: Icons.location_on_outlined, label: job.location, colors: colors),
-              _Tag(icon: Icons.work_outline, label: job.type, colors: colors),
+              _Tag(icon: Icons.location_on_outlined, label: job.location),
+              _Tag(icon: Icons.work_outline, label: job.type),
             ],
           ),
           Row(
             children: [
               Text(
                 job.salary,
-                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.onSurface),
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: colors.textPrimary),
               ),
               const Spacer(),
               TextButton(
@@ -217,8 +216,8 @@ class _JobListingCard extends StatelessWidget {
               ElevatedButton(
                 onPressed: applied ? null : () => _apply(context, l10n),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colors.accent,
+                  foregroundColor: colors.onAccent,
                 ),
                 child: Text(applied ? l10n.jobAlreadyApplied : l10n.applyButton),
               ),
@@ -267,25 +266,25 @@ class _JobListingCard extends StatelessWidget {
 class _Tag extends StatelessWidget {
   final IconData icon;
   final String label;
-  final ColorScheme colors;
 
-  const _Tag({required this.icon, required this.label, required this.colors});
+  const _Tag({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: colors.background,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: colors.outlineVariant),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          Icon(icon, size: 11, color: colors.onSurfaceVariant),
-          Text(label, style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant)),
+          Icon(icon, size: 11, color: colors.textMuted),
+          Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
         ],
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jobfy/core/settings/settings_controller.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +15,8 @@ void main() {
       ChangeNotifierProvider.value(
         value: settings,
         child: MaterialApp(
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
           locale: const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [
@@ -43,6 +46,8 @@ void main() {
       ChangeNotifierProvider.value(
         value: settings,
         child: MaterialApp(
+          theme: AppTheme.light,
+          darkTheme: AppTheme.dark,
           locale: const Locale('en'),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: const [

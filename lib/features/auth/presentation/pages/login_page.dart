@@ -1,5 +1,6 @@
 import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
@@ -7,6 +8,7 @@ import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dar
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/shared/widgets/app_chip.dart';
 import 'package:jobfy/shared/widgets/glow_circle.dart';
+import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,9 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
-  bool _hoverForgotPassword = false;
-  bool _hoverRegister = false;
-  bool _hoverCompany = false;
 
   late final AuthController _authController;
 
@@ -101,14 +100,15 @@ class _LoginPageState extends State<LoginPage> {
       listenable: _authController,
       builder: (context, _) {
         final l10n = AppLocalizations.of(context)!;
+        final colors = context.colors;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.all(32),
           padding: const EdgeInsets.all(32),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.cardBorder),
+            border: Border.all(color: colors.surfaceBorder),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   Text(
                     l10n.loginSubtitle,
-                    style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                    style: TextStyle(fontSize: 13, color: colors.textMuted),
                   ),
                 ],
               ),
@@ -189,18 +189,18 @@ class _LoginPageState extends State<LoginPage> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.danger.withValues(alpha: 0.08),
+                    color: colors.danger.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
+                    border: Border.all(color: colors.danger.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     spacing: 8,
                     children: [
-                      const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
+                      Icon(Icons.error_outline, color: colors.danger, size: 16),
                       Expanded(
                         child: Text(
                           _errorMessage(l10n, _authController.errorCode!),
-                          style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                          style: TextStyle(color: colors.danger, fontSize: 13),
                         ),
                       ),
                     ],
@@ -233,51 +233,34 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Wrap(
                 alignment: WrapAlignment.spaceBetween,
+                spacing: 16,
                 runSpacing: 8,
                 children: [
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverForgotPassword = true),
-                    onExit: (_) => setState(() => _hoverForgotPassword = false),
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        l10n.forgotPassword,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverForgotPassword ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.forgotPassword,
+                    onTap: () {},
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverRegister = true),
-                    onExit: (_) => setState(() => _hoverRegister = false),
-                    child: GestureDetector(
-                      onTap: () => context.go('/register'),
-                      child: Text(
-                        l10n.createAccount,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverRegister ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.createAccount,
+                    onTap: () => context.go('/register'),
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverCompany = true),
-                    onExit: (_) => setState(() => _hoverCompany = false),
-                    child: GestureDetector(
-                      onTap: () => context.go('/company'),
-                      child: Text(
-                        l10n.iAmCompany,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverCompany ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.iAmCompany,
+                    onTap: () => context.go('/company'),
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ],

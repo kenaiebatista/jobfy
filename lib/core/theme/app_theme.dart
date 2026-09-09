@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'app_semantic_colors.dart';
 
 class AppTheme {
   static ThemeData get light => ThemeData(
@@ -7,6 +8,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.backgroundLight,
     cardColor: AppColors.white,
     dividerColor: AppColors.cardBorder,
+    extensions: const [AppSemanticColors.light],
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.backgroundDark,
       foregroundColor: Colors.white,
@@ -33,6 +35,7 @@ class AppTheme {
     scaffoldBackgroundColor: AppColors.backgroundDark,
     cardColor: AppColors.surfaceDark,
     dividerColor: AppColors.cardBorderDark,
+    extensions: const [AppSemanticColors.dark],
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.backgroundDark,
       foregroundColor: Colors.white,
