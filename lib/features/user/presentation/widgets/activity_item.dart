@@ -25,6 +25,7 @@ class ActivityItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
@@ -47,17 +48,17 @@ class ActivityItem extends StatelessWidget {
               children: [
                 Text(
                   activity.description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: colors.onSurface,
                   ),
                 ),
                 Text(
                   activity.time,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: colors.onSurfaceVariant,
                   ),
                 ),
               ],
