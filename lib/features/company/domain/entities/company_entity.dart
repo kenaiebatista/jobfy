@@ -1,61 +1,53 @@
-/// Entidade que representa uma vaga publicada pela empresa.
-/// (necessária para o método publicarVaga() do diagrama)
-class VagaEntity {
+/// A job posting published by a company.
+class JobEntity {
   final String id;
-  final String idEmpresa;
-  final String titulo;
-  final String descricao;
-  final String localizacao;
-  final String tipoContrato;
-  final String salario;
+  final String companyId;
+  final String title;
+  final String description;
+  final String location;
+  final String contractType;
+  final String salary;
 
-  const VagaEntity({
+  const JobEntity({
     required this.id,
-    required this.idEmpresa,
-    required this.titulo,
-    required this.descricao,
-    required this.localizacao,
-    required this.tipoContrato,
-    required this.salario,
+    required this.companyId,
+    required this.title,
+    required this.description,
+    required this.location,
+    required this.contractType,
+    required this.salary,
   });
 }
 
-/// Entidade que representa um candidato retornado pelo filtro.
-/// (necessária para o método filtrarCandidatos() do diagrama)
-class CandidatoEntity {
+/// A candidate returned by the candidate filter.
+class CandidateEntity {
   final String id;
-  final String nome;
-  final String cargoDesejado;
+  final String name;
+  final String desiredRole;
   final int matchPercent;
-  final double? avaliacao;
+  final double? rating;
 
-  const CandidatoEntity({
+  const CandidateEntity({
     required this.id,
-    required this.nome,
-    required this.cargoDesejado,
+    required this.name,
+    required this.desiredRole,
     required this.matchPercent,
-    this.avaliacao,
+    this.rating,
   });
 }
 
-/// Entidade principal, espelhando 1:1 o diagrama UML fornecido:
-/// - id_empresa : int      -> idEmpresa
-/// - nome_empresa : String -> nomeEmpresa
-/// - cnpj : String         -> cnpj
-/// - email : String        -> email
-/// - telefone : String     -> telefone
-class EmpresaEntity {
-  final int idEmpresa;
-  final String nomeEmpresa;
+class CompanyEntity {
+  final int companyId;
+  final String companyName;
   final String cnpj;
   final String email;
-  final String telefone;
+  final String phone;
 
-  const EmpresaEntity({
-    required this.idEmpresa,
-    required this.nomeEmpresa,
+  const CompanyEntity({
+    required this.companyId,
+    required this.companyName,
     required this.cnpj,
     required this.email,
-    required this.telefone,
+    required this.phone,
   });
 }

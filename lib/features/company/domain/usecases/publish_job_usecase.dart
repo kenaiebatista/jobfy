@@ -1,12 +1,12 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
 
-class PublicarVagaUsecase {
-  final EmpresaRepository _repository;
+class PublishJobUsecase {
+  final CompanyRepository _repository;
 
-  PublicarVagaUsecase(this._repository);
+  PublishJobUsecase(this._repository);
 
-  Future<VagaEntity> call(VagaEntity vaga) {
-    return _repository.publicarVaga(vaga);
+  Future<JobEntity> call(JobEntity job) {
+    return _repository.publishJob(job);
   }
 }

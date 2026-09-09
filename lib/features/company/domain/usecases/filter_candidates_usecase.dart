@@ -1,20 +1,20 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
 
-class FiltrarCandidatosUsecase {
-  final EmpresaRepository _repository;
+class FilterCandidatesUsecase {
+  final CompanyRepository _repository;
 
-  FiltrarCandidatosUsecase(this._repository);
+  FilterCandidatesUsecase(this._repository);
 
-  Future<List<CandidatoEntity>> call(
-    String vagaId, {
-    String? filtroCargo,
-    int? matchMinimo,
+  Future<List<CandidateEntity>> call(
+    String jobId, {
+    String? roleFilter,
+    int? minMatch,
   }) {
-    return _repository.filtrarCandidatos(
-      vagaId,
-      filtroCargo: filtroCargo,
-      matchMinimo: matchMinimo,
+    return _repository.filterCandidates(
+      jobId,
+      roleFilter: roleFilter,
+      minMatch: minMatch,
     );
   }
 }

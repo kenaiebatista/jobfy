@@ -1,73 +1,70 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
-import 'package:aplicativo_jobfy/features/company/data/models/empresa_model.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
+import 'package:jobfy/features/company/data/models/company_model.dart';
 
-class EmpresaRepositoryImpl implements EmpresaRepository {
-  // "banco" em memória só para simular persistência, como no exemplo de user
-  final List<CandidatoEntity> _candidatosMock = const [
-    CandidatoEntity(
+// Mock implementation — replace with CompanyRemoteDataSource once the backend is live.
+class CompanyRepositoryImpl implements CompanyRepository {
+  final List<CandidateEntity> _candidatesMock = const [
+    CandidateEntity(
       id: 'cand_001',
-      nome: 'Caue Bueno',
-      cargoDesejado: 'Desenvolvedor Flutter',
+      name: 'Caue Bueno',
+      desiredRole: 'Flutter Developer',
       matchPercent: 97,
     ),
-    CandidatoEntity(
+    CandidateEntity(
       id: 'cand_002',
-      nome: 'Marina Alves',
-      cargoDesejado: 'Mobile Engineer',
+      name: 'Marina Alves',
+      desiredRole: 'Mobile Engineer',
       matchPercent: 88,
     ),
-    CandidatoEntity(
+    CandidateEntity(
       id: 'cand_003',
-      nome: 'Rafael Souza',
-      cargoDesejado: 'Dart/Flutter Developer',
+      name: 'Rafael Souza',
+      desiredRole: 'Dart/Flutter Developer',
       matchPercent: 74,
     ),
   ];
 
   @override
-  Future<EmpresaEntity> cadastrarEmpresa(EmpresaEntity empresa) async {
+  Future<CompanyEntity> registerCompany(CompanyEntity company) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    // Aqui entraria a chamada real (API/Firebase) para persistir a empresa.
-    return EmpresaModel(
-      idEmpresa: empresa.idEmpresa,
-      nomeEmpresa: empresa.nomeEmpresa,
-      cnpj: empresa.cnpj,
-      email: empresa.email,
-      telefone: empresa.telefone,
+    return CompanyModel(
+      companyId: company.companyId,
+      companyName: company.companyName,
+      cnpj: company.cnpj,
+      email: company.email,
+      phone: company.phone,
     );
   }
 
   @override
-  Future<VagaEntity> publicarVaga(VagaEntity vaga) async {
+  Future<JobEntity> publishJob(JobEntity job) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    return vaga;
+    return job;
   }
 
   @override
-  Future<List<CandidatoEntity>> filtrarCandidatos(
-    String vagaId, {
-    String? filtroCargo,
-    int? matchMinimo,
+  Future<List<CandidateEntity>> filterCandidates(
+    String jobId, {
+    String? roleFilter,
+    int? minMatch,
   }) async {
     await Future.delayed(const Duration(milliseconds: 400));
-    return _candidatosMock.where((c) {
-      final passaCargo = filtroCargo == null ||
-          c.cargoDesejado.toLowerCase().contains(filtroCargo.toLowerCase());
-      final passaMatch = matchMinimo == null || c.matchPercent >= matchMinimo;
-      return passaCargo && passaMatch;
+    return _candidatesMock.where((c) {
+      final matchesRole = roleFilter == null ||
+          c.desiredRole.toLowerCase().contains(roleFilter.toLowerCase());
+      final matchesScore = minMatch == null || c.matchPercent >= minMatch;
+      return matchesRole && matchesScore;
     }).toList();
   }
 
   @override
-  Future<void> avaliarUsuario(String candidatoId, double nota, {String? comentario}) async {
+  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    // Aqui salvaria a nota/comentário no backend.
   }
 
   @override
-  Future<void> mandarMensagem(String candidatoId, String mensagem) async {
+  Future<void> sendMessage(String candidateId, String message) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    // Aqui enviaria a mensagem via API/chat service.
   }
 }

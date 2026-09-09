@@ -1,11 +1,11 @@
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
 
-class MandarMensagemUsecase {
-  final EmpresaRepository _repository;
+class SendMessageUsecase {
+  final CompanyRepository _repository;
 
-  MandarMensagemUsecase(this._repository);
+  SendMessageUsecase(this._repository);
 
-  Future<void> call(String candidatoId, String mensagem) {
-    return _repository.mandarMensagem(candidatoId, mensagem);
+  Future<void> call(String candidateId, String message) {
+    return _repository.sendMessage(candidateId, message);
   }
 }

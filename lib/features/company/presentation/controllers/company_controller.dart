@@ -1,104 +1,99 @@
 import 'package:flutter/foundation.dart';
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/avaliar_usuario_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/cadastrar_empresa_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/filtrar_candidatos_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/mandar_mensagem_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/publicar_vaga_usecase.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/register_company_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
 
-enum EmpresaStatus { idle, loading, loaded, error }
+enum CompanyStatus { idle, loading, loaded, error }
 
-class EmpresaController extends ChangeNotifier {
-  final CadastrarEmpresaUsecase _cadastrarEmpresaUsecase;
-  final PublicarVagaUsecase _publicarVagaUsecase;
-  final FiltrarCandidatosUsecase _filtrarCandidatosUsecase;
-  final AvaliarUsuarioUsecase _avaliarUsuarioUsecase;
-  final MandarMensagemUsecase _mandarMensagemUsecase;
+class CompanyController extends ChangeNotifier {
+  final RegisterCompanyUsecase _registerCompanyUsecase;
+  final PublishJobUsecase _publishJobUsecase;
+  final FilterCandidatesUsecase _filterCandidatesUsecase;
+  final RateCandidateUsecase _rateCandidateUsecase;
+  final SendMessageUsecase _sendMessageUsecase;
 
-  EmpresaController({
-    required CadastrarEmpresaUsecase cadastrarEmpresaUsecase,
-    required PublicarVagaUsecase publicarVagaUsecase,
-    required FiltrarCandidatosUsecase filtrarCandidatosUsecase,
-    required AvaliarUsuarioUsecase avaliarUsuarioUsecase,
-    required MandarMensagemUsecase mandarMensagemUsecase,
-  })  : _cadastrarEmpresaUsecase = cadastrarEmpresaUsecase,
-        _publicarVagaUsecase = publicarVagaUsecase,
-        _filtrarCandidatosUsecase = filtrarCandidatosUsecase,
-        _avaliarUsuarioUsecase = avaliarUsuarioUsecase,
-        _mandarMensagemUsecase = mandarMensagemUsecase;
+  CompanyController({
+    required RegisterCompanyUsecase registerCompanyUsecase,
+    required PublishJobUsecase publishJobUsecase,
+    required FilterCandidatesUsecase filterCandidatesUsecase,
+    required RateCandidateUsecase rateCandidateUsecase,
+    required SendMessageUsecase sendMessageUsecase,
+  })  : _registerCompanyUsecase = registerCompanyUsecase,
+        _publishJobUsecase = publishJobUsecase,
+        _filterCandidatesUsecase = filterCandidatesUsecase,
+        _rateCandidateUsecase = rateCandidateUsecase,
+        _sendMessageUsecase = sendMessageUsecase;
 
-  EmpresaStatus _status = EmpresaStatus.idle;
-  EmpresaEntity? _empresa;
-  final List<VagaEntity> _vagas = [];
-  List<CandidatoEntity> _candidatos = [];
-  String? _erro;
+  CompanyStatus _status = CompanyStatus.idle;
+  CompanyEntity? _company;
+  final List<JobEntity> _jobs = [];
+  List<CandidateEntity> _candidates = [];
+  String? _error;
 
-  EmpresaStatus get status => _status;
-  EmpresaEntity? get empresa => _empresa;
-  List<VagaEntity> get vagas => List.unmodifiable(_vagas);
-  List<CandidatoEntity> get candidatos => List.unmodifiable(_candidatos);
-  String? get erro => _erro;
-  bool get isLoading => _status == EmpresaStatus.loading;
+  CompanyStatus get status => _status;
+  CompanyEntity? get company => _company;
+  List<JobEntity> get jobs => List.unmodifiable(_jobs);
+  List<CandidateEntity> get candidates => List.unmodifiable(_candidates);
+  String? get error => _error;
+  bool get isLoading => _status == CompanyStatus.loading;
 
-  /// cadastrarEmpresa()
-  Future<void> cadastrarEmpresa(EmpresaEntity dados) async {
-    _status = EmpresaStatus.loading;
+  Future<void> registerCompany(CompanyEntity data) async {
+    _status = CompanyStatus.loading;
     notifyListeners();
     try {
-      _empresa = await _cadastrarEmpresaUsecase(dados);
-      _status = EmpresaStatus.loaded;
-    } catch (e) {
-      _erro = 'Não foi possível cadastrar a empresa.';
-      _status = EmpresaStatus.error;
+      _company = await _registerCompanyUsecase(data);
+      _status = CompanyStatus.loaded;
+    } catch (_) {
+      _error = 'companyRegisterError';
+      _status = CompanyStatus.error;
     }
     notifyListeners();
   }
 
-  /// publicarVaga()
-  Future<void> publicarVaga(VagaEntity vaga) async {
+  Future<void> publishJob(JobEntity job) async {
     try {
-      final vagaCriada = await _publicarVagaUsecase(vaga);
-      _vagas.add(vagaCriada);
-    } catch (e) {
-      _erro = 'Não foi possível publicar a vaga.';
+      final created = await _publishJobUsecase(job);
+      _jobs.add(created);
+    } catch (_) {
+      _error = 'jobPublishError';
     }
     notifyListeners();
   }
 
-  /// filtrarCandidatos()
-  Future<void> filtrarCandidatos(
-    String vagaId, {
-    String? filtroCargo,
-    int? matchMinimo,
+  Future<void> filterCandidates(
+    String jobId, {
+    String? roleFilter,
+    int? minMatch,
   }) async {
     try {
-      _candidatos = await _filtrarCandidatosUsecase(
-        vagaId,
-        filtroCargo: filtroCargo,
-        matchMinimo: matchMinimo,
+      _candidates = await _filterCandidatesUsecase(
+        jobId,
+        roleFilter: roleFilter,
+        minMatch: minMatch,
       );
-    } catch (e) {
-      _erro = 'Não foi possível filtrar os candidatos.';
+    } catch (_) {
+      _error = 'candidateFilterError';
     }
     notifyListeners();
   }
 
-  /// avaliarUsuario()
-  Future<void> avaliarUsuario(String candidatoId, double nota, {String? comentario}) async {
+  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) async {
     try {
-      await _avaliarUsuarioUsecase(candidatoId, nota, comentario: comentario);
-    } catch (e) {
-      _erro = 'Não foi possível registrar a avaliação.';
+      await _rateCandidateUsecase(candidateId, rating, comment: comment);
+    } catch (_) {
+      _error = 'candidateRateError';
     }
     notifyListeners();
   }
 
-  /// mandarMensagem()
-  Future<void> mandarMensagem(String candidatoId, String mensagem) async {
+  Future<void> sendMessage(String candidateId, String message) async {
     try {
-      await _mandarMensagemUsecase(candidatoId, mensagem);
-    } catch (e) {
-      _erro = 'Não foi possível enviar a mensagem.';
+      await _sendMessageUsecase(candidateId, message);
+    } catch (_) {
+      _error = 'messageSendError';
     }
     notifyListeners();
   }

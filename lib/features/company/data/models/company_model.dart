@@ -1,32 +1,31 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
+import '../../domain/entities/company_entity.dart';
 
-/// Usar Firebase dps
-class EmpresaModel extends EmpresaEntity {
-  const EmpresaModel({
-    required super.idEmpresa,
-    required super.nomeEmpresa,
+class CompanyModel extends CompanyEntity {
+  const CompanyModel({
+    required super.companyId,
+    required super.companyName,
     required super.cnpj,
     required super.email,
-    required super.telefone,
+    required super.phone,
   });
 
-  factory EmpresaModel.fromJson(Map<String, dynamic> json) {
-    return EmpresaModel(
-      idEmpresa: json['id_empresa'] as int,
-      nomeEmpresa: json['nome_empresa'] as String,
+  factory CompanyModel.fromJson(Map<String, dynamic> json) {
+    return CompanyModel(
+      companyId: json['company_id'] as int,
+      companyName: json['company_name'] as String,
       cnpj: json['cnpj'] as String,
       email: json['email'] as String,
-      telefone: json['telefone'] as String,
+      phone: json['phone'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id_empresa': idEmpresa,
-      'nome_empresa': nomeEmpresa,
+      'company_id': companyId,
+      'company_name': companyName,
       'cnpj': cnpj,
       'email': email,
-      'telefone': telefone,
+      'phone': phone,
     };
   }
 }

@@ -1,11 +1,11 @@
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
 
-class AvaliarUsuarioUsecase {
-  final EmpresaRepository _repository;
+class RateCandidateUsecase {
+  final CompanyRepository _repository;
 
-  AvaliarUsuarioUsecase(this._repository);
+  RateCandidateUsecase(this._repository);
 
-  Future<void> call(String candidatoId, double nota, {String? comentario}) {
-    return _repository.avaliarUsuario(candidatoId, nota, comentario: comentario);
+  Future<void> call(String candidateId, double rating, {String? comment}) {
+    return _repository.rateCandidate(candidateId, rating, comment: comment);
   }
 }

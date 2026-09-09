@@ -1,24 +1,17 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
+import '../entities/company_entity.dart';
 
-/// Contrato (o "o quê"), sem se preocupar com o "como".
-/// Cada método do diagrama UML vira uma assinatura aqui.
-abstract class EmpresaRepository {
-  /// + cadastrarEmpresa()
-  Future<EmpresaEntity> cadastrarEmpresa(EmpresaEntity empresa);
+abstract class CompanyRepository {
+  Future<CompanyEntity> registerCompany(CompanyEntity company);
 
-  /// + publicarVaga()
-  Future<VagaEntity> publicarVaga(VagaEntity vaga);
+  Future<JobEntity> publishJob(JobEntity job);
 
-  /// + filtrarCandidatos()
-  Future<List<CandidatoEntity>> filtrarCandidatos(
-    String vagaId, {
-    String? filtroCargo,
-    int? matchMinimo,
+  Future<List<CandidateEntity>> filterCandidates(
+    String jobId, {
+    String? roleFilter,
+    int? minMatch,
   });
 
-  /// + avaliarUsuario()
-  Future<void> avaliarUsuario(String candidatoId, double nota, {String? comentario});
+  Future<void> rateCandidate(String candidateId, double rating, {String? comment});
 
-  /// + mandarMensagem()
-  Future<void> mandarMensagem(String candidatoId, String mensagem);
+  Future<void> sendMessage(String candidateId, String message);
 }
