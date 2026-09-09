@@ -37,7 +37,6 @@ class _UserAreaPageState extends State<UserAreaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
       body: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {
@@ -126,45 +125,49 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        border: Border(bottom: BorderSide(color: colors.outlineVariant)),
       ),
       child: Row(
         spacing: 8,
         children: [
-          const Icon(Icons.lightbulb_circle, size: 28),
-          const Text(
+          Icon(Icons.lightbulb_circle, size: 28, color: colors.onSurface),
+          Text(
             'Jobfy',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: colors.onSurface,
+            ),
           ),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              color: AppColors.backgroundLight,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.cardBorder),
+              border: Border.all(color: colors.outlineVariant),
             ),
             child: Row(
               spacing: 6,
               children: [
-                const Icon(Icons.search, size: 16, color: AppColors.textMuted),
-                const Text(
+                Icon(Icons.search, size: 16, color: colors.onSurfaceVariant),
+                Text(
                   'Buscar vagas...',
-                  style:
-                      TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  style: TextStyle(fontSize: 13, color: colors.onSurfaceVariant),
                 ),
               ],
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: Icon(Icons.notifications_outlined, color: colors.onSurface),
             onPressed: () {},
             style: IconButton.styleFrom(
-              backgroundColor: AppColors.backgroundLight,
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             ),
           ),
           CircleAvatar(
@@ -338,12 +341,13 @@ class _SkillsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -356,9 +360,13 @@ class _SkillsRow extends StatelessWidget {
         spacing: 10,
         children: [
           const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
-          const Text(
+          Text(
             'Habilidades',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              color: colors.onSurface,
+            ),
           ),
           Expanded(
             child: Wrap(
@@ -414,12 +422,13 @@ class _JobsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -434,9 +443,13 @@ class _JobsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
+              Text(
                 'Vagas Recomendadas',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: colors.onSurface,
+                ),
               ),
               const Spacer(),
               TextButton(
@@ -468,12 +481,13 @@ class _ActivitySection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.outlineVariant),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -486,15 +500,19 @@ class _ActivitySection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 12,
         children: [
-          const Text(
+          Text(
             'Atividade Recente',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: colors.onSurface,
+            ),
           ),
-          const Divider(height: 1, color: AppColors.cardBorder),
+          Divider(height: 1, color: colors.outlineVariant),
           ...activities.map((a) => Column(
                 children: [
                   ActivityItem(activity: a),
-                  const Divider(height: 1, color: AppColors.cardBorder),
+                  Divider(height: 1, color: colors.outlineVariant),
                 ],
               )),
         ],

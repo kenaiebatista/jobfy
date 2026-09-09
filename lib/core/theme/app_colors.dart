@@ -15,6 +15,11 @@ class AppColors {
   static const Color danger = Color(0xFFEF4444);
   static const Color white = Colors.white;
 
+  // Dark-theme surfaces.
+  static const Color surfaceDark = Color(0xFF151B2E);
+  static const Color cardBorderDark = Color(0xFF262F49);
+  static const Color textMutedDark = Color(0xFF8592AD);
+
   static Color glassWhite = Colors.white.withValues(alpha: 0.08);
   static Color glassBorder = Colors.white.withValues(alpha: 0.15);
 }

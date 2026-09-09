@@ -23,6 +23,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -30,10 +31,10 @@ class _JobMatchCardState extends State<JobMatchCard> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : AppColors.cardBorder,
+            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : colors.outlineVariant,
           ),
           boxShadow: [
             BoxShadow(
@@ -71,17 +72,18 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     children: [
                       Text(
                         widget.job.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
+                          color: colors.onSurface,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         widget.job.company,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textMuted,
+                          color: colors.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -115,10 +117,10 @@ class _JobMatchCardState extends State<JobMatchCard> {
               children: [
                 Text(
                   widget.job.salary,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: colors.onSurface,
                   ),
                 ),
                 const Spacer(),
@@ -158,21 +160,22 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
+        color: Theme.of(context).scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.outlineVariant),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         spacing: 4,
         children: [
-          Icon(icon, size: 11, color: AppColors.textMuted),
+          Icon(icon, size: 11, color: colors.onSurfaceVariant),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 11, color: colors.onSurfaceVariant),
           ),
         ],
       ),
