@@ -229,6 +229,7 @@ class _NavItemState extends State<_NavItem> {
             : AppColors.textLight;
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(

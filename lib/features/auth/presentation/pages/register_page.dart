@@ -1,10 +1,11 @@
-import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
 import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -86,8 +87,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Widget _buildScaffold(BuildContext context, AppLocalizations l10n) {
+    final colors = context.colors;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colors.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
@@ -115,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               Text(
                 l10n.registerSubtitle,
-                style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 14, color: colors.textMuted),
               ),
               const SizedBox(height: 20),
               Container(
@@ -123,9 +125,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 constraints: const BoxConstraints(maxWidth: 440),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: colors.surfaceBorder),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -229,15 +231,13 @@ class _RegisterPageState extends State<RegisterPage> {
                               l10n.acceptTermsPrefix,
                               style: const TextStyle(fontSize: 13),
                             ),
-                            GestureDetector(
+                            HoverLink(
+                              label: l10n.termsOfService,
                               onTap: () => _showTerms(context),
-                              child: Text(
-                                l10n.termsOfService,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.accent,
-                                  decoration: TextDecoration.underline,
-                                ),
+                              style: (_) => TextStyle(
+                                fontSize: 13,
+                                color: colors.accent,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
                           ],
@@ -246,16 +246,16 @@ class _RegisterPageState extends State<RegisterPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.danger.withValues(alpha: 0.08),
+                              color: colors.danger.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: AppColors.danger.withValues(alpha: 0.3),
+                                color: colors.danger.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
                               _errorMessage(l10n, _authController.errorCode!),
-                              style: const TextStyle(
-                                color: AppColors.danger,
+                              style: TextStyle(
+                                color: colors.danger,
                                 fontSize: 13,
                               ),
                             ),
@@ -291,15 +291,13 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         Center(
-                          child: GestureDetector(
+                          child: HoverLink(
+                            label: l10n.alreadyHaveAccount,
                             onTap: () => context.go('/login'),
-                            child: Text(
-                              l10n.alreadyHaveAccount,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textMuted,
-                                decoration: TextDecoration.underline,
-                              ),
+                            style: (hovered) => TextStyle(
+                              fontSize: 13,
+                              color: hovered ? colors.accent : colors.textMuted,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
