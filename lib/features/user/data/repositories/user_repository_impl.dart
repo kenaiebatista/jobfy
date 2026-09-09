@@ -2,72 +2,73 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../models/user_profile_model.dart';
 
+// Mock implementation — replace with UserRemoteDataSource once the backend is live.
 class UserRepositoryImpl implements UserRepository {
   @override
   Future<UserProfileEntity> getUserProfile(String userId) async {
     await Future.delayed(const Duration(milliseconds: 600));
     return const UserProfileModel(
       id: 'usr_001',
-      nome: 'Victor hahaha',
-      email: 'HenriqueDevJunior@email.com',
-      cargo: 'Desenvolvedor Pro MAXXXX EM Flutter',
-      localizacao: 'Gaspar, SC',
-      perfilCompleto: 75,
-      candidaturas: 12,
+      name: 'Victor Henrique',
+      email: 'victor.henrique@email.com',
+      role: 'Flutter Developer',
+      location: 'Gaspar, SC',
+      profileCompletion: 75,
+      applications: 12,
       matchScore: 89,
-      visualizacoes: 234,
-      habilidades: ['Flutter', 'Dart', 'Firebase', 'UI/UX', 'REST APIs'],
-      vagasRecomendadas: [
+      profileViews: 234,
+      skills: ['Flutter', 'Dart', 'Firebase', 'UI/UX', 'REST APIs'],
+      recommendedJobs: [
         JobMatchEntity(
-          titulo: 'Flutter Developer Senior',
-          empresa: 'Nubank',
-          local: 'São Paulo, SP',
-          tipo: 'Remoto',
+          title: 'Flutter Developer Senior',
+          company: 'Nubank',
+          location: 'São Paulo, SP',
+          type: 'Remoto',
           matchPercent: 97,
-          salario: 'R\$ 12.000 – 18.000',
+          salary: 'R\$ 12.000 – 18.000',
         ),
         JobMatchEntity(
-          titulo: 'Mobile Engineer',
-          empresa: 'iFood',
-          local: 'Campinas, SP',
-          tipo: 'Híbrido',
+          title: 'Mobile Engineer',
+          company: 'iFood',
+          location: 'Campinas, SP',
+          type: 'Híbrido',
           matchPercent: 91,
-          salario: 'R\$ 10.000 – 15.000',
+          salary: 'R\$ 10.000 – 15.000',
         ),
         JobMatchEntity(
-          titulo: 'Dart/Flutter Developer',
-          empresa: 'PicPay',
-          local: 'Remoto',
-          tipo: 'Remoto',
+          title: 'Dart/Flutter Developer',
+          company: 'PicPay',
+          location: 'Remoto',
+          type: 'Remoto',
           matchPercent: 85,
-          salario: 'R\$ 9.000 – 14.000',
+          salary: 'R\$ 9.000 – 14.000',
         ),
       ],
-      atividades: [
+      activities: [
         ActivityEntity(
-          descricao: 'Candidatura enviada para Nubank',
-          tempo: 'há 2 horas',
-          tipo: 'candidatura',
+          description: 'Candidatura enviada para Nubank',
+          time: 'há 2 horas',
+          type: ActivityType.application,
         ),
         ActivityEntity(
-          descricao: 'Perfil visualizado por iFood',
-          tempo: 'há 5 horas',
-          tipo: 'visualizacao',
+          description: 'Perfil visualizado por iFood',
+          time: 'há 5 horas',
+          type: ActivityType.profileView,
         ),
         ActivityEntity(
-          descricao: 'Match de 91% com iFood',
-          tempo: 'ontem',
-          tipo: 'match',
+          description: 'Match de 91% com iFood',
+          time: 'ontem',
+          type: ActivityType.match,
         ),
         ActivityEntity(
-          descricao: 'Currículo atualizado',
-          tempo: 'há 2 dias',
-          tipo: 'perfil',
+          description: 'Currículo atualizado',
+          time: 'há 2 dias',
+          type: ActivityType.profile,
         ),
         ActivityEntity(
-          descricao: '3 novas vagas compatíveis',
-          tempo: 'há 3 dias',
-          tipo: 'vaga',
+          description: '3 novas vagas compatíveis',
+          time: 'há 3 dias',
+          type: ActivityType.job,
         ),
       ],
     );

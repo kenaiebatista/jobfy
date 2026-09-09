@@ -1,59 +1,61 @@
 class JobMatchEntity {
-  final String titulo;
-  final String empresa;
-  final String local;
-  final String tipo;
+  final String title;
+  final String company;
+  final String location;
+  final String type;
   final int matchPercent;
-  final String salario;
+  final String salary;
 
   const JobMatchEntity({
-    required this.titulo,
-    required this.empresa,
-    required this.local,
-    required this.tipo,
+    required this.title,
+    required this.company,
+    required this.location,
+    required this.type,
     required this.matchPercent,
-    required this.salario,
+    required this.salary,
   });
 }
 
+enum ActivityType { application, profileView, match, profile, job }
+
 class ActivityEntity {
-  final String descricao;
-  final String tempo;
-  final String tipo;
+  final String description;
+  final String time;
+  final ActivityType type;
 
   const ActivityEntity({
-    required this.descricao,
-    required this.tempo,
-    required this.tipo,
+    required this.description,
+    required this.time,
+    required this.type,
   });
 }
 
 class UserProfileEntity {
   final String id;
-  final String nome;
+  final String name;
   final String email;
-  final String cargo;
-  final String localizacao;
-  final int perfilCompleto;
-  final int candidaturas;
+  final String role;
+  final String location;
+  final int profileCompletion;
+  final int applications;
   final int matchScore;
-  final int visualizacoes;
-  final List<String> habilidades;
-  final List<JobMatchEntity> vagasRecomendadas;
-  final List<ActivityEntity> atividades;
+  final int profileViews;
+  final List<String> skills;
+  final List<JobMatchEntity> recommendedJobs;
+  final List<ActivityEntity> activities;
 
   const UserProfileEntity({
     required this.id,
-    required this.nome,
+    required this.name,
     required this.email,
-    required this.cargo,
-    required this.localizacao,
-    required this.perfilCompleto,
-    required this.candidaturas,
+    required this.role,
+    required this.location,
+    required this.profileCompletion,
+    required this.applications,
     required this.matchScore,
-    required this.visualizacoes,
-    required this.habilidades,
-    required this.vagasRecomendadas,
-    required this.atividades,
+    required this.profileViews,
+    required this.skills,
+    required this.recommendedJobs,
+    required this.activities,
   });
 }

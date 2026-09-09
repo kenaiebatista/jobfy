@@ -1,5 +1,5 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:flutter/material.dart';
 
 class JobMatchCard extends StatefulWidget {
@@ -47,8 +47,10 @@ class _JobMatchCardState extends State<JobMatchCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 10,
           children: [
             Row(
+              spacing: 12,
               children: [
                 Container(
                   width: 40,
@@ -63,13 +65,12 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.job.titulo,
+                        widget.job.title,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -77,7 +78,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        widget.job.empresa,
+                        widget.job.company,
                         style: const TextStyle(
                           fontSize: 12,
                           color: AppColors.textMuted,
@@ -103,19 +104,17 @@ class _JobMatchCardState extends State<JobMatchCard> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
             Row(
+              spacing: 8,
               children: [
-                _Tag(icon: Icons.location_on_outlined, label: widget.job.local),
-                const SizedBox(width: 8),
-                _Tag(icon: Icons.work_outline, label: widget.job.tipo),
+                _Tag(icon: Icons.location_on_outlined, label: widget.job.location),
+                _Tag(icon: Icons.work_outline, label: widget.job.type),
               ],
             ),
-            const SizedBox(height: 10),
             Row(
               children: [
                 Text(
-                  widget.job.salario,
+                  widget.job.salary,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
@@ -168,9 +167,9 @@ class _Tag extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: 4,
         children: [
           Icon(icon, size: 11, color: AppColors.textMuted),
-          const SizedBox(width: 4),
           Text(
             label,
             style: const TextStyle(fontSize: 11, color: AppColors.textMuted),

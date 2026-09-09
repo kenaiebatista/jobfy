@@ -1,4 +1,4 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -14,9 +14,9 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
         onPressed: () {},
       ),
       title: const Row(
+        spacing: 8,
         children: [
           Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
-          SizedBox(width: 8),
           Text(
             'Jobfy',
             style: TextStyle(
@@ -31,7 +31,8 @@ class HeaderWidget extends StatelessWidget implements PreferredSizeWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.settings_outlined, color: Colors.white),
-          onPressed: () {},
+          onPressed: () => context.go('/settings'),
+          tooltip: 'Configurações',
         ),
         IconButton(
           icon: const Icon(Icons.account_circle_outlined, color: Colors.white),

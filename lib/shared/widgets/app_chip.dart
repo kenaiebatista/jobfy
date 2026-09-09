@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
 
 class AppChip extends StatelessWidget {
   final IconData icon;
@@ -18,9 +18,9 @@ class AppChip extends StatelessWidget {
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: 6,
         children: [
           Icon(icon, color: Colors.white70, size: 15),
-          const SizedBox(width: 6),
           Text(label, style: const TextStyle(color: Colors.white70, fontSize: 12)),
         ],
       ),

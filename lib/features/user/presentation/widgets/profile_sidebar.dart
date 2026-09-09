@@ -1,6 +1,6 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,8 +26,8 @@ class ProfileSidebar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = profile.nome.isNotEmpty
-        ? profile.nome.trim().split(' ').take(2).map((w) => w[0]).join()
+    final initials = profile.name.isNotEmpty
+        ? profile.name.trim().split(' ').take(2).map((w) => w[0]).join()
         : '?';
 
     return SizedBox(
@@ -56,9 +56,9 @@ class ProfileSidebar extends StatelessWidget {
             children: [
               _buildProfile(initials),
               const Divider(color: Colors.white12, height: 1),
-              Expanded(child: _buildNav()),
+              Expanded(child: _buildNav(context)),
               const Divider(color: Colors.white12, height: 1),
-              _buildLogout(context),
+              _buildSettingsAndLogout(context),
             ],
           ),
         ],
@@ -70,6 +70,7 @@ class ProfileSidebar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
       child: Column(
+        spacing: 4,
         children: [
           Stack(
             children: [
@@ -112,9 +113,9 @@ class ProfileSidebar extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           Text(
-            profile.nome,
+            profile.name,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -123,33 +124,31 @@ class ProfileSidebar extends StatelessWidget {
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
           Text(
-            profile.cargo,
+            profile.role,
             style: const TextStyle(color: AppColors.textLight, fontSize: 12),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 3,
             children: [
               const Icon(Icons.location_on_outlined,
                   color: AppColors.textMuted, size: 13),
-              const SizedBox(width: 3),
               Text(
-                profile.localizacao,
+                profile.location,
                 style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _ProgressBar(percent: profile.perfilCompleto),
+          const SizedBox(height: 12),
+          _ProgressBar(percent: profile.profileCompletion),
         ],
       ),
     );
   }
 
-  Widget _buildNav() {
+  Widget _buildNav(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
       itemCount: _navItems.length,
@@ -166,15 +165,26 @@ class ProfileSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildLogout(BuildContext context) {
+  Widget _buildSettingsAndLogout(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: _NavItem(
-        icon: Icons.logout,
-        label: 'Sair',
-        isSelected: false,
-        isDanger: true,
-        onTap: () => context.go('/'),
+      child: Column(
+        spacing: 2,
+        children: [
+          _NavItem(
+            icon: Icons.settings_outlined,
+            label: 'Configurações',
+            isSelected: false,
+            onTap: () => context.go('/settings'),
+          ),
+          _NavItem(
+            icon: Icons.logout,
+            label: 'Sair',
+            isSelected: false,
+            isDanger: true,
+            onTap: () => context.go('/'),
+          ),
+        ],
       ),
     );
   }
@@ -231,9 +241,9 @@ class _NavItemState extends State<_NavItem> {
                 : null,
           ),
           child: Row(
+            spacing: 12,
             children: [
               Icon(widget.icon, color: baseColor, size: 18),
-              const SizedBox(width: 12),
               Text(
                 widget.label,
                 style: TextStyle(
@@ -271,6 +281,7 @@ class _ProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 6,
       children: [
         Row(
           children: [
@@ -289,7 +300,6 @@ class _ProgressBar extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(

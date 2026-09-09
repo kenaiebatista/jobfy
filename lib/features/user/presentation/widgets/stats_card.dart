@@ -1,19 +1,19 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class StatsCard extends StatelessWidget {
-  final String valor;
-  final String titulo;
-  final String subtitulo;
+  final String value;
+  final String title;
+  final String subtitle;
   final IconData icon;
   final Color iconColor;
   final Color iconBg;
 
   const StatsCard({
     super.key,
-    required this.valor,
-    required this.titulo,
-    required this.subtitulo,
+    required this.value,
+    required this.title,
+    required this.subtitle,
     required this.icon,
     required this.iconColor,
     required this.iconBg,
@@ -36,6 +36,7 @@ class StatsCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        spacing: 16,
         children: [
           Container(
             width: 48,
@@ -46,13 +47,12 @@ class StatsCard extends StatelessWidget {
             ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  valor,
+                  value,
                   style: const TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
@@ -61,7 +61,7 @@ class StatsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  titulo,
+                  title,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
@@ -69,7 +69,7 @@ class StatsCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  subtitulo,
+                  subtitle,
                   style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.textMuted,

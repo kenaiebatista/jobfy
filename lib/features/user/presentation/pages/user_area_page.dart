@@ -1,12 +1,12 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/controllers/user_controller.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/activity_item.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_card.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
+import 'package:jobfy/features/user/presentation/controllers/user_controller.dart';
+import 'package:jobfy/features/user/presentation/widgets/activity_item.dart';
+import 'package:jobfy/features/user/presentation/widgets/job_match_card.dart';
+import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:jobfy/features/user/presentation/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
 
 class UserAreaPage extends StatefulWidget {
@@ -90,25 +90,23 @@ class _MainContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 28,
               children: [
-                const SizedBox(height: 28),
+                const SizedBox(height: 4),
                 _WelcomeBanner(profile: profile),
-                const SizedBox(height: 28),
                 _StatsRow(profile: profile),
-                const SizedBox(height: 28),
                 _SkillsRow(profile: profile),
-                const SizedBox(height: 28),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 20,
                   children: [
                     Expanded(
                       flex: 3,
-                      child: _VagasSection(vagas: profile.vagasRecomendadas),
+                      child: _JobsSection(jobs: profile.recommendedJobs),
                     ),
-                    const SizedBox(width: 20),
                     SizedBox(
                       width: 300,
-                      child: _AtividadeSection(atividades: profile.atividades),
+                      child: _ActivitySection(activities: profile.activities),
                     ),
                   ],
                 ),
@@ -135,9 +133,9 @@ class _TopBar extends StatelessWidget {
         border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
       ),
       child: Row(
+        spacing: 8,
         children: [
           const Icon(Icons.lightbulb_circle, size: 28),
-          const SizedBox(width: 8),
           const Text(
             'Jobfy',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -151,9 +149,9 @@ class _TopBar extends StatelessWidget {
               border: Border.all(color: AppColors.cardBorder),
             ),
             child: Row(
+              spacing: 6,
               children: [
                 const Icon(Icons.search, size: 16, color: AppColors.textMuted),
-                const SizedBox(width: 6),
                 const Text(
                   'Buscar vagas...',
                   style:
@@ -162,7 +160,6 @@ class _TopBar extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 16),
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
             onPressed: () {},
@@ -170,12 +167,11 @@ class _TopBar extends StatelessWidget {
               backgroundColor: AppColors.backgroundLight,
             ),
           ),
-          const SizedBox(width: 8),
           CircleAvatar(
             radius: 18,
             backgroundColor: AppColors.accent,
             child: Text(
-              profile.nome.isNotEmpty ? profile.nome[0].toUpperCase() : '?',
+              profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -196,7 +192,7 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final firstName = profile.nome.trim().split(' ').first;
+    final firstName = profile.name.trim().split(' ').first;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -208,10 +204,12 @@ class _WelcomeBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        spacing: 20,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
               children: [
                 Text(
                   'Olá, $firstName! 👋',
@@ -221,7 +219,6 @@ class _WelcomeBanner extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
                 const Text(
                   'Você tem novas vagas compatíveis com seu perfil.',
                   style: TextStyle(
@@ -230,7 +227,7 @@ class _WelcomeBanner extends StatelessWidget {
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 ElevatedButton.icon(
                   onPressed: () {},
                   icon: const Icon(Icons.bolt_outlined, size: 16),
@@ -252,7 +249,6 @@ class _WelcomeBanner extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 20),
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -263,9 +259,9 @@ class _WelcomeBanner extends StatelessWidget {
               ),
             ),
             child: Column(
+              spacing: 8,
               children: [
                 const Icon(Icons.insights, color: Colors.white, size: 36),
-                const SizedBox(height: 8),
                 Text(
                   '${profile.matchScore}%',
                   style: const TextStyle(
@@ -298,34 +294,33 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      spacing: 16,
       children: [
         Expanded(
           child: StatsCard(
-            valor: '${profile.candidaturas}',
-            titulo: 'Candidaturas',
-            subtitulo: 'este mês',
+            value: '${profile.applications}',
+            title: 'Candidaturas',
+            subtitle: 'este mês',
             icon: Icons.send_outlined,
             iconColor: AppColors.accent,
             iconBg: AppColors.accent.withValues(alpha: 0.1),
           ),
         ),
-        const SizedBox(width: 16),
         Expanded(
           child: StatsCard(
-            valor: '${profile.matchScore}%',
-            titulo: 'Match Score',
-            subtitulo: 'média geral',
+            value: '${profile.matchScore}%',
+            title: 'Match Score',
+            subtitle: 'média geral',
             icon: Icons.bolt_outlined,
             iconColor: AppColors.warning,
             iconBg: AppColors.warning.withValues(alpha: 0.1),
           ),
         ),
-        const SizedBox(width: 16),
         Expanded(
           child: StatsCard(
-            valor: '${profile.visualizacoes}',
-            titulo: 'Visualizações',
-            subtitulo: 'do seu perfil',
+            value: '${profile.profileViews}',
+            title: 'Visualizações',
+            subtitle: 'do seu perfil',
             icon: Icons.visibility_outlined,
             iconColor: AppColors.success,
             iconBg: AppColors.success.withValues(alpha: 0.1),
@@ -358,20 +353,19 @@ class _SkillsRow extends StatelessWidget {
         ],
       ),
       child: Row(
+        spacing: 10,
         children: [
           const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
-          const SizedBox(width: 10),
           const Text(
             'Habilidades',
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
-          const SizedBox(width: 16),
           Expanded(
             child: Wrap(
               spacing: 8,
               runSpacing: 6,
-              children: profile.habilidades
-                  .map((h) => _SkillTag(label: h))
+              children: profile.skills
+                  .map((s) => _SkillTag(label: s))
                   .toList(),
             ),
           ),
@@ -413,10 +407,10 @@ class _SkillTag extends StatelessWidget {
   }
 }
 
-class _VagasSection extends StatelessWidget {
-  final List<JobMatchEntity> vagas;
+class _JobsSection extends StatelessWidget {
+  final List<JobMatchEntity> jobs;
 
-  const _VagasSection({required this.vagas});
+  const _JobsSection({required this.jobs});
 
   @override
   Widget build(BuildContext context) {
@@ -436,6 +430,7 @@ class _VagasSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 4,
         children: [
           Row(
             children: [
@@ -456,8 +451,7 @@ class _VagasSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          ...vagas.map((j) => Padding(
+          ...jobs.map((j) => Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: JobMatchCard(job: j),
               )),
@@ -467,10 +461,10 @@ class _VagasSection extends StatelessWidget {
   }
 }
 
-class _AtividadeSection extends StatelessWidget {
-  final List<ActivityEntity> atividades;
+class _ActivitySection extends StatelessWidget {
+  final List<ActivityEntity> activities;
 
-  const _AtividadeSection({required this.atividades});
+  const _ActivitySection({required this.activities});
 
   @override
   Widget build(BuildContext context) {
@@ -490,14 +484,14 @@ class _AtividadeSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
         children: [
           const Text(
             'Atividade Recente',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
-          const SizedBox(height: 12),
           const Divider(height: 1, color: AppColors.cardBorder),
-          ...atividades.map((a) => Column(
+          ...activities.map((a) => Column(
                 children: [
                   ActivityItem(activity: a),
                   const Divider(height: 1, color: AppColors.cardBorder),
