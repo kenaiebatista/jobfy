@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:jobfy/core/network/api_exception.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -7,7 +8,7 @@ enum AuthStatus { idle, loading, success, error }
 
 /// Machine-readable error codes. The presentation layer maps these to
 /// localized copy — see [AppLocalizations].
-enum AuthErrorCode { invalidCredentials, registrationFailed }
+enum AuthErrorCode { invalidCredentials, registrationFailed, network }
 
 class AuthController extends ChangeNotifier {
   final LoginUsecase _loginUsecase;
@@ -29,15 +30,19 @@ class AuthController extends ChangeNotifier {
     _errorCode = null;
     notifyListeners();
 
-    final user = await _loginUsecase(email, password);
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _loginUsecase(email, password);
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.invalidCredentials;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _errorCode = AuthErrorCode.invalidCredentials;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
@@ -54,22 +59,25 @@ class AuthController extends ChangeNotifier {
     _errorCode = null;
     notifyListeners();
 
-    final user = await _registerUsecase(
-      name: name,
-      email: email,
-      cpf: cpf,
-      password: password,
-      gender: gender,
-    );
-
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _registerUsecase(
+        name: name,
+        email: email,
+        cpf: cpf,
+        password: password,
+        gender: gender,
+      );
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.registrationFailed;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _errorCode = AuthErrorCode.registrationFailed;
     _status = AuthStatus.error;
     notifyListeners();
     return false;

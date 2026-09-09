@@ -55,6 +55,7 @@ class _LoginPageState extends State<LoginPage> {
   String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
         AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
         AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+        AuthErrorCode.network => l10n.authErrorNetwork,
       };
 
   @override
