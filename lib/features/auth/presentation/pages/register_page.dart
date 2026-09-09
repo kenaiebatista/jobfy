@@ -3,6 +3,7 @@ import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart'
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
 import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -42,15 +43,22 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  String _errorMessage(AuthErrorCode code) => switch (code) {
-        AuthErrorCode.invalidCredentials => 'Email ou senha inválidos.',
-        AuthErrorCode.registrationFailed => 'Erro ao criar conta. Tente novamente.',
+  String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
+        AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
+        AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+      };
+
+  String _genderLabel(AppLocalizations l10n, Gender gender) => switch (gender) {
+        Gender.male => l10n.genderMale,
+        Gender.female => l10n.genderFemale,
+        Gender.other => l10n.genderOther,
       };
 
   Future<void> _handleRegister() async {
+    final l10n = AppLocalizations.of(context)!;
     if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Você precisa aceitar os termos.')),
+        SnackBar(content: Text(l10n.termsRequiredError)),
       );
       return;
     }
@@ -66,6 +74,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.backgroundLight,
       body: Center(
@@ -74,14 +83,14 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             spacing: 12,
             children: [
-              const Row(
+              Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 8,
                 children: [
-                  Icon(Icons.lightbulb_circle, size: 36),
+                  const Icon(Icons.lightbulb_circle, size: 36),
                   Text(
-                    'Jobfy',
-                    style: TextStyle(
+                    l10n.appName,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                       letterSpacing: 0.3,
@@ -89,13 +98,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              const Text(
-                'Crie sua conta',
-                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+              Text(
+                l10n.registerTitle,
+                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-              const Text(
-                'Para o crescimento da sua carreira',
-                style: TextStyle(fontSize: 14, color: AppColors.textMuted),
+              Text(
+                l10n.registerSubtitle,
+                style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
               ),
               const SizedBox(height: 20),
               Container(
@@ -122,44 +131,44 @@ class _RegisterPageState extends State<RegisterPage> {
                       children: [
                         TextField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Nome completo',
-                            hintText: 'Seu nome...',
-                            prefixIcon: Icon(Icons.person_outline, size: 18),
+                          decoration: InputDecoration(
+                            labelText: l10n.fullNameLabel,
+                            hintText: l10n.fullNameHint,
+                            prefixIcon: const Icon(Icons.person_outline, size: 18),
                           ),
                         ),
                         TextField(
                           controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            hintText: 'seu@email.com',
-                            prefixIcon: Icon(Icons.email_outlined, size: 18),
+                          decoration: InputDecoration(
+                            labelText: l10n.emailLabel,
+                            hintText: l10n.emailHint,
+                            prefixIcon: const Icon(Icons.email_outlined, size: 18),
                           ),
                         ),
                         TextField(
                           controller: _cpfController,
-                          decoration: const InputDecoration(
-                            labelText: 'CPF',
-                            hintText: '000.000.000-00',
-                            prefixIcon: Icon(Icons.badge_outlined, size: 18),
+                          decoration: InputDecoration(
+                            labelText: l10n.cpfLabel,
+                            hintText: l10n.cpfHint,
+                            prefixIcon: const Icon(Icons.badge_outlined, size: 18),
                           ),
                         ),
                         TextField(
                           controller: _passwordController,
                           obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Senha',
-                            hintText: 'Mínimo 6 caracteres',
-                            prefixIcon: Icon(Icons.lock_outline, size: 18),
+                          decoration: InputDecoration(
+                            labelText: l10n.passwordLabel,
+                            hintText: l10n.passwordHintMin6,
+                            prefixIcon: const Icon(Icons.lock_outline, size: 18),
                           ),
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           spacing: 8,
                           children: [
-                            const Text(
-                              'Gênero',
-                              style: TextStyle(
+                            Text(
+                              l10n.genderLabel,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black87,
@@ -177,8 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             dense: true,
                                             contentPadding: EdgeInsets.zero,
                                             title: Text(
-                                              g.name[0].toUpperCase() +
-                                                  g.name.substring(1),
+                                              _genderLabel(l10n, g),
                                               style: const TextStyle(fontSize: 13),
                                             ),
                                           ),
@@ -204,15 +212,15 @@ class _RegisterPageState extends State<RegisterPage> {
                                 ),
                               ),
                             ),
-                            const Text(
-                              'Aceito os ',
-                              style: TextStyle(fontSize: 13),
+                            Text(
+                              l10n.acceptTermsPrefix,
+                              style: const TextStyle(fontSize: 13),
                             ),
                             GestureDetector(
                               onTap: _showTerms,
-                              child: const Text(
-                                'termos de serviço',
-                                style: TextStyle(
+                              child: Text(
+                                l10n.termsOfService,
+                                style: const TextStyle(
                                   fontSize: 13,
                                   color: AppColors.accent,
                                   decoration: TextDecoration.underline,
@@ -232,7 +240,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             child: Text(
-                              _errorMessage(_authController.errorCode!),
+                              _errorMessage(l10n, _authController.errorCode!),
                               style: const TextStyle(
                                 color: AppColors.danger,
                                 fontSize: 13,
@@ -263,18 +271,18 @@ class _RegisterPageState extends State<RegisterPage> {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text(
-                                    'Criar conta',
-                                    style: TextStyle(fontSize: 15),
+                                : Text(
+                                    l10n.registerButton,
+                                    style: const TextStyle(fontSize: 15),
                                   ),
                           ),
                         ),
                         Center(
                           child: GestureDetector(
                             onTap: () => context.go('/login'),
-                            child: const Text(
-                              'Já tenho conta → Fazer login',
-                              style: TextStyle(
+                            child: Text(
+                              l10n.alreadyHaveAccount,
+                              style: const TextStyle(
                                 fontSize: 13,
                                 color: AppColors.textMuted,
                                 decoration: TextDecoration.underline,
@@ -295,6 +303,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _showTerms() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => Dialog(
@@ -309,9 +318,9 @@ class _RegisterPageState extends State<RegisterPage> {
             children: [
               Row(
                 children: [
-                  const Text(
-                    'Termos de Serviço',
-                    style: TextStyle(
+                  Text(
+                    l10n.termsDialogTitle,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -327,11 +336,11 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               ),
               const Divider(),
-              const Expanded(
+              Expanded(
                 child: SingleChildScrollView(
                   child: Text(
-                    'Ao criar uma conta na Jobfy, você concorda com nossa política de privacidade e termos de uso. Seus dados serão utilizados exclusivamente para conectar você a oportunidades de emprego relevantes.',
-                    style: TextStyle(
+                    l10n.termsDialogBody,
+                    style: const TextStyle(
                       fontSize: 14,
                       height: 1.7,
                       color: Colors.black87,

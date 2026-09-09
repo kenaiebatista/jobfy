@@ -1,5 +1,6 @@
 import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,13 +17,13 @@ class ProfileSidebar extends StatelessWidget {
     required this.onNavTap,
   });
 
-  static const _navItems = [
-    (icon: Icons.dashboard_outlined, label: 'Dashboard'),
-    (icon: Icons.work_outline, label: 'Vagas'),
-    (icon: Icons.description_outlined, label: 'Currículo'),
-    (icon: Icons.chat_bubble_outline, label: 'Mensagens'),
-    (icon: Icons.settings_outlined, label: 'Configurações'),
-  ];
+  List<({IconData icon, String label})> _navItems(AppLocalizations l10n) => [
+        (icon: Icons.dashboard_outlined, label: l10n.navDashboard),
+        (icon: Icons.work_outline, label: l10n.navJobs),
+        (icon: Icons.description_outlined, label: l10n.navResume),
+        (icon: Icons.chat_bubble_outline, label: l10n.navMessages),
+        (icon: Icons.settings_outlined, label: l10n.navSettings),
+      ];
 
   @override
   Widget build(BuildContext context) {
@@ -149,11 +150,12 @@ class ProfileSidebar extends StatelessWidget {
   }
 
   Widget _buildNav(BuildContext context) {
+    final items = _navItems(AppLocalizations.of(context)!);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      itemCount: _navItems.length,
+      itemCount: items.length,
       itemBuilder: (context, i) {
-        final item = _navItems[i];
+        final item = items[i];
         final isSelected = selectedIndex == i;
         return _NavItem(
           icon: item.icon,
@@ -166,6 +168,7 @@ class ProfileSidebar extends StatelessWidget {
   }
 
   Widget _buildSettingsAndLogout(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -173,13 +176,13 @@ class ProfileSidebar extends StatelessWidget {
         children: [
           _NavItem(
             icon: Icons.settings_outlined,
-            label: 'Configurações',
+            label: l10n.navSettings,
             isSelected: false,
             onTap: () => context.go('/settings'),
           ),
           _NavItem(
             icon: Icons.logout,
-            label: 'Sair',
+            label: l10n.navLogout,
             isSelected: false,
             isDanger: true,
             onTap: () => context.go('/'),
@@ -285,9 +288,9 @@ class _ProgressBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
-              'Perfil completo',
-              style: TextStyle(color: AppColors.textLight, fontSize: 11),
+            Text(
+              AppLocalizations.of(context)!.profileCompletion,
+              style: const TextStyle(color: AppColors.textLight, fontSize: 11),
             ),
             const Spacer(),
             Text(
