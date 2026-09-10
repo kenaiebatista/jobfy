@@ -1,16 +1,16 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
-import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
-import 'package:jobfy/features/user/presentation/controllers/user_controller.dart';
 import 'package:jobfy/features/user/presentation/widgets/activity_item.dart';
 import 'package:jobfy/features/user/presentation/widgets/job_match_card.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/features/user/presentation/widgets/stats_card.dart';
+import 'package:jobfy/shared/widgets/user_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class UserAreaPage extends StatefulWidget {
   const UserAreaPage({super.key});
@@ -20,59 +20,21 @@ class UserAreaPage extends StatefulWidget {
 }
 
 class _UserAreaPageState extends State<UserAreaPage> {
-  late final UserController _controller;
-
   @override
   void initState() {
     super.initState();
-    _controller = UserController(
-      GetUserProfileUsecase(UserRepositoryImpl()),
-    );
-    _controller.loadProfile('usr_001');
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+    context.read<UserSessionController>().ensureLoaded('usr_001');
   }
 
   @override
   Widget build(BuildContext context) {
+    final session = context.watch<UserSessionController>();
     return Scaffold(
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading) {
-            return Center(
-              child: CircularProgressIndicator(color: context.colors.accent),
-            );
-          }
-
-          final profile = _controller.profile;
-          if (profile == null) {
-            return Center(
-              child: Text(AppLocalizations.of(context)!.userAreaLoadError),
-            );
-          }
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ProfileSidebar(
-                profile: profile,
-                selectedIndex: _controller.selectedNavIndex,
-                onNavTap: _controller.selectNav,
-              ),
-              Expanded(
-                child: _MainContent(
-                  profile: profile,
-                  navIndex: _controller.selectedNavIndex,
-                ),
-              ),
-            ],
-          );
-        },
+      body: UserShell(
+        profile: session.profile,
+        isError: session.status == UserSessionStatus.error,
+        current: SidebarSection.dashboard,
+        builder: (context, profile) => _MainContent(profile: profile),
       ),
     );
   }
@@ -80,9 +42,8 @@ class _UserAreaPageState extends State<UserAreaPage> {
 
 class _MainContent extends StatelessWidget {
   final UserProfileEntity profile;
-  final int navIndex;
 
-  const _MainContent({required this.profile, required this.navIndex});
+  const _MainContent({required this.profile});
 
   @override
   Widget build(BuildContext context) {

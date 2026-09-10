@@ -1,6 +1,9 @@
 import 'package:jobfy/core/routes/app_router.dart';
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/settings/settings_controller.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
+import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -15,8 +18,15 @@ class JobfyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SettingsController()..load(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsController()..load()),
+        ChangeNotifierProvider(
+          create: (_) => UserSessionController(
+            GetUserProfileUsecase(UserRepositoryImpl()),
+          ),
+        ),
+      ],
       child: Consumer<SettingsController>(
         builder: (context, settings, _) {
           return MaterialApp.router(
