@@ -1,17 +1,32 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/settings/settings_controller.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/user_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<UserSessionController>().ensureLoaded('usr_001');
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<SettingsController>();
+    final session = context.watch<UserSessionController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -22,34 +37,39 @@ class SettingsPage extends StatelessWidget {
           onPressed: () => context.canPop() ? context.pop() : context.go('/user'),
         ),
       ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 24,
-              children: [
-                _SettingsSection(
-                  title: l10n.settingsAppearance,
-                  description: l10n.settingsAppearanceDescription,
-                  child: _ThemeModeSelector(
-                    l10n: l10n,
-                    value: settings.themeMode,
-                    onChanged: settings.setThemeMode,
+      body: UserShell(
+        profile: session.profile,
+        isError: session.status == UserSessionStatus.error,
+        current: SidebarSection.settings,
+        builder: (context, profile) => Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 24,
+                children: [
+                  _SettingsSection(
+                    title: l10n.settingsAppearance,
+                    description: l10n.settingsAppearanceDescription,
+                    child: _ThemeModeSelector(
+                      l10n: l10n,
+                      value: settings.themeMode,
+                      onChanged: settings.setThemeMode,
+                    ),
                   ),
-                ),
-                _SettingsSection(
-                  title: l10n.settingsLanguage,
-                  description: l10n.settingsLanguageDescription,
-                  child: _LanguageSelector(
-                    l10n: l10n,
-                    value: settings.locale,
-                    onChanged: settings.setLocale,
+                  _SettingsSection(
+                    title: l10n.settingsLanguage,
+                    description: l10n.settingsLanguageDescription,
+                    child: _LanguageSelector(
+                      l10n: l10n,
+                      value: settings.locale,
+                      onChanged: settings.setLocale,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
