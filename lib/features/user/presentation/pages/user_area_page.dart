@@ -8,6 +8,7 @@ import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_ca
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserAreaPage extends StatefulWidget {
   const UserAreaPage({super.key});
@@ -443,7 +444,7 @@ class _VagasSection extends StatelessWidget {
               ),
               const Spacer(),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context.push('/jobs'),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.accent,
                 ),

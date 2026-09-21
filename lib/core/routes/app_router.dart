@@ -3,6 +3,7 @@ import 'package:aplicativo_jobfy/features/auth/presentation/pages/register_page.
 import 'package:aplicativo_jobfy/features/home/presentation/pages/home_page.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/pages/user_area_page.dart';
 import 'package:aplicativo_jobfy/features/company/presentation/pages/company_page.dart';
+import 'package:aplicativo_jobfy/features/job/presentation/pages/job_page.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
@@ -26,6 +27,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/company',
       builder: (_, __) => const CompanyPage(),
-    )
+    ),
+    GoRoute(
+      path: '/jobs',
+      builder: (_, __) => const JobPage(),
+    ),
   ],
 );
