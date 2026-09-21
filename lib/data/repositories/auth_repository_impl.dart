@@ -2,7 +2,7 @@ import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/user_model.dart';
 
-// Mock implementation — substitua por integração real com Firebase/API
+// Mock implementation — substitua por integração real com a API (MySQL)
 class AuthRepositoryImpl implements AuthRepository {
   static UserModel? _currentUser;
 

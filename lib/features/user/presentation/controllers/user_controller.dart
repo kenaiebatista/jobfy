@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/user_profile_entity.dart';
-import '../../domain/usecases/get_user_profile_usecase.dart';
+import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/domain/usecases/user_usecase.dart';
 
 enum UserProfileStatus { idle, loading, loaded, error }
 
 class UserController extends ChangeNotifier {
-  final GetUserProfileUsecase _getProfileUsecase;
+  final UserUsecase _userUsecase;
 
-  UserController(this._getProfileUsecase);
+  UserController(this._userUsecase);
 
   UserProfileStatus _status = UserProfileStatus.idle;
   UserProfileEntity? _profile;
@@ -23,7 +23,7 @@ class UserController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _profile = await _getProfileUsecase(userId);
+      _profile = await _userUsecase.getUserProfile(userId);
       _status = UserProfileStatus.loaded;
     } catch (_) {
       _status = UserProfileStatus.error;

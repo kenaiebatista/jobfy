@@ -1,15 +1,13 @@
 import 'package:flutter/foundation.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/usecases/login_usecase.dart';
-import '../../domain/usecases/register_usecase.dart';
+import 'package:aplicativo_jobfy/domain/entities/user_entity.dart';
+import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
 
 enum AuthStatus { idle, loading, success, error }
 
 class AuthController extends ChangeNotifier {
-  final LoginUsecase _loginUsecase;
-  final RegisterUsecase _registerUsecase;
+  final AuthUsecase _authUsecase;
 
-  AuthController(this._loginUsecase, this._registerUsecase);
+  AuthController(this._authUsecase);
 
   AuthStatus _status = AuthStatus.idle;
   UserEntity? _user;
@@ -25,7 +23,7 @@ class AuthController extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
 
-    final user = await _loginUsecase(email, senha);
+    final user = await _authUsecase.login(email, senha);
     if (user != null) {
       _user = user;
       _status = AuthStatus.success;
@@ -50,7 +48,7 @@ class AuthController extends ChangeNotifier {
     _errorMessage = '';
     notifyListeners();
 
-    final user = await _registerUsecase(
+    final user = await _authUsecase.register(
       nome: nome,
       email: email,
       cpf: cpf,

@@ -1,5 +1,5 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
 import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

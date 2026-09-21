@@ -1,31 +1,13 @@
 import 'package:flutter/foundation.dart';
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/avaliar_usuario_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/cadastrar_empresa_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/filtrar_candidatos_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/mandar_mensagem_usecase.dart';
-import 'package:aplicativo_jobfy/features/company/domain/usecases/publicar_vaga_usecase.dart';
+import 'package:aplicativo_jobfy/domain/entities/empresa_entity.dart';
+import 'package:aplicativo_jobfy/domain/usecases/empresa_usecase.dart';
 
 enum EmpresaStatus { idle, loading, loaded, error }
 
 class EmpresaController extends ChangeNotifier {
-  final CadastrarEmpresaUsecase _cadastrarEmpresaUsecase;
-  final PublicarVagaUsecase _publicarVagaUsecase;
-  final FiltrarCandidatosUsecase _filtrarCandidatosUsecase;
-  final AvaliarUsuarioUsecase _avaliarUsuarioUsecase;
-  final MandarMensagemUsecase _mandarMensagemUsecase;
+  final EmpresaUsecase _empresaUsecase;
 
-  EmpresaController({
-    required CadastrarEmpresaUsecase cadastrarEmpresaUsecase,
-    required PublicarVagaUsecase publicarVagaUsecase,
-    required FiltrarCandidatosUsecase filtrarCandidatosUsecase,
-    required AvaliarUsuarioUsecase avaliarUsuarioUsecase,
-    required MandarMensagemUsecase mandarMensagemUsecase,
-  })  : _cadastrarEmpresaUsecase = cadastrarEmpresaUsecase,
-        _publicarVagaUsecase = publicarVagaUsecase,
-        _filtrarCandidatosUsecase = filtrarCandidatosUsecase,
-        _avaliarUsuarioUsecase = avaliarUsuarioUsecase,
-        _mandarMensagemUsecase = mandarMensagemUsecase;
+  EmpresaController(this._empresaUsecase);
 
   EmpresaStatus _status = EmpresaStatus.idle;
   EmpresaEntity? _empresa;
@@ -45,7 +27,7 @@ class EmpresaController extends ChangeNotifier {
     _status = EmpresaStatus.loading;
     notifyListeners();
     try {
-      _empresa = await _cadastrarEmpresaUsecase(dados);
+      _empresa = await _empresaUsecase.cadastrarEmpresa(dados);
       _status = EmpresaStatus.loaded;
     } catch (e) {
       _erro = 'Não foi possível cadastrar a empresa.';
@@ -57,7 +39,7 @@ class EmpresaController extends ChangeNotifier {
   /// publicarVaga()
   Future<void> publicarVaga(VagaEntity vaga) async {
     try {
-      final vagaCriada = await _publicarVagaUsecase(vaga);
+      final vagaCriada = await _empresaUsecase.publicarVaga(vaga);
       _vagas.add(vagaCriada);
     } catch (e) {
       _erro = 'Não foi possível publicar a vaga.';
@@ -72,7 +54,7 @@ class EmpresaController extends ChangeNotifier {
     int? matchMinimo,
   }) async {
     try {
-      _candidatos = await _filtrarCandidatosUsecase(
+      _candidatos = await _empresaUsecase.filtrarCandidatos(
         vagaId,
         filtroCargo: filtroCargo,
         matchMinimo: matchMinimo,
@@ -86,7 +68,7 @@ class EmpresaController extends ChangeNotifier {
   /// avaliarUsuario()
   Future<void> avaliarUsuario(String candidatoId, double nota, {String? comentario}) async {
     try {
-      await _avaliarUsuarioUsecase(candidatoId, nota, comentario: comentario);
+      await _empresaUsecase.avaliarUsuario(candidatoId, nota, comentario: comentario);
     } catch (e) {
       _erro = 'Não foi possível registrar a avaliação.';
     }
@@ -96,7 +78,7 @@ class EmpresaController extends ChangeNotifier {
   /// mandarMensagem()
   Future<void> mandarMensagem(String candidatoId, String mensagem) async {
     try {
-      await _mandarMensagemUsecase(candidatoId, mensagem);
+      await _empresaUsecase.mandarMensagem(candidatoId, mensagem);
     } catch (e) {
       _erro = 'Não foi possível enviar a mensagem.';
     }

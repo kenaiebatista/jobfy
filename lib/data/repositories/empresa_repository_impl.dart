@@ -1,6 +1,6 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
-import 'package:aplicativo_jobfy/features/company/domain/repositories/empresa_repository.dart';
-import 'package:aplicativo_jobfy/features/company/data/models/empresa_model.dart';
+import 'package:aplicativo_jobfy/domain/entities/empresa_entity.dart';
+import 'package:aplicativo_jobfy/domain/repositories/empresa_repository.dart';
+import 'package:aplicativo_jobfy/data/models/empresa_model.dart';
 
 class EmpresaRepositoryImpl implements EmpresaRepository {
   // "banco" em memória só para simular persistência, como no exemplo de user
@@ -28,7 +28,7 @@ class EmpresaRepositoryImpl implements EmpresaRepository {
   @override
   Future<EmpresaEntity> cadastrarEmpresa(EmpresaEntity empresa) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    // Aqui entraria a chamada real (API/Firebase) para persistir a empresa.
+    // Aqui entraria a chamada real (API/MySQL) para persistir a empresa.
     return EmpresaModel(
       idEmpresa: empresa.idEmpresa,
       nomeEmpresa: empresa.nomeEmpresa,

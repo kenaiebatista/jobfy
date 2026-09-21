@@ -1,7 +1,6 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/login_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/register_usecase.dart';
+import 'package:aplicativo_jobfy/data/repositories/auth_repository_impl.dart';
+import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
 import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -28,8 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
-    final repo = AuthRepositoryImpl();
-    _authController = AuthController(LoginUsecase(repo), RegisterUsecase(repo));
+    _authController = AuthController(AuthUsecase(AuthRepositoryImpl()));
   }
 
   @override

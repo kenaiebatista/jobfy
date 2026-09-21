@@ -1,6 +1,6 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
+import 'package:aplicativo_jobfy/domain/entities/empresa_entity.dart';
 
-/// Usar Firebase dps
+/// Chaves em snake_case, iguais às colunas do MySQL (a API devolve esse JSON).
 class EmpresaModel extends EmpresaEntity {
   const EmpresaModel({
     required super.idEmpresa,

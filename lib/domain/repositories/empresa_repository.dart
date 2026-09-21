@@ -1,4 +1,4 @@
-import 'package:aplicativo_jobfy/features/company/domain/entities/empresa_entity.dart';
+import 'package:aplicativo_jobfy/domain/entities/empresa_entity.dart';
 
 /// Contrato (o "o quê"), sem se preocupar com o "como".
 /// Cada método do diagrama UML vira uma assinatura aqui.

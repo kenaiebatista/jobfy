@@ -1,7 +1,7 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
+import 'package:aplicativo_jobfy/data/repositories/user_repository_impl.dart';
+import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/domain/usecases/user_usecase.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/controllers/user_controller.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/activity_item.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_card.dart';
@@ -22,9 +22,7 @@ class _UserAreaPageState extends State<UserAreaPage> {
   @override
   void initState() {
     super.initState();
-    _controller = UserController(
-      GetUserProfileUsecase(UserRepositoryImpl()),
-    );
+    _controller = UserController(UserUsecase(UserRepositoryImpl()));
     _controller.loadProfile('usr_001');
   }
 
