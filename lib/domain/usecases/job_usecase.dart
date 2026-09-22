@@ -13,4 +13,12 @@ class JobUsecase {
   Future<void> candidatar(String jobId) {
     return _repository.candidatar(jobId);
   }
+
+  Future<void> salvarVaga(String jobId) {
+    return _repository.salvarVaga(jobId);
+  }
+
+  Future<void> removerVagaSalva(String jobId) {
+    return _repository.removerVagaSalva(jobId);
+  }
 }

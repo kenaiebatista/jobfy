@@ -33,6 +33,14 @@ class _UserAreaPageState extends State<UserAreaPage> {
     super.dispose();
   }
 
+  void _handleNav(int index) {
+    if (index == 1) {
+      context.push('/jobs');
+      return;
+    }
+    _controller.selectNav(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +65,7 @@ class _UserAreaPageState extends State<UserAreaPage> {
               ProfileSidebar(
                 profile: profile,
                 selectedIndex: _controller.selectedNavIndex,
-                onNavTap: _controller.selectNav,
+                onNavTap: _handleNav,
               ),
               Expanded(
                 child: _MainContent(
@@ -231,7 +239,7 @@ class _WelcomeBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () => context.push('/jobs'),
                   icon: const Icon(Icons.bolt_outlined, size: 16),
                   label: const Text(
                     'Ver vagas recomendadas',

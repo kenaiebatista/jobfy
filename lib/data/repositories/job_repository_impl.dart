@@ -50,6 +50,37 @@ class JobRepositoryImpl implements JobRepository {
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
+  @override
+  Future<void> salvarVaga(String jobId) async {
+    // --- Backend --- POST /usuarios/{uid}/vagas-salvas
+    //                 (INSERT em `vagas_salvas`: id_vaga, id_usuario)
+    // final response = await http.post(
+    //   Uri.parse('$_baseUrl/usuarios/$_userId/vagas-salvas'),
+    //   headers: {'Authorization': 'Bearer $token'},
+    //   body: jsonEncode({'id_vaga': jobId}),
+    // );
+    // if (response.statusCode != 201) {
+    //   throw Exception('Erro ao salvar vaga (${response.statusCode})');
+    // }
+
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
+  @override
+  Future<void> removerVagaSalva(String jobId) async {
+    // --- Backend --- DELETE /usuarios/{uid}/vagas-salvas/{id_vaga}
+    //                 (DELETE FROM `vagas_salvas` WHERE id_vaga = ? AND id_usuario = ?)
+    // final response = await http.delete(
+    //   Uri.parse('$_baseUrl/usuarios/$_userId/vagas-salvas/$jobId'),
+    //   headers: {'Authorization': 'Bearer $token'},
+    // );
+    // if (response.statusCode != 204) {
+    //   throw Exception('Erro ao remover vaga salva (${response.statusCode})');
+    // }
+
+    await Future.delayed(const Duration(milliseconds: 300));
+  }
+
   List<JobEntity> _mockJobs() {
     final agora = DateTime.now();
     return [

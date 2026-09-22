@@ -1,12 +1,18 @@
+import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/data/repositories/job_repository_impl.dart';
+import 'package:aplicativo_jobfy/data/repositories/user_repository_impl.dart';
 import 'package:aplicativo_jobfy/domain/entities/job_entity.dart';
 import 'package:aplicativo_jobfy/domain/usecases/job_usecase.dart';
+import 'package:aplicativo_jobfy/domain/usecases/user_usecase.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/controllers/job_controller.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_card.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_details_sheet.dart';
+import 'package:aplicativo_jobfy/features/user/presentation/controllers/user_controller.dart';
+import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class JobPage extends StatefulWidget {
   const JobPage({super.key});
@@ -17,6 +23,7 @@ class JobPage extends StatefulWidget {
 
 class _JobPageState extends State<JobPage> {
   late final JobController _controller;
+  late final UserController _userController;
   final _buscaController = TextEditingController();
 
   @override
@@ -24,18 +31,28 @@ class _JobPageState extends State<JobPage> {
     super.initState();
     _controller = JobController(JobUsecase(JobRepositoryImpl()));
     _controller.loadJobs();
+    _userController = UserController(UserUsecase(UserRepositoryImpl()));
+    _userController.loadProfile('usr_001');
   }
 
   @override
   void dispose() {
     _buscaController.dispose();
     _controller.dispose();
+    _userController.dispose();
     super.dispose();
   }
 
   void _limparBusca() {
     _buscaController.clear();
     _controller.setBusca('');
+  }
+
+  void _handleNav(BuildContext context, int index, bool isMobile) {
+    if (isMobile) Navigator.pop(context);
+    if (index == 0) context.go('/user');
+    // Vagas (1) já é a página atual; Currículo, Mensagens e Configurações
+    // ainda não têm tela própria.
   }
 
   Future<void> _candidatar(JobEntity job) async {
@@ -70,28 +87,62 @@ class _JobPageState extends State<JobPage> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
-      child: Scaffold(
-        backgroundColor: AppColors.backgroundLight,
-        body: ListenableBuilder(
-          listenable: _controller,
-          builder: (context, _) {
-            return Column(
-              children: [
-                _Header(
-                  total: _controller.jobsFiltradas.length,
-                  buscaController: _buscaController,
-                  onBuscaChanged: _controller.setBusca,
-                  onLimpar: _limparBusca,
-                ),
-                _FilterChips(
-                  selecionado: _controller.tipoSelecionado,
-                  onSelected: _controller.selecionarTipo,
-                ),
-                Expanded(child: _buildBody()),
-              ],
+      child: ListenableBuilder(
+        listenable: _userController,
+        builder: (context, _) {
+          final profile = _userController.profile;
+          if (profile == null) {
+            return const Scaffold(
+              backgroundColor: AppColors.backgroundLight,
+              body: Center(
+                child: CircularProgressIndicator(color: AppColors.accent),
+              ),
             );
-          },
-        ),
+          }
+
+          final isMobile =
+              MediaQuery.sizeOf(context).width < AppBreakpoints.mobile;
+
+          final sidebar = ProfileSidebar(
+            profile: profile,
+            selectedIndex: 1,
+            onNavTap: (i) => _handleNav(context, i, isMobile),
+          );
+
+          return Scaffold(
+            backgroundColor: AppColors.backgroundLight,
+            drawer: isMobile ? Drawer(child: sidebar) : null,
+            body: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (!isMobile) sidebar,
+                Expanded(
+                  child: ListenableBuilder(
+                    listenable: _controller,
+                    builder: (context, _) {
+                      return Column(
+                        children: [
+                          _Header(
+                            total: _controller.jobsFiltradas.length,
+                            buscaController: _buscaController,
+                            onBuscaChanged: _controller.setBusca,
+                            onLimpar: _limparBusca,
+                            isMobile: isMobile,
+                          ),
+                          _FilterChips(
+                            selecionado: _controller.tipoSelecionado,
+                            onSelected: _controller.selecionarTipo,
+                          ),
+                          Expanded(child: _buildBody()),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -142,12 +193,14 @@ class _Header extends StatelessWidget {
   final TextEditingController buscaController;
   final ValueChanged<String> onBuscaChanged;
   final VoidCallback onLimpar;
+  final bool isMobile;
 
   const _Header({
     required this.total,
     required this.buscaController,
     required this.onBuscaChanged,
     required this.onLimpar,
+    required this.isMobile,
   });
 
   @override
@@ -175,11 +228,19 @@ class _Header extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.lightbulb_circle, color: Colors.white, size: 26),
-              SizedBox(width: 8),
-              Text(
+              if (isMobile)
+                IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                )
+              else
+                const Icon(Icons.lightbulb_circle, color: Colors.white, size: 26),
+              const SizedBox(width: 8),
+              const Text(
                 'Jobfy',
                 style: TextStyle(
                   color: Colors.white,

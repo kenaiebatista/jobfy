@@ -16,8 +16,8 @@ class JobController extends ChangeNotifier {
   String _busca = '';
   String _tipoSelecionado = tiposFiltro.first;
 
-  // Vagas salvas ficam só em memória por enquanto.
-  // TODO(backend): persistir em users/{uid}/vagas_salvas.
+  // Vagas salvas: estado local otimista, persistido via [JobUsecase]
+  // (mock por enquanto — chamadas reais comentadas em JobRepositoryImpl).
   final Set<String> _salvas = {};
   final Set<String> _candidaturas = {};
   final Set<String> _enviando = {};
@@ -72,9 +72,25 @@ class JobController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Otimista: alterna localmente e persiste em segundo plano. Se a chamada
+  /// falhar, desfaz o toggle.
   void toggleSalva(String jobId) {
-    if (!_salvas.remove(jobId)) _salvas.add(jobId);
+    final salvando = !_salvas.remove(jobId);
+    if (salvando) _salvas.add(jobId);
     notifyListeners();
+
+    final acao = salvando
+        ? _jobUsecase.salvarVaga(jobId)
+        : _jobUsecase.removerVagaSalva(jobId);
+
+    acao.catchError((_) {
+      if (salvando) {
+        _salvas.remove(jobId);
+      } else {
+        _salvas.add(jobId);
+      }
+      notifyListeners();
+    });
   }
 
   /// Retorna `true` se a candidatura foi enviada.
