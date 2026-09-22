@@ -6,6 +6,8 @@ import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_con
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+const double _kRegisterCardMaxWidth = 440;
+
 enum Genero { masculino, feminino, outro }
 
 class RegisterPage extends StatefulWidget {
@@ -65,7 +67,7 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: AppColors.backgroundLight,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 48),
           child: Column(
             children: [
               const Row(
@@ -95,7 +97,8 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 32),
               Container(
-                width: 440,
+                width: double.infinity,
+                constraints: const BoxConstraints(maxWidth: _kRegisterCardMaxWidth),
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
                   color: Colors.white,

@@ -1,3 +1,4 @@
+import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
@@ -8,6 +9,7 @@ import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_ca
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class UserAreaPage extends StatefulWidget {
   const UserAreaPage({super.key});
@@ -34,42 +36,65 @@ class _UserAreaPageState extends State<UserAreaPage> {
     super.dispose();
   }
 
+  void _handleNav(BuildContext context, int index, bool isMobile) {
+    if (isMobile) {
+      Navigator.pop(context);
+    }
+    if (index == 4) {
+      context.go('/settings');
+      return;
+    }
+    _controller.selectNav(index);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading) {
-            return const Center(
+    return ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) {
+        if (_controller.isLoading) {
+          return const Scaffold(
+            backgroundColor: AppColors.backgroundLight,
+            body: Center(
               child: CircularProgressIndicator(color: AppColors.accent),
-            );
-          }
+            ),
+          );
+        }
 
-          final profile = _controller.profile;
-          if (profile == null) {
-            return const Center(child: Text('Erro ao carregar perfil.'));
-          }
+        final profile = _controller.profile;
+        if (profile == null) {
+          return const Scaffold(
+            backgroundColor: AppColors.backgroundLight,
+            body: Center(child: Text('Erro ao carregar perfil.')),
+          );
+        }
 
-          return Row(
+        final isMobile = MediaQuery.sizeOf(context).width < AppBreakpoints.mobile;
+
+        final sidebar = ProfileSidebar(
+          profile: profile,
+          selectedIndex: _controller.selectedNavIndex,
+          onNavTap: (i) => _handleNav(context, i, isMobile),
+        );
+
+        return Scaffold(
+          backgroundColor: AppColors.backgroundLight,
+          drawer: isMobile ? Drawer(child: sidebar) : null,
+          body: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ProfileSidebar(
-                profile: profile,
-                selectedIndex: _controller.selectedNavIndex,
-                onNavTap: _controller.selectNav,
-              ),
+              if (!isMobile) sidebar,
               Expanded(
                 child: _MainContent(
                   profile: profile,
                   navIndex: _controller.selectedNavIndex,
+                  isMobile: isMobile,
                 ),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
@@ -77,41 +102,58 @@ class _UserAreaPageState extends State<UserAreaPage> {
 class _MainContent extends StatelessWidget {
   final UserProfileEntity profile;
   final int navIndex;
+  final bool isMobile;
 
-  const _MainContent({required this.profile, required this.navIndex});
+  const _MainContent({
+    required this.profile,
+    required this.navIndex,
+    required this.isMobile,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final pad = isMobile ? 16.0 : 28.0;
+
     return Column(
       children: [
-        _TopBar(profile: profile),
+        _TopBar(profile: profile, isMobile: isMobile),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
+            padding: EdgeInsets.fromLTRB(pad, 0, pad, pad),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 28),
-                _WelcomeBanner(profile: profile),
-                const SizedBox(height: 28),
-                _StatsRow(profile: profile),
-                const SizedBox(height: 28),
+                SizedBox(height: pad),
+                _WelcomeBanner(profile: profile, isMobile: isMobile),
+                SizedBox(height: pad),
+                _StatsRow(profile: profile, isMobile: isMobile),
+                SizedBox(height: pad),
                 _SkillsRow(profile: profile),
-                const SizedBox(height: 28),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _VagasSection(vagas: profile.vagasRecomendadas),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 300,
-                      child: _AtividadeSection(atividades: profile.atividades),
-                    ),
-                  ],
-                ),
+                SizedBox(height: pad),
+                if (isMobile)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _VagasSection(vagas: profile.vagasRecomendadas),
+                      SizedBox(height: pad),
+                      _AtividadeSection(atividades: profile.atividades),
+                    ],
+                  )
+                else
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: _VagasSection(vagas: profile.vagasRecomendadas),
+                      ),
+                      const SizedBox(width: 20),
+                      SizedBox(
+                        width: 300,
+                        child: _AtividadeSection(atividades: profile.atividades),
+                      ),
+                    ],
+                  ),
               ],
             ),
           ),
@@ -123,54 +165,68 @@ class _MainContent extends StatelessWidget {
 
 class _TopBar extends StatelessWidget {
   final UserProfileEntity profile;
+  final bool isMobile;
 
-  const _TopBar({required this.profile});
+  const _TopBar({required this.profile, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 16 : 28,
+        vertical: 14,
+      ),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
       ),
       child: Row(
         children: [
-          const Icon(Icons.lightbulb_circle, size: 28),
-          const SizedBox(width: 8),
+          if (isMobile)
+            IconButton(
+              icon: const Icon(Icons.menu),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            )
+          else
+            const Icon(Icons.lightbulb_circle, size: 28),
+          const SizedBox(width: 10),
           const Text(
             'Jobfy',
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundLight,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.cardBorder),
+          if (!isMobile) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.backgroundLight,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.cardBorder),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, size: 16, color: AppColors.textMuted),
+                  const SizedBox(width: 6),
+                  const Text(
+                    'Buscar vagas...',
+                    style:
+                        TextStyle(fontSize: 13, color: AppColors.textMuted),
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, size: 16, color: AppColors.textMuted),
-                const SizedBox(width: 6),
-                const Text(
-                  'Buscar vagas...',
-                  style:
-                      TextStyle(fontSize: 13, color: AppColors.textMuted),
-                ),
-              ],
+            const SizedBox(width: 16),
+            IconButton(
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () {},
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.backgroundLight,
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.backgroundLight,
-            ),
-          ),
-          const SizedBox(width: 8),
+            const SizedBox(width: 8),
+          ],
           CircleAvatar(
             radius: 18,
             backgroundColor: AppColors.accent,
@@ -191,13 +247,91 @@ class _TopBar extends StatelessWidget {
 
 class _WelcomeBanner extends StatelessWidget {
   final UserProfileEntity profile;
+  final bool isMobile;
 
-  const _WelcomeBanner({required this.profile});
+  const _WelcomeBanner({required this.profile, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
     final firstName = profile.nome.trim().split(' ').first;
+
+    final texto = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Olá, $firstName! 👋',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          'Você tem novas vagas compatíveis com seu perfil.',
+          style: TextStyle(
+            color: AppColors.textLight,
+            fontSize: 14,
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.bolt_outlined, size: 16),
+          label: const Text(
+            'Ver vagas recomendadas',
+            style: TextStyle(fontSize: 13),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.accent,
+            foregroundColor: Colors.white,
+            padding:
+                const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+          ),
+        ),
+      ],
+    );
+
+    final matchBox = Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.insights, color: Colors.white, size: 36),
+          const SizedBox(height: 8),
+          Text(
+            '${profile.matchScore}%',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const Text(
+            'Match médio',
+            style: TextStyle(
+              color: AppColors.textLight,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+
     return Container(
+      width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -207,131 +341,83 @@ class _WelcomeBanner extends StatelessWidget {
         ),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      child: isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  'Olá, $firstName! 👋',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Você tem novas vagas compatíveis com seu perfil.',
-                  style: TextStyle(
-                    color: AppColors.textLight,
-                    fontSize: 14,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.bolt_outlined, size: 16),
-                  label: const Text(
-                    'Ver vagas recomendadas',
-                    style: TextStyle(fontSize: 13),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 18, vertical: 10),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
-                  ),
-                ),
+                texto,
+                const SizedBox(height: 20),
+                matchBox,
+              ],
+            )
+          : Row(
+              children: [
+                Expanded(child: texto),
+                const SizedBox(width: 20),
+                matchBox,
               ],
             ),
-          ),
-          const SizedBox(width: 20),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
-              ),
-            ),
-            child: Column(
-              children: [
-                const Icon(Icons.insights, color: Colors.white, size: 36),
-                const SizedBox(height: 8),
-                Text(
-                  '${profile.matchScore}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const Text(
-                  'Match médio',
-                  style: TextStyle(
-                    color: AppColors.textLight,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
 
 class _StatsRow extends StatelessWidget {
   final UserProfileEntity profile;
+  final bool isMobile;
 
-  const _StatsRow({required this.profile});
+  const _StatsRow({required this.profile, required this.isMobile});
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.candidaturas}',
-            titulo: 'Candidaturas',
-            subtitulo: 'este mês',
-            icon: Icons.send_outlined,
-            iconColor: AppColors.accent,
-            iconBg: AppColors.accent.withValues(alpha: 0.1),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.matchScore}%',
-            titulo: 'Match Score',
-            subtitulo: 'média geral',
-            icon: Icons.bolt_outlined,
-            iconColor: AppColors.warning,
-            iconBg: AppColors.warning.withValues(alpha: 0.1),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.visualizacoes}',
-            titulo: 'Visualizações',
-            subtitulo: 'do seu perfil',
-            icon: Icons.visibility_outlined,
-            iconColor: AppColors.success,
-            iconBg: AppColors.success.withValues(alpha: 0.1),
-          ),
-        ),
-      ],
+    final cards = [
+      StatsCard(
+        valor: '${profile.candidaturas}',
+        titulo: 'Candidaturas',
+        subtitulo: 'este mês',
+        icon: Icons.send_outlined,
+        iconColor: AppColors.accent,
+        iconBg: AppColors.accent.withValues(alpha: 0.1),
+      ),
+      StatsCard(
+        valor: '${profile.matchScore}%',
+        titulo: 'Match Score',
+        subtitulo: 'média geral',
+        icon: Icons.bolt_outlined,
+        iconColor: AppColors.warning,
+        iconBg: AppColors.warning.withValues(alpha: 0.1),
+      ),
+      StatsCard(
+        valor: '${profile.visualizacoes}',
+        titulo: 'Visualizações',
+        subtitulo: 'do seu perfil',
+        icon: Icons.visibility_outlined,
+        iconColor: AppColors.success,
+        iconBg: AppColors.success.withValues(alpha: 0.1),
+      ),
+    ];
+
+    if (!isMobile) {
+      return Row(
+        children: [
+          for (var i = 0; i < cards.length; i++) ...[
+            if (i != 0) const SizedBox(width: 16),
+            Expanded(child: cards[i]),
+          ],
+        ],
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            for (final card in cards) SizedBox(width: itemWidth, child: card),
+          ],
+        );
+      },
     );
   }
 }

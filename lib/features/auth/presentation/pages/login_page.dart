@@ -1,3 +1,4 @@
+import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:aplicativo_jobfy/features/auth/domain/usecases/login_usecase.dart';
@@ -52,31 +53,45 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = MediaQuery.sizeOf(context).width < AppBreakpoints.mobile;
+
     return Scaffold(
-      body: Row(
-        children: [
-          const Expanded(child: _LeftPanel()),
-          Expanded(
-            child: Center(
-              child: SizedBox(
-                width: 480,
-                child: _buildForm(),
+      body: isMobile
+          ? SingleChildScrollView(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 480),
+                  child: _buildForm(isMobile: true),
+                ),
               ),
+            )
+          : Row(
+              children: [
+                const Expanded(child: _LeftPanel()),
+                Expanded(
+                  child: Center(
+                    child: SizedBox(
+                      width: 480,
+                      child: _buildForm(isMobile: false),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 
-  Widget _buildForm() {
+  Widget _buildForm({required bool isMobile}) {
     return ListenableBuilder(
       listenable: _authController,
       builder: (context, _) {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.all(32),
-          padding: const EdgeInsets.all(32),
+          margin: EdgeInsets.symmetric(
+            horizontal: isMobile ? 16 : 32,
+            vertical: 32,
+          ),
+          padding: EdgeInsets.all(isMobile ? 24 : 32),
           decoration: BoxDecoration(
             color: AppColors.white,
             borderRadius: BorderRadius.circular(20),
