@@ -1,9 +1,10 @@
-import 'package:aplicativo_jobfy/features/auth/presentation/pages/login_page.dart';
-import 'package:aplicativo_jobfy/features/auth/presentation/pages/register_page.dart';
-import 'package:aplicativo_jobfy/features/home/presentation/pages/home_page.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/pages/user_area_page.dart';
-import 'package:aplicativo_jobfy/features/company/presentation/pages/company_page.dart';
-import 'package:aplicativo_jobfy/features/job/presentation/pages/job_page.dart';
+import 'package:jobfy/features/auth/presentation/pages/login_page.dart';
+import 'package:jobfy/features/auth/presentation/pages/register_page.dart';
+import 'package:jobfy/features/home/presentation/pages/home_page.dart';
+import 'package:jobfy/features/jobs/presentation/pages/jobs_page.dart';
+import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
+import 'package:jobfy/features/user/presentation/pages/user_area_page.dart';
+import 'package:jobfy/features/company/presentation/pages/company_page.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
@@ -29,8 +30,12 @@ final appRouter = GoRouter(
       builder: (_, __) => const CompanyPage(),
     ),
     GoRoute(
+      path: '/settings',
+      builder: (_, __) => const SettingsPage(),
+    ),
+    GoRoute(
       path: '/jobs',
-      builder: (_, __) => const JobPage(),
+      builder: (_, __) => const JobsPage(),
     ),
   ],
 );

@@ -1,15 +1,17 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/data/repositories/user_repository_impl.dart';
-import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/domain/usecases/user_usecase.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/controllers/user_controller.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/activity_item.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_card.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/features/user/presentation/widgets/activity_item.dart';
+import 'package:jobfy/features/user/presentation/widgets/job_match_card.dart';
+import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:jobfy/features/user/presentation/widgets/stats_card.dart';
+import 'package:jobfy/shared/widgets/user_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class UserAreaPage extends StatefulWidget {
   const UserAreaPage({super.key});
@@ -19,66 +21,26 @@ class UserAreaPage extends StatefulWidget {
 }
 
 class _UserAreaPageState extends State<UserAreaPage> {
-  late final UserController _controller;
-
   @override
   void initState() {
     super.initState();
-    _controller = UserController(UserUsecase(UserRepositoryImpl()));
-    _controller.loadProfile('usr_001');
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleNav(int index) {
-    if (index == 1) {
-      context.push('/jobs');
-      return;
-    }
-    _controller.selectNav(index);
+    context.read<UserSessionController>().ensureLoaded('usr_001');
   }
 
   @override
   Widget build(BuildContext context) {
+    final session = context.watch<UserSessionController>();
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) {
-          if (_controller.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.accent),
-            );
-          }
-
-          final profile = _controller.profile;
-          if (profile == null) {
-            return Center(
-              child: Text(AppLocalizations.of(context)!.userAreaLoadError),
-            );
-          }
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ProfileSidebar(
-                profile: profile,
-                selectedIndex: _controller.selectedNavIndex,
-                onNavTap: _handleNav,
-              ),
-              Expanded(
-                child: _MainContent(
-                  profile: profile,
-                  navIndex: _controller.selectedNavIndex,
-                ),
-              ),
-            ],
-          );
-        },
+      drawer: UserShell.drawer(
+        context,
+        profile: session.profile,
+        current: SidebarSection.dashboard,
+      ),
+      body: UserShell(
+        profile: session.profile,
+        isError: session.status == UserSessionStatus.error,
+        current: SidebarSection.dashboard,
+        builder: (context, profile) => _MainContent(profile: profile),
       ),
     );
   }
@@ -86,43 +48,45 @@ class _UserAreaPageState extends State<UserAreaPage> {
 
 class _MainContent extends StatelessWidget {
   final UserProfileEntity profile;
-  final int navIndex;
 
-  const _MainContent({required this.profile, required this.navIndex});
+  const _MainContent({required this.profile});
 
   @override
   Widget build(BuildContext context) {
+    final jobs = _JobsSection(jobs: profile.recommendedJobs);
+    final activity = _ActivitySection(activities: profile.activities);
+    final gap = context.responsive(mobile: 16.0, tablet: 20.0, laptop: 28.0);
+
     return Column(
       children: [
         _TopBar(profile: profile),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(28, 0, 28, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 28),
-                _WelcomeBanner(profile: profile),
-                const SizedBox(height: 28),
-                _StatsRow(profile: profile),
-                const SizedBox(height: 28),
-                _SkillsRow(profile: profile),
-                const SizedBox(height: 28),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 3,
-                      child: _VagasSection(vagas: profile.vagasRecomendadas),
-                    ),
-                    const SizedBox(width: 20),
-                    SizedBox(
-                      width: 300,
-                      child: _AtividadeSection(atividades: profile.atividades),
-                    ),
+            child: ResponsiveContent(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: gap,
+                children: [
+                  _WelcomeBanner(profile: profile),
+                  _StatsRow(profile: profile),
+                  _SkillsRow(profile: profile),
+                  // Only a full desktop has room for the activity feed
+                  // beside the jobs list; everything narrower stacks them.
+                  if (context.isDesktop)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 20,
+                      children: [
+                        Expanded(flex: 3, child: jobs),
+                        SizedBox(width: 300, child: activity),
+                      ],
+                    )
+                  else ...[
+                    jobs,
+                    activity,
                   ],
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -138,57 +102,77 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
+    final compact = context.isMobile;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+      padding: EdgeInsets.symmetric(
+        horizontal: context.pagePadding,
+        vertical: context.responsive(mobile: 6.0, laptop: 14.0),
+      ),
+      decoration: BoxDecoration(
+        color: colors.surface,
+        border: Border(bottom: BorderSide(color: colors.surfaceBorder)),
       ),
       child: Row(
+        spacing: 8,
         children: [
-          const Icon(Icons.lightbulb_circle, size: 28),
-          const SizedBox(width: 8),
-          const Text(
-            'Jobfy',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
+          // Phones/tablets: the sidebar lives in a drawer opened from here.
+          if (context.isCompactLayout) MenuButton(color: colors.textPrimary),
+          Icon(Icons.lightbulb_circle, size: 28, color: colors.textPrimary),
+          if (!compact)
+            Text(
+              l10n.appName,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: colors.textPrimary,
+              ),
+            ),
           const Spacer(),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundLight,
+          // Phones only get the search icon; the pill's label doesn't fit.
+          if (compact)
+            IconButton(
+              icon: Icon(Icons.search, color: colors.textPrimary),
+              onPressed: () => context.go('/jobs'),
+              style: IconButton.styleFrom(backgroundColor: colors.background),
+            )
+          else
+            InkWell(
+              onTap: () => context.go('/jobs'),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppColors.cardBorder),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.search, size: 16, color: AppColors.textMuted),
-                const SizedBox(width: 6),
-                Text(
-                  l10n.searchJobsPlaceholder,
-                  style:
-                      const TextStyle(fontSize: 13, color: AppColors.textMuted),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colors.background,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: colors.surfaceBorder),
                 ),
-              ],
+                child: Row(
+                  spacing: 6,
+                  children: [
+                    Icon(Icons.search, size: 16, color: colors.textMuted),
+                    Text(
+                      l10n.searchJobsPlaceholder,
+                      style: TextStyle(fontSize: 13, color: colors.textMuted),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
+            icon: Icon(Icons.notifications_outlined, color: colors.textPrimary),
             onPressed: () {},
-            style: IconButton.styleFrom(
-              backgroundColor: AppColors.backgroundLight,
-            ),
+            style: IconButton.styleFrom(backgroundColor: colors.background),
           ),
-          const SizedBox(width: 8),
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.accent,
+            backgroundColor: colors.accent,
             child: Text(
-              profile.nome.isNotEmpty ? profile.nome[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
+              profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
+              style: TextStyle(
+                color: colors.onAccent,
                 fontWeight: FontWeight.bold,
                 fontSize: 14,
               ),
@@ -207,10 +191,12 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
-    final firstName = profile.nome.trim().split(' ').first;
+    final firstName = profile.name.trim().split(' ').first;
+    final compact = context.isMobile;
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.responsive(mobile: 18.0, laptop: 24.0)),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.centerLeft,
@@ -220,20 +206,21 @@ class _WelcomeBanner extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        spacing: 20,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 6,
               children: [
                 Text(
                   l10n.welcomeGreeting(firstName),
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 24,
+                    fontSize: context.responsive(mobile: 20.0, laptop: 24.0),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
                 Text(
                   l10n.welcomeSubtitle,
                   style: const TextStyle(
@@ -242,17 +229,17 @@ class _WelcomeBanner extends StatelessWidget {
                     height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 10),
                 ElevatedButton.icon(
-                  onPressed: () => context.push('/jobs'),
+                  onPressed: () => context.go('/jobs'),
                   icon: const Icon(Icons.bolt_outlined, size: 16),
                   label: Text(
                     l10n.viewRecommendedJobs,
                     style: const TextStyle(fontSize: 13),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.accent,
+                    foregroundColor: colors.onAccent,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 18, vertical: 10),
                     shape: RoundedRectangleBorder(
@@ -264,38 +251,39 @@ class _WelcomeBanner extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 20),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.1),
+          // The score badge is decorative; phones need the room for text.
+          if (!compact)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.1),
+                ),
+              ),
+              child: Column(
+                spacing: 8,
+                children: [
+                  const Icon(Icons.insights, color: Colors.white, size: 36),
+                  Text(
+                    '${profile.matchScore}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    l10n.avgMatch,
+                    style: const TextStyle(
+                      color: AppColors.textLight,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
-            child: Column(
-              children: [
-                const Icon(Icons.insights, color: Colors.white, size: 36),
-                const SizedBox(height: 8),
-                Text(
-                  '${profile.matchScore}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  l10n.avgMatch,
-                  style: const TextStyle(
-                    color: AppColors.textLight,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -309,42 +297,42 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
+    final cards = [
+      StatsCard(
+        value: '${profile.applications}',
+        title: l10n.statApplications,
+        subtitle: l10n.statApplicationsSub,
+        icon: Icons.send_outlined,
+        iconColor: colors.accent,
+        iconBg: colors.accent.withValues(alpha: 0.1),
+      ),
+      StatsCard(
+        value: '${profile.matchScore}%',
+        title: l10n.statMatchScore,
+        subtitle: l10n.statMatchScoreSub,
+        icon: Icons.bolt_outlined,
+        iconColor: colors.warning,
+        iconBg: colors.warning.withValues(alpha: 0.1),
+      ),
+      StatsCard(
+        value: '${profile.profileViews}',
+        title: l10n.statProfileViews,
+        subtitle: l10n.statProfileViewsSub,
+        icon: Icons.visibility_outlined,
+        iconColor: colors.success,
+        iconBg: colors.success.withValues(alpha: 0.1),
+      ),
+    ];
+
+    // Phones stack the cards; tablets and up keep them side by side.
+    if (context.isMobile) {
+      return Column(spacing: 12, children: cards);
+    }
     return Row(
-      children: [
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.candidaturas}',
-            titulo: l10n.statApplications,
-            subtitulo: l10n.statApplicationsSub,
-            icon: Icons.send_outlined,
-            iconColor: AppColors.accent,
-            iconBg: AppColors.accent.withValues(alpha: 0.1),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.matchScore}%',
-            titulo: l10n.statMatchScore,
-            subtitulo: l10n.statMatchScoreSub,
-            icon: Icons.bolt_outlined,
-            iconColor: AppColors.warning,
-            iconBg: AppColors.warning.withValues(alpha: 0.1),
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: StatsCard(
-            valor: '${profile.visualizacoes}',
-            titulo: l10n.statProfileViews,
-            subtitulo: l10n.statProfileViewsSub,
-            icon: Icons.visibility_outlined,
-            iconColor: AppColors.success,
-            iconBg: AppColors.success.withValues(alpha: 0.1),
-          ),
-        ),
-      ],
+      spacing: 16,
+      children: [for (final card in cards) Expanded(child: card)],
     );
   }
 }
@@ -356,13 +344,41 @@ class _SkillsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
+    final title = Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 10,
+      children: [
+        Icon(Icons.auto_awesome, color: colors.accent, size: 20),
+        Text(
+          l10n.skillsTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+            color: colors.textPrimary,
+          ),
+        ),
+      ],
+    );
+    final tags = Wrap(
+      spacing: 8,
+      runSpacing: 6,
+      children: profile.skills.map((s) => _SkillTag(label: s)).toList(),
+    );
+    final addButton = TextButton.icon(
+      onPressed: () {},
+      icon: const Icon(Icons.add, size: 16),
+      label: Text(l10n.addSkill, style: const TextStyle(fontSize: 13)),
+      style: TextButton.styleFrom(foregroundColor: colors.accent),
+    );
+
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(context.responsive(mobile: 16.0, laptop: 20.0)),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -371,32 +387,21 @@ class _SkillsRow extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
-          const SizedBox(width: 10),
-          Text(
-            l10n.skillsTitle,
-            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              children: profile.habilidades
-                  .map((h) => _SkillTag(label: h))
-                  .toList(),
+      // On phones the title, tags and button can't share one line.
+      child: context.isMobile
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                title,
+                tags,
+                Align(alignment: Alignment.centerRight, child: addButton),
+              ],
+            )
+          : Row(
+              spacing: 10,
+              children: [title, Expanded(child: tags), addButton],
             ),
-          ),
-          TextButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.add, size: 16),
-            label: Text(l10n.addSkill, style: const TextStyle(fontSize: 13)),
-            style: TextButton.styleFrom(foregroundColor: AppColors.accent),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -408,17 +413,18 @@ class _SkillTag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final accent = context.colors.accent;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.accent.withValues(alpha: 0.08),
+        color: accent.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
+        border: Border.all(color: accent.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,
-        style: const TextStyle(
-          color: AppColors.accent,
+        style: TextStyle(
+          color: accent,
           fontSize: 12,
           fontWeight: FontWeight.w500,
         ),
@@ -427,20 +433,21 @@ class _SkillTag extends StatelessWidget {
   }
 }
 
-class _VagasSection extends StatelessWidget {
-  final List<JobMatchEntity> vagas;
+class _JobsSection extends StatelessWidget {
+  final List<JobMatchEntity> jobs;
 
-  const _VagasSection({required this.vagas});
+  const _JobsSection({required this.jobs});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -451,19 +458,22 @@ class _VagasSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 4,
         children: [
           Row(
             children: [
               Text(
                 l10n.recommendedJobsTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: colors.textPrimary,
+                ),
               ),
               const Spacer(),
               TextButton(
-                onPressed: () => context.push('/jobs'),
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.accent,
-                ),
+                onPressed: () => context.go('/jobs'),
+                style: TextButton.styleFrom(foregroundColor: colors.accent),
                 child: Text(
                   l10n.viewAll,
                   style: const TextStyle(fontSize: 13),
@@ -471,8 +481,7 @@ class _VagasSection extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          ...vagas.map((j) => Padding(
+          ...jobs.map((j) => Padding(
                 padding: const EdgeInsets.only(top: 12),
                 child: JobMatchCard(job: j),
               )),
@@ -482,20 +491,21 @@ class _VagasSection extends StatelessWidget {
   }
 }
 
-class _AtividadeSection extends StatelessWidget {
-  final List<ActivityEntity> atividades;
+class _ActivitySection extends StatelessWidget {
+  final List<ActivityEntity> activities;
 
-  const _AtividadeSection({required this.atividades});
+  const _ActivitySection({required this.activities});
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -506,17 +516,21 @@ class _AtividadeSection extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
         children: [
           Text(
             l10n.recentActivityTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: colors.textPrimary,
+            ),
           ),
-          const SizedBox(height: 12),
-          const Divider(height: 1, color: AppColors.cardBorder),
-          ...atividades.map((a) => Column(
+          Divider(height: 1, color: colors.surfaceBorder),
+          ...activities.map((a) => Column(
                 children: [
                   ActivityItem(activity: a),
-                  const Divider(height: 1, color: AppColors.cardBorder),
+                  Divider(height: 1, color: colors.surfaceBorder),
                 ],
               )),
         ],

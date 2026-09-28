@@ -1,12 +1,16 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/data/repositories/auth_repository_impl.dart';
-import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
+import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
+import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-enum Genero { masculino, feminino, outro }
+enum Gender { male, female, other }
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,46 +20,58 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _nomeController = TextEditingController();
+  final _nameController = TextEditingController();
   final _cpfController = TextEditingController();
   final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-  Genero _genero = Genero.masculino;
-  bool _aceitoTermos = false;
+  final _passwordController = TextEditingController();
+  Gender _gender = Gender.male;
+  bool _acceptedTerms = false;
 
   late final AuthController _authController;
 
   @override
   void initState() {
     super.initState();
-    _authController = AuthController(AuthUsecase(AuthRepositoryImpl()));
+    final repo = AuthRepositoryImpl();
+    _authController = AuthController(LoginUsecase(repo), RegisterUsecase(repo));
   }
 
   @override
   void dispose() {
-    _nomeController.dispose();
+    _nameController.dispose();
     _cpfController.dispose();
     _emailController.dispose();
-    _senhaController.dispose();
+    _passwordController.dispose();
     _authController.dispose();
     super.dispose();
   }
 
+  String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
+        AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
+        AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+        AuthErrorCode.network => l10n.authErrorNetwork,
+      };
+
+  String _genderLabel(AppLocalizations l10n, Gender gender) => switch (gender) {
+        Gender.male => l10n.genderMale,
+        Gender.female => l10n.genderFemale,
+        Gender.other => l10n.genderOther,
+      };
+
   Future<void> _handleRegister() async {
-    if (!_aceitoTermos) {
+    final l10n = AppLocalizations.of(context)!;
+    if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.termsRequiredError),
-        ),
+        SnackBar(content: Text(l10n.termsRequiredError)),
       );
       return;
     }
     final ok = await _authController.register(
-      nome: _nomeController.text.trim(),
+      name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       cpf: _cpfController.text.trim(),
-      senha: _senhaController.text,
-      genero: _genero.name,
+      password: _passwordController.text,
+      gender: _gender.name,
     );
     if (ok && mounted) context.go('/user');
   }
@@ -63,21 +79,35 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    // This screen's card-on-light-background design (and the terms dialog
+    // it opens) is intentionally fixed regardless of the device's theme.
+    return Theme(
+      data: AppTheme.light,
+      child: _buildScaffold(context, l10n),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context, AppLocalizations l10n) {
+    final colors = context.colors;
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: colors.background,
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 48),
+          padding: EdgeInsets.symmetric(
+            horizontal: context.pagePadding,
+            vertical: context.responsive(mobile: 24.0, laptop: 48.0),
+          ),
           child: Column(
+            spacing: 12,
             children: [
-              const Row(
+              Row(
                 mainAxisSize: MainAxisSize.min,
+                spacing: 8,
                 children: [
-                  Icon(Icons.lightbulb_circle, size: 36),
-                  SizedBox(width: 8),
+                  const Icon(Icons.lightbulb_circle, size: 36),
                   Text(
-                    'Jobfy',
-                    style: TextStyle(
+                    l10n.appName,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
                       letterSpacing: 0.3,
@@ -85,24 +115,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
               Text(
                 l10n.registerTitle,
-                style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: context.responsive(mobile: 26.0, laptop: 32.0),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              const SizedBox(height: 6),
               Text(
                 l10n.registerSubtitle,
-                style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
+                style: TextStyle(fontSize: 14, color: colors.textMuted),
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 20),
               Container(
-                width: 440,
-                padding: const EdgeInsets.all(32),
+                width: double.infinity,
+                constraints: const BoxConstraints(maxWidth: 440),
+                padding: EdgeInsets.all(context.responsive(mobile: 20.0, laptop: 32.0)),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: colors.surfaceBorder),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.05),
@@ -116,16 +148,16 @@ class _RegisterPageState extends State<RegisterPage> {
                   builder: (context, _) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 16,
                       children: [
                         TextField(
-                          controller: _nomeController,
+                          controller: _nameController,
                           decoration: InputDecoration(
                             labelText: l10n.fullNameLabel,
                             hintText: l10n.fullNameHint,
                             prefixIcon: const Icon(Icons.person_outline, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -134,7 +166,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: const Icon(Icons.email_outlined, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
                           controller: _cpfController,
                           decoration: InputDecoration(
@@ -143,9 +174,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: const Icon(Icons.badge_outlined, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         TextField(
-                          controller: _senhaController,
+                          controller: _passwordController,
                           obscureText: true,
                           decoration: InputDecoration(
                             labelText: l10n.passwordLabel,
@@ -153,90 +183,93 @@ class _RegisterPageState extends State<RegisterPage> {
                             prefixIcon: const Icon(Icons.lock_outline, size: 18),
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        Text(
-                          l10n.genderLabel,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // ignore: deprecated_member_use
-                        RadioGroup<Genero>(
-                          groupValue: _genero,
-                          onChanged: (v) => setState(() => _genero = v!),
-                          child: Row(
-                            children: Genero.values
-                                .map((g) => Expanded(
-                                      child: RadioListTile<Genero>(
-                                        value: g,
-                                        dense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(
-                                          _generoLabel(l10n, g),
-                                          style: const TextStyle(fontSize: 13),
-                                        ),
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ),
-                        const Divider(height: 24),
-                        Row(
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          spacing: 8,
                           children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: Checkbox(
-                                value: _aceitoTermos,
-                                onChanged: (v) =>
-                                    setState(() => _aceitoTermos = v!),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
+                            Text(
+                              l10n.genderLabel,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.acceptTermsPrefix,
-                              style: const TextStyle(fontSize: 13),
-                            ),
-                            GestureDetector(
-                              onTap: _showTermos,
-                              child: Text(
-                                l10n.termsOfService,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: AppColors.accent,
-                                  decoration: TextDecoration.underline,
+                            // ignore: deprecated_member_use
+                            RadioGroup<Gender>(
+                              groupValue: _gender,
+                              onChanged: (v) => setState(() => _gender = v!),
+                              child: Material(
+                                type: MaterialType.transparency,
+                                child: Row(
+                                  children: Gender.values
+                                      .map((g) => Expanded(
+                                            child: RadioListTile<Gender>(
+                                              value: g,
+                                              dense: true,
+                                              contentPadding: EdgeInsets.zero,
+                                              title: Text(
+                                                _genderLabel(l10n, g),
+                                                style: const TextStyle(fontSize: 13),
+                                              ),
+                                            ),
+                                          ))
+                                      .toList(),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                        if (_authController.error != null) ...[
-                          const SizedBox(height: 12),
+                        const Divider(height: 8),
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 8,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: Checkbox(
+                                value: _acceptedTerms,
+                                onChanged: (v) =>
+                                    setState(() => _acceptedTerms = v!),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              l10n.acceptTermsPrefix,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                            HoverLink(
+                              label: l10n.termsOfService,
+                              onTap: () => _showTerms(context),
+                              style: (_) => TextStyle(
+                                fontSize: 13,
+                                color: colors.accent,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (_authController.errorCode != null)
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: AppColors.danger.withValues(alpha: 0.08),
+                              color: colors.danger.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: AppColors.danger.withValues(alpha: 0.3),
+                                color: colors.danger.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
-                              l10n.authErrorRegistrationFailed,
-                              style: const TextStyle(
-                                color: AppColors.danger,
+                              _errorMessage(l10n, _authController.errorCode!),
+                              style: TextStyle(
+                                color: colors.danger,
                                 fontSize: 13,
                               ),
                             ),
                           ),
-                        ],
-                        const SizedBox(height: 20),
                         SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -267,17 +300,14 @@ class _RegisterPageState extends State<RegisterPage> {
                                   ),
                           ),
                         ),
-                        const SizedBox(height: 16),
                         Center(
-                          child: GestureDetector(
+                          child: HoverLink(
+                            label: l10n.alreadyHaveAccount,
                             onTap: () => context.go('/login'),
-                            child: Text(
-                              l10n.alreadyHaveAccount,
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textMuted,
-                                decoration: TextDecoration.underline,
-                              ),
+                            style: (hovered) => TextStyle(
+                              fontSize: 13,
+                              color: hovered ? colors.accent : colors.textMuted,
+                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
@@ -293,7 +323,7 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _showTermos() {
+  void _showTerms(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -305,6 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
           padding: const EdgeInsets.all(28),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
               Row(
                 children: [
@@ -325,7 +356,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
               const Divider(),
               Expanded(
                 child: SingleChildScrollView(
@@ -344,16 +374,5 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
     );
-  }
-
-  String _generoLabel(AppLocalizations l10n, Genero genero) {
-    switch (genero) {
-      case Genero.masculino:
-        return l10n.genderMale;
-      case Genero.feminino:
-        return l10n.genderFemale;
-      case Genero.outro:
-        return l10n.genderOther;
-    }
   }
 }

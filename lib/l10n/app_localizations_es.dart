@@ -9,6 +9,15 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get appName => 'Jobfy';
+
+  @override
+  String get headerSettingsTooltip => 'Configuración';
+
+  @override
+  String get headerUserAreaTooltip => 'Área del usuario';
+
+  @override
   String get homeHeadline => 'Encuentra el empleo\nde tus sueños.';
 
   @override
@@ -20,12 +29,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeCtaSecondary => 'Ya tengo una cuenta';
-
-  @override
-  String get headerUserAreaTooltip => 'Área del usuario';
-
-  @override
-  String get headerSettingsTooltip => 'Configuración';
 
   @override
   String get loginHeroTitle => 'Conéctate a\ntu próximo empleo.';
@@ -80,6 +83,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get authErrorInvalidCredentials => 'Correo o contraseña inválidos.';
 
   @override
+  String get authErrorRegistrationFailed =>
+      'No se pudo crear la cuenta. Inténtalo de nuevo.';
+
+  @override
+  String get authErrorNetwork =>
+      'No se pudo conectar con el servidor. Inténtalo más tarde.';
+
+  @override
   String get registerTitle => 'Crea tu cuenta';
 
   @override
@@ -130,10 +141,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get termsDialogBody =>
       'Al crear una cuenta en Jobfy, aceptas nuestra política de privacidad y términos de uso. Tus datos se usarán exclusivamente para conectarte con oportunidades de empleo relevantes.';
-
-  @override
-  String get authErrorRegistrationFailed =>
-      'No se pudo crear la cuenta. Inténtalo de nuevo.';
 
   @override
   String get userAreaLoadError => 'No se pudo cargar tu perfil.';
@@ -187,6 +194,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get viewAll => 'Ver todos';
 
   @override
+  String get applyButton => 'Postularme';
+
+  @override
   String get recentActivityTitle => 'Actividad reciente';
 
   @override
@@ -211,118 +221,199 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navLogout => 'Cerrar sesión';
 
   @override
+  String get settingsTitle => 'Configuración';
+
+  @override
+  String get settingsAppearance => 'Apariencia';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Elige cómo se ve Jobfy en este dispositivo.';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Oscuro';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageDescription => 'Elige el idioma de la aplicación.';
+
+  @override
+  String get settingsLanguageSystem => 'Predeterminado del sistema';
+
+  @override
+  String get settingsBack => 'Volver';
+
+  @override
+  String get companyRegisterTitle => 'Registra tu empresa';
+
+  @override
+  String get companyRegisterSubtitle =>
+      'Empieza a publicar empleos y encontrar talento en Jobfy.';
+
+  @override
+  String get companyNameLabel => 'Nombre de la empresa';
+
+  @override
+  String get companyNameHint => 'El nombre de tu empresa...';
+
+  @override
+  String get companyCnpjLabel => 'CNPJ';
+
+  @override
+  String get companyCnpjHint => '00.000.000/0000-00';
+
+  @override
+  String get companyPhoneLabel => 'Teléfono';
+
+  @override
+  String get companyPhoneHint => '(00) 00000-0000';
+
+  @override
+  String get companyRegisterButton => 'Registrar empresa';
+
+  @override
+  String get companyRegisterError =>
+      'No se pudo registrar la empresa. Inténtalo de nuevo.';
+
+  @override
+  String companyWelcome(String companyName) {
+    return 'Bienvenido, $companyName';
+  }
+
+  @override
+  String get companyPublishJobTitle => 'Publicar un empleo';
+
+  @override
+  String get jobTitleLabel => 'Título del empleo';
+
+  @override
+  String get jobTitleHint => 'ej.: Desarrollador Flutter';
+
+  @override
+  String get jobDescriptionLabel => 'Descripción';
+
+  @override
+  String get jobDescriptionHint => 'Responsabilidades, requisitos...';
+
+  @override
+  String get jobLocationLabel => 'Ubicación';
+
+  @override
+  String get jobLocationHint => 'ej.: Remoto, Madrid';
+
+  @override
+  String get jobContractTypeLabel => 'Tipo de contrato';
+
+  @override
+  String get jobContractTypeHint => 'ej.: Tiempo completo, Freelance';
+
+  @override
+  String get jobSalaryLabel => 'Rango salarial';
+
+  @override
+  String get jobSalaryHint => 'ej.: 2.000 – 3.000 €';
+
+  @override
+  String get companyPublishJobButton => 'Publicar empleo';
+
+  @override
+  String get companyJobPublishError =>
+      'No se pudo publicar el empleo. Inténtalo de nuevo.';
+
+  @override
+  String get companyJobsTitle => 'Empleos publicados';
+
+  @override
+  String get companyNoJobsYet =>
+      'Aún no hay empleos publicados. Publica el primero arriba.';
+
+  @override
+  String get companyViewCandidates => 'Ver candidatos';
+
+  @override
+  String companyCandidatesTitle(String jobTitle) {
+    return 'Candidatos para $jobTitle';
+  }
+
+  @override
+  String get companyRoleFilterLabel => 'Filtrar por puesto deseado';
+
+  @override
+  String companyMinMatchLabel(int percent) {
+    return 'Match mínimo: $percent%';
+  }
+
+  @override
+  String get companyNoCandidates =>
+      'Ningún candidato coincide con este filtro todavía.';
+
+  @override
+  String get companyCandidateFilterError =>
+      'No se pudieron cargar los candidatos. Inténtalo de nuevo.';
+
+  @override
+  String get companyRateCandidate => 'Calificar';
+
+  @override
+  String get companyMessageCandidate => 'Mensaje';
+
+  @override
+  String get companyRatingLabel => 'Calificación (0-5)';
+
+  @override
+  String get companyMessageLabel => 'Mensaje';
+
+  @override
+  String get companyMessageHint => 'Escribe un mensaje para este candidato...';
+
+  @override
+  String get companySend => 'Enviar';
+
+  @override
+  String get companyCandidateRateError =>
+      'No se pudo guardar la calificación. Inténtalo de nuevo.';
+
+  @override
+  String get companyMessageSendError =>
+      'No se pudo enviar el mensaje. Inténtalo de nuevo.';
+
+  @override
+  String get companyRatingSaved => 'Calificación guardada.';
+
+  @override
+  String get companyMessageSent => 'Mensaje enviado.';
+
+  @override
   String get jobsPageTitle => 'Empleos';
 
   @override
-  String jobsAvailableCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count empleos para ti',
-      one: '1 empleo para ti',
-    );
-    return '$_temp0';
-  }
+  String get jobsLocationHint => 'Ubicación...';
 
   @override
-  String get jobsSearchHint => 'Puesto, empresa o ubicación';
+  String get jobsNoResults => 'No se encontraron empleos para esta búsqueda.';
 
   @override
-  String get jobsSearchClearTooltip => 'Limpiar búsqueda';
+  String get jobSearchError =>
+      'No se pudieron cargar los empleos. Inténtalo de nuevo.';
 
   @override
-  String get jobsEmptyTitle => 'No se encontraron empleos';
+  String get jobApplyError =>
+      'No se pudo enviar tu postulación. Inténtalo de nuevo.';
 
   @override
-  String get jobsEmptySubtitle => 'Intenta ajustar la búsqueda o los filtros.';
+  String get jobApplySuccess => '¡Postulación enviada!';
 
   @override
-  String get jobsErrorTitle => 'No se pudieron cargar los empleos.';
+  String get jobAlreadyApplied => 'Postulado';
 
   @override
-  String get jobsRetryButton => 'Intentar de nuevo';
-
-  @override
-  String jobApplySuccessMessage(String company) {
-    return '¡Postulación enviada a $company!';
-  }
-
-  @override
-  String get jobApplyErrorMessage => 'No se pudo enviar tu postulación.';
-
-  @override
-  String get jobRemoveSaved => 'Quitar de guardados';
-
-  @override
-  String get jobSaveJob => 'Guardar empleo';
-
-  @override
-  String get jobSalaryRangeLabel => 'Rango salarial';
-
-  @override
-  String jobPublishedPrefix(String time) {
-    return 'Publicado $time';
-  }
-
-  @override
-  String get jobAboutTitle => 'Sobre el empleo';
-
-  @override
-  String get jobRequirementsTitle => 'Requisitos';
-
-  @override
-  String get jobApplyButtonLabel => 'Postularme';
-
-  @override
-  String get jobAppliedLabel => 'Postulado';
-
-  @override
-  String get timeAgoNow => 'ahora';
-
-  @override
-  String timeAgoMinutes(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'hace $count min',
-      one: 'hace $count min',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String timeAgoHours(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'hace $count horas',
-      one: 'hace 1 hora',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String get timeAgoYesterday => 'ayer';
-
-  @override
-  String timeAgoDays(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'hace $count días',
-      one: 'hace 1 día',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String timeAgoMonths(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: 'hace $count meses',
-      one: 'hace 1 mes',
-    );
-    return '$_temp0';
-  }
+  String get jobViewDetails => 'Ver detalles';
 }

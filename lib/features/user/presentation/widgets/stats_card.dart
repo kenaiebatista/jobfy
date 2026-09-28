@@ -1,19 +1,19 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:flutter/material.dart';
 
 class StatsCard extends StatelessWidget {
-  final String valor;
-  final String titulo;
-  final String subtitulo;
+  final String value;
+  final String title;
+  final String subtitle;
   final IconData icon;
   final Color iconColor;
   final Color iconBg;
 
   const StatsCard({
     super.key,
-    required this.valor,
-    required this.titulo,
-    required this.subtitulo,
+    required this.value,
+    required this.title,
+    required this.subtitle,
     required this.icon,
     required this.iconColor,
     required this.iconBg,
@@ -21,12 +21,13 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: colors.surfaceBorder),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -36,6 +37,7 @@ class StatsCard extends StatelessWidget {
         ],
       ),
       child: Row(
+        spacing: 16,
         children: [
           Container(
             width: 48,
@@ -46,33 +48,33 @@ class StatsCard extends StatelessWidget {
             ),
             child: Icon(icon, color: iconColor, size: 22),
           ),
-          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  valor,
-                  style: const TextStyle(
+                  value,
+                  style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     height: 1,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  titulo,
-                  style: const TextStyle(
+                  title,
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: colors.textPrimary,
                   ),
                 ),
                 Text(
-                  subtitulo,
-                  style: const TextStyle(
+                  subtitle,
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: colors.textMuted,
                   ),
                 ),
               ],

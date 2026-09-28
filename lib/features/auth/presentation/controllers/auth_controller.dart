@@ -1,71 +1,83 @@
 import 'package:flutter/foundation.dart';
-import 'package:aplicativo_jobfy/domain/entities/user_entity.dart';
-import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
+import 'package:jobfy/core/network/api_exception.dart';
+import '../../domain/entities/user_entity.dart';
+import '../../domain/usecases/login_usecase.dart';
+import '../../domain/usecases/register_usecase.dart';
 
 enum AuthStatus { idle, loading, success, error }
 
-enum AuthError { invalidCredentials, registrationFailed }
+/// Machine-readable error codes. The presentation layer maps these to
+/// localized copy — see [AppLocalizations].
+enum AuthErrorCode { invalidCredentials, registrationFailed, network }
 
 class AuthController extends ChangeNotifier {
-  final AuthUsecase _authUsecase;
+  final LoginUsecase _loginUsecase;
+  final RegisterUsecase _registerUsecase;
 
-  AuthController(this._authUsecase);
+  AuthController(this._loginUsecase, this._registerUsecase);
 
   AuthStatus _status = AuthStatus.idle;
   UserEntity? _user;
-  AuthError? _error;
+  AuthErrorCode? _errorCode;
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
-  AuthError? get error => _error;
+  AuthErrorCode? get errorCode => _errorCode;
   bool get isLoading => _status == AuthStatus.loading;
 
-  Future<bool> login(String email, String senha) async {
+  Future<bool> login(String email, String password) async {
     _status = AuthStatus.loading;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
 
-    final user = await _authUsecase.login(email, senha);
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _loginUsecase(email, password);
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.invalidCredentials;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _error = AuthError.invalidCredentials;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
   }
 
   Future<bool> register({
-    required String nome,
+    required String name,
     required String email,
     required String cpf,
-    required String senha,
-    required String genero,
+    required String password,
+    required String gender,
   }) async {
     _status = AuthStatus.loading;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
 
-    final user = await _authUsecase.register(
-      nome: nome,
-      email: email,
-      cpf: cpf,
-      senha: senha,
-      genero: genero,
-    );
-
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _registerUsecase(
+        name: name,
+        email: email,
+        cpf: cpf,
+        password: password,
+        gender: gender,
+      );
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.registrationFailed;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _error = AuthError.registrationFailed;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
@@ -79,7 +91,7 @@ class AuthController extends ChangeNotifier {
 
   void resetStatus() {
     _status = AuthStatus.idle;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
   }
 }

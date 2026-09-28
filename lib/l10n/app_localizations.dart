@@ -68,8 +68,8 @@ abstract class AppLocalizations {
 
   final String localeName;
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
@@ -98,7 +98,26 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('es'),
     Locale('pt'),
+    Locale('pt', 'BR'),
   ];
+
+  /// No description provided for @appName.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobfy'**
+  String get appName;
+
+  /// No description provided for @headerSettingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get headerSettingsTooltip;
+
+  /// No description provided for @headerUserAreaTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'User area'**
+  String get headerUserAreaTooltip;
 
   /// No description provided for @homeHeadline.
   ///
@@ -123,18 +142,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I already have an account'**
   String get homeCtaSecondary;
-
-  /// No description provided for @headerUserAreaTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'User area'**
-  String get headerUserAreaTooltip;
-
-  /// No description provided for @headerSettingsTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get headerSettingsTooltip;
 
   /// No description provided for @loginHeroTitle.
   ///
@@ -238,6 +245,18 @@ abstract class AppLocalizations {
   /// **'Invalid email or password.'**
   String get authErrorInvalidCredentials;
 
+  /// No description provided for @authErrorRegistrationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create your account. Please try again.'**
+  String get authErrorRegistrationFailed;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Please try again later.'**
+  String get authErrorNetwork;
+
   /// No description provided for @registerTitle.
   ///
   /// In en, this message translates to:
@@ -340,12 +359,6 @@ abstract class AppLocalizations {
   /// **'By creating a Jobfy account, you agree to our privacy policy and terms of use. Your data will be used exclusively to connect you to relevant job opportunities.'**
   String get termsDialogBody;
 
-  /// No description provided for @authErrorRegistrationFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not create your account. Please try again.'**
-  String get authErrorRegistrationFailed;
-
   /// No description provided for @userAreaLoadError.
   ///
   /// In en, this message translates to:
@@ -442,6 +455,12 @@ abstract class AppLocalizations {
   /// **'View all'**
   String get viewAll;
 
+  /// No description provided for @applyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyButton;
+
   /// No description provided for @recentActivityTitle.
   ///
   /// In en, this message translates to:
@@ -490,149 +509,365 @@ abstract class AppLocalizations {
   /// **'Log out'**
   String get navLogout;
 
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsAppearanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how Jobfy looks on this device.'**
+  String get settingsAppearanceDescription;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the app language.'**
+  String get settingsLanguageDescription;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settingsLanguageSystem;
+
+  /// No description provided for @settingsBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get settingsBack;
+
+  /// No description provided for @companyRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register your company'**
+  String get companyRegisterTitle;
+
+  /// No description provided for @companyRegisterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start publishing jobs and finding talent on Jobfy.'**
+  String get companyRegisterSubtitle;
+
+  /// No description provided for @companyNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name'**
+  String get companyNameLabel;
+
+  /// No description provided for @companyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company\'s name...'**
+  String get companyNameHint;
+
+  /// No description provided for @companyCnpjLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CNPJ'**
+  String get companyCnpjLabel;
+
+  /// No description provided for @companyCnpjHint.
+  ///
+  /// In en, this message translates to:
+  /// **'00.000.000/0000-00'**
+  String get companyCnpjHint;
+
+  /// No description provided for @companyPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get companyPhoneLabel;
+
+  /// No description provided for @companyPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'(00) 00000-0000'**
+  String get companyPhoneHint;
+
+  /// No description provided for @companyRegisterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Register company'**
+  String get companyRegisterButton;
+
+  /// No description provided for @companyRegisterError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not register the company. Please try again.'**
+  String get companyRegisterError;
+
+  /// No description provided for @companyWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {companyName}'**
+  String companyWelcome(String companyName);
+
+  /// No description provided for @companyPublishJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish a job'**
+  String get companyPublishJobTitle;
+
+  /// No description provided for @jobTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get jobTitleLabel;
+
+  /// No description provided for @jobTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Flutter Developer'**
+  String get jobTitleHint;
+
+  /// No description provided for @jobDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get jobDescriptionLabel;
+
+  /// No description provided for @jobDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsibilities, requirements...'**
+  String get jobDescriptionHint;
+
+  /// No description provided for @jobLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get jobLocationLabel;
+
+  /// No description provided for @jobLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Remote, São Paulo'**
+  String get jobLocationHint;
+
+  /// No description provided for @jobContractTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contract type'**
+  String get jobContractTypeLabel;
+
+  /// No description provided for @jobContractTypeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Full-time, Contract'**
+  String get jobContractTypeHint;
+
+  /// No description provided for @jobSalaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary range'**
+  String get jobSalaryLabel;
+
+  /// No description provided for @jobSalaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. \$4,000 – \$6,000'**
+  String get jobSalaryHint;
+
+  /// No description provided for @companyPublishJobButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish job'**
+  String get companyPublishJobButton;
+
+  /// No description provided for @companyJobPublishError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not publish the job. Please try again.'**
+  String get companyJobPublishError;
+
+  /// No description provided for @companyJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Published jobs'**
+  String get companyJobsTitle;
+
+  /// No description provided for @companyNoJobsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs published yet. Publish your first one above.'**
+  String get companyNoJobsYet;
+
+  /// No description provided for @companyViewCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'View candidates'**
+  String get companyViewCandidates;
+
+  /// No description provided for @companyCandidatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidates for {jobTitle}'**
+  String companyCandidatesTitle(String jobTitle);
+
+  /// No description provided for @companyRoleFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by desired role'**
+  String get companyRoleFilterLabel;
+
+  /// No description provided for @companyMinMatchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum match: {percent}%'**
+  String companyMinMatchLabel(int percent);
+
+  /// No description provided for @companyNoCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'No candidates match this filter yet.'**
+  String get companyNoCandidates;
+
+  /// No description provided for @companyCandidateFilterError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load candidates. Please try again.'**
+  String get companyCandidateFilterError;
+
+  /// No description provided for @companyRateCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get companyRateCandidate;
+
+  /// No description provided for @companyMessageCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get companyMessageCandidate;
+
+  /// No description provided for @companyRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating (0-5)'**
+  String get companyRatingLabel;
+
+  /// No description provided for @companyMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get companyMessageLabel;
+
+  /// No description provided for @companyMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message to this candidate...'**
+  String get companyMessageHint;
+
+  /// No description provided for @companySend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get companySend;
+
+  /// No description provided for @companyCandidateRateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the rating. Please try again.'**
+  String get companyCandidateRateError;
+
+  /// No description provided for @companyMessageSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the message. Please try again.'**
+  String get companyMessageSendError;
+
+  /// No description provided for @companyRatingSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating saved.'**
+  String get companyRatingSaved;
+
+  /// No description provided for @companyMessageSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent.'**
+  String get companyMessageSent;
+
   /// No description provided for @jobsPageTitle.
   ///
   /// In en, this message translates to:
   /// **'Jobs'**
   String get jobsPageTitle;
 
-  /// No description provided for @jobsAvailableCount.
+  /// No description provided for @jobsLocationHint.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, one{1 job for you} other{{count} jobs for you}}'**
-  String jobsAvailableCount(int count);
+  /// **'Location...'**
+  String get jobsLocationHint;
 
-  /// No description provided for @jobsSearchHint.
+  /// No description provided for @jobsNoResults.
   ///
   /// In en, this message translates to:
-  /// **'Role, company or location'**
-  String get jobsSearchHint;
+  /// **'No jobs found for this search.'**
+  String get jobsNoResults;
 
-  /// No description provided for @jobsSearchClearTooltip.
+  /// No description provided for @jobSearchError.
   ///
   /// In en, this message translates to:
-  /// **'Clear search'**
-  String get jobsSearchClearTooltip;
+  /// **'Could not load jobs. Please try again.'**
+  String get jobSearchError;
 
-  /// No description provided for @jobsEmptyTitle.
+  /// No description provided for @jobApplyError.
   ///
   /// In en, this message translates to:
-  /// **'No jobs found'**
-  String get jobsEmptyTitle;
+  /// **'Could not submit your application. Please try again.'**
+  String get jobApplyError;
 
-  /// No description provided for @jobsEmptySubtitle.
+  /// No description provided for @jobApplySuccess.
   ///
   /// In en, this message translates to:
-  /// **'Try adjusting the search or filters.'**
-  String get jobsEmptySubtitle;
+  /// **'Application submitted!'**
+  String get jobApplySuccess;
 
-  /// No description provided for @jobsErrorTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not load jobs.'**
-  String get jobsErrorTitle;
-
-  /// No description provided for @jobsRetryButton.
-  ///
-  /// In en, this message translates to:
-  /// **'Try again'**
-  String get jobsRetryButton;
-
-  /// No description provided for @jobApplySuccessMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Application sent to {company}!'**
-  String jobApplySuccessMessage(String company);
-
-  /// No description provided for @jobApplyErrorMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Could not submit your application.'**
-  String get jobApplyErrorMessage;
-
-  /// No description provided for @jobRemoveSaved.
-  ///
-  /// In en, this message translates to:
-  /// **'Remove from saved'**
-  String get jobRemoveSaved;
-
-  /// No description provided for @jobSaveJob.
-  ///
-  /// In en, this message translates to:
-  /// **'Save job'**
-  String get jobSaveJob;
-
-  /// No description provided for @jobSalaryRangeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Salary range'**
-  String get jobSalaryRangeLabel;
-
-  /// No description provided for @jobPublishedPrefix.
-  ///
-  /// In en, this message translates to:
-  /// **'Published {time}'**
-  String jobPublishedPrefix(String time);
-
-  /// No description provided for @jobAboutTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'About the job'**
-  String get jobAboutTitle;
-
-  /// No description provided for @jobRequirementsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Requirements'**
-  String get jobRequirementsTitle;
-
-  /// No description provided for @jobApplyButtonLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Apply'**
-  String get jobApplyButtonLabel;
-
-  /// No description provided for @jobAppliedLabel.
+  /// No description provided for @jobAlreadyApplied.
   ///
   /// In en, this message translates to:
   /// **'Applied'**
-  String get jobAppliedLabel;
+  String get jobAlreadyApplied;
 
-  /// No description provided for @timeAgoNow.
+  /// No description provided for @jobViewDetails.
   ///
   /// In en, this message translates to:
-  /// **'now'**
-  String get timeAgoNow;
-
-  /// No description provided for @timeAgoMinutes.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{{count} min ago} other{{count} min ago}}'**
-  String timeAgoMinutes(int count);
-
-  /// No description provided for @timeAgoHours.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{1 hour ago} other{{count} hours ago}}'**
-  String timeAgoHours(int count);
-
-  /// No description provided for @timeAgoYesterday.
-  ///
-  /// In en, this message translates to:
-  /// **'yesterday'**
-  String get timeAgoYesterday;
-
-  /// No description provided for @timeAgoDays.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{1 day ago} other{{count} days ago}}'**
-  String timeAgoDays(int count);
-
-  /// No description provided for @timeAgoMonths.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, one{1 month ago} other{{count} months ago}}'**
-  String timeAgoMonths(int count);
+  /// **'View details'**
+  String get jobViewDetails;
 }
 
 class _AppLocalizationsDelegate
@@ -653,6 +888,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'BR':
+            return AppLocalizationsPtBr();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en':
