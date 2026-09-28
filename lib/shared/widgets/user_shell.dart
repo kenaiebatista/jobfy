@@ -36,7 +36,7 @@ class UserShell extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ProfileSidebar(profile: profile, current: current),
+        ProfileSidebar(profile: profile, current: current, onNavTap: () {  },),
         Expanded(child: builder(context, profile)),
       ],
     );

@@ -1,14 +1,14 @@
-import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/messages/data/repositories/messages_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/messages/domain/entities/conversation_entity.dart';
-import 'package:aplicativo_jobfy/features/messages/domain/usecases/get_conversations_usecase.dart';
-import 'package:aplicativo_jobfy/features/messages/domain/usecases/send_message_usecase.dart';
-import 'package:aplicativo_jobfy/features/messages/presentation/controllers/messages_controller.dart';
-import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
-import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/messages/data/repositories/messages_repository_impl.dart';
+import 'package:jobfy/features/messages/domain/entities/conversation_entity.dart';
+import 'package:jobfy/features/messages/domain/usecases/get_conversations_usecase.dart';
+import 'package:jobfy/features/messages/domain/usecases/send_message_usecase.dart';
+import 'package:jobfy/features/messages/presentation/controllers/messages_controller.dart';
+import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
+import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -58,7 +58,7 @@ class _MessagesPageState extends State<MessagesPage> {
     super.dispose();
   }
 
-  void _handleNav(BuildContext context, int index, bool isMobile) {
+  _handleNav(BuildContext context, int index, bool isMobile) {
     if (isMobile) {
       Navigator.pop(context);
     }
@@ -96,7 +96,7 @@ class _MessagesPageState extends State<MessagesPage> {
     final sidebar = ProfileSidebar(
       profile: profile,
       selectedIndex: 3,
-      onNavTap: (i) => _handleNav(context, i, isMobile),
+      onNavTap: _handleNav(context, 4, true), current: SidebarSection.messages,
     );
 
     return Scaffold(

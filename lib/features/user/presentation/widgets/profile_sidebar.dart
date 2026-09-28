@@ -17,7 +17,7 @@ class ProfileSidebar extends StatelessWidget {
   const ProfileSidebar({
     super.key,
     required this.profile,
-    required this.current,
+    required this.current, required void Function() onNavTap, int? selectedIndex,
   });
 
   List<({IconData icon, String label, SidebarSection section, String? route})> _navItems(
