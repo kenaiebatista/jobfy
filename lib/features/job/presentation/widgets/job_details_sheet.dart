@@ -4,6 +4,7 @@ import 'package:aplicativo_jobfy/features/job/presentation/controllers/job_contr
 import 'package:aplicativo_jobfy/features/job/presentation/utils/tempo_relativo.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_apply_button.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_tag.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobDetailsSheet extends StatelessWidget {
@@ -83,6 +84,7 @@ class _Content extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,9 +155,9 @@ class _Content extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Faixa salarial',
-                      style: TextStyle(
+                    Text(
+                      l10n.jobSalaryRangeLabel,
+                      style: const TextStyle(
                         fontSize: 12,
                         color: AppColors.textMuted,
                       ),
@@ -172,7 +174,7 @@ class _Content extends StatelessWidget {
                 ),
               ),
               Text(
-                'Publicada ${tempoRelativo(job.publicadaEm)}',
+                l10n.jobPublishedPrefix(tempoRelativo(l10n, job.publicadaEm)),
                 style: const TextStyle(
                   fontSize: 11.5,
                   color: AppColors.textMuted,
@@ -182,9 +184,9 @@ class _Content extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Sobre a vaga',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        Text(
+          l10n.jobAboutTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         const SizedBox(height: 8),
         Text(
@@ -196,9 +198,9 @@ class _Content extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
-          'Requisitos',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+        Text(
+          l10n.jobRequirementsTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
         const SizedBox(height: 8),
         ...job.requisitos.map(

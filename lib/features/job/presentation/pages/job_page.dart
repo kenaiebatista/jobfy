@@ -10,6 +10,7 @@ import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_card.dart
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_details_sheet.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/controllers/user_controller.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -59,6 +60,7 @@ class _JobPageState extends State<JobPage> {
     final ok = await _controller.candidatar(job.id);
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -67,8 +69,8 @@ class _JobPageState extends State<JobPage> {
           backgroundColor: ok ? AppColors.success : AppColors.danger,
           content: Text(
             ok
-                ? 'Candidatura enviada para ${job.empresa}!'
-                : 'Não foi possível enviar a candidatura.',
+                ? l10n.jobApplySuccessMessage(job.empresa)
+                : l10n.jobApplyErrorMessage,
           ),
         ),
       );
@@ -205,6 +207,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final semBorda = OutlineInputBorder(
       borderRadius: BorderRadius.circular(14),
       borderSide: BorderSide.none,
@@ -252,9 +255,9 @@ class _Header extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          const Text(
-            'Vagas',
-            style: TextStyle(
+          Text(
+            l10n.jobsPageTitle,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 26,
               fontWeight: FontWeight.bold,
@@ -262,7 +265,7 @@ class _Header extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            total == 1 ? '1 vaga para você' : '$total vagas para você',
+            l10n.jobsAvailableCount(total),
             style: const TextStyle(color: AppColors.textLight, fontSize: 13),
           ),
           const SizedBox(height: 16),
@@ -272,7 +275,7 @@ class _Header extends StatelessWidget {
             textInputAction: TextInputAction.search,
             style: const TextStyle(fontSize: 14),
             decoration: InputDecoration(
-              hintText: 'Cargo, empresa ou local',
+              hintText: l10n.jobsSearchHint,
               prefixIcon: const Icon(
                 Icons.search,
                 size: 20,
@@ -282,7 +285,7 @@ class _Header extends StatelessWidget {
                   ? null
                   : IconButton(
                       onPressed: onLimpar,
-                      tooltip: 'Limpar busca',
+                      tooltip: l10n.jobsSearchClearTooltip,
                       icon: const Icon(
                         Icons.close,
                         size: 18,
@@ -350,23 +353,24 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // ListView para o pull-to-refresh continuar funcionando sem resultados.
     return ListView(
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(32, 64, 32, 32),
-      children: const [
-        Icon(Icons.search_off, size: 56, color: AppColors.textMuted),
-        SizedBox(height: 16),
+      children: [
+        const Icon(Icons.search_off, size: 56, color: AppColors.textMuted),
+        const SizedBox(height: 16),
         Text(
-          'Nenhuma vaga encontrada',
+          l10n.jobsEmptyTitle,
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(
-          'Tente ajustar a busca ou os filtros.',
+          l10n.jobsEmptySubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+          style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
         ),
       ],
     );
@@ -380,6 +384,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -388,9 +393,9 @@ class _ErrorState extends StatelessWidget {
           children: [
             const Icon(Icons.error_outline, size: 56, color: AppColors.danger),
             const SizedBox(height: 16),
-            const Text(
-              'Erro ao carregar vagas.',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              l10n.jobsErrorTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 16),
             SizedBox(
@@ -405,7 +410,7 @@ class _ErrorState extends StatelessWidget {
                   ),
                   elevation: 0,
                 ),
-                child: const Text('Tentar novamente'),
+                child: Text(l10n.jobsRetryButton),
               ),
             ),
           ],

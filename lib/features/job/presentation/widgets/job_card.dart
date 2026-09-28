@@ -3,6 +3,7 @@ import 'package:aplicativo_jobfy/domain/entities/job_entity.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/utils/tempo_relativo.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_apply_button.dart';
 import 'package:aplicativo_jobfy/features/job/presentation/widgets/job_tag.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobCard extends StatelessWidget {
@@ -27,6 +28,7 @@ class JobCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -94,7 +96,7 @@ class JobCard extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: onSalvar,
-                      tooltip: salva ? 'Remover dos salvos' : 'Salvar vaga',
+                      tooltip: salva ? l10n.jobRemoveSaved : l10n.jobSaveJob,
                       visualDensity: VisualDensity.compact,
                       icon: Icon(
                         salva ? Icons.bookmark : Icons.bookmark_border,
@@ -133,7 +135,7 @@ class JobCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            tempoRelativo(job.publicadaEm),
+                            tempoRelativo(l10n, job.publicadaEm),
                             style: const TextStyle(
                               fontSize: 11,
                               color: AppColors.textMuted,

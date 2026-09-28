@@ -1,4 +1,5 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobApplyButton extends StatelessWidget {
@@ -19,6 +20,7 @@ class JobApplyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final desabilitado = candidatado || enviando;
 
     return SizedBox(
@@ -56,7 +58,7 @@ class JobApplyButton extends StatelessWidget {
                     const SizedBox(width: 6),
                   ],
                   Text(
-                    candidatado ? 'Candidatado' : 'Candidatar',
+                    candidatado ? l10n.jobAppliedLabel : l10n.jobApplyButtonLabel,
                     style: TextStyle(fontSize: fontSize),
                   ),
                 ],

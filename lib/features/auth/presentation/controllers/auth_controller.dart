@@ -4,6 +4,8 @@ import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
 
 enum AuthStatus { idle, loading, success, error }
 
+enum AuthError { invalidCredentials, registrationFailed }
+
 class AuthController extends ChangeNotifier {
   final AuthUsecase _authUsecase;
 
@@ -11,16 +13,16 @@ class AuthController extends ChangeNotifier {
 
   AuthStatus _status = AuthStatus.idle;
   UserEntity? _user;
-  String _errorMessage = '';
+  AuthError? _error;
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
-  String get errorMessage => _errorMessage;
+  AuthError? get error => _error;
   bool get isLoading => _status == AuthStatus.loading;
 
   Future<bool> login(String email, String senha) async {
     _status = AuthStatus.loading;
-    _errorMessage = '';
+    _error = null;
     notifyListeners();
 
     final user = await _authUsecase.login(email, senha);
@@ -31,7 +33,7 @@ class AuthController extends ChangeNotifier {
       return true;
     }
 
-    _errorMessage = 'Email ou senha inválidos.';
+    _error = AuthError.invalidCredentials;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
@@ -45,7 +47,7 @@ class AuthController extends ChangeNotifier {
     required String genero,
   }) async {
     _status = AuthStatus.loading;
-    _errorMessage = '';
+    _error = null;
     notifyListeners();
 
     final user = await _authUsecase.register(
@@ -63,7 +65,7 @@ class AuthController extends ChangeNotifier {
       return true;
     }
 
-    _errorMessage = 'Erro ao criar conta. Tente novamente.';
+    _error = AuthError.registrationFailed;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
@@ -77,7 +79,7 @@ class AuthController extends ChangeNotifier {
 
   void resetStatus() {
     _status = AuthStatus.idle;
-    _errorMessage = '';
+    _error = null;
     notifyListeners();
   }
 }

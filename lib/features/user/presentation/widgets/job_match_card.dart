@@ -1,5 +1,6 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobMatchCard extends StatefulWidget {
@@ -136,9 +137,9 @@ class _JobMatchCardState extends State<JobMatchCard> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Candidatar',
-                      style: TextStyle(fontSize: 12),
+                    child: Text(
+                      AppLocalizations.of(context)!.jobApplyButtonLabel,
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),

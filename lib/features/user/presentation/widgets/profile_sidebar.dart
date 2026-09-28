@@ -1,5 +1,6 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,16 +17,17 @@ class ProfileSidebar extends StatelessWidget {
     required this.onNavTap,
   });
 
-  static const _navItems = [
-    (icon: Icons.dashboard_outlined, label: 'Dashboard'),
-    (icon: Icons.work_outline, label: 'Vagas'),
-    (icon: Icons.description_outlined, label: 'Currículo'),
-    (icon: Icons.chat_bubble_outline, label: 'Mensagens'),
-    (icon: Icons.settings_outlined, label: 'Configurações'),
-  ];
+  List<({IconData icon, String label})> _navItems(AppLocalizations l10n) => [
+        (icon: Icons.dashboard_outlined, label: l10n.navDashboard),
+        (icon: Icons.work_outline, label: l10n.navJobs),
+        (icon: Icons.description_outlined, label: l10n.navResume),
+        (icon: Icons.chat_bubble_outline, label: l10n.navMessages),
+        (icon: Icons.settings_outlined, label: l10n.navSettings),
+      ];
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final initials = profile.nome.isNotEmpty
         ? profile.nome.trim().split(' ').take(2).map((w) => w[0]).join()
         : '?';
@@ -54,11 +56,11 @@ class ProfileSidebar extends StatelessWidget {
           ),
           Column(
             children: [
-              _buildProfile(initials),
+              _buildProfile(l10n, initials),
               const Divider(color: Colors.white12, height: 1),
-              Expanded(child: _buildNav()),
+              Expanded(child: _buildNav(l10n)),
               const Divider(color: Colors.white12, height: 1),
-              _buildLogout(context),
+              _buildLogout(context, l10n),
             ],
           ),
         ],
@@ -66,7 +68,7 @@ class ProfileSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildProfile(String initials) {
+  Widget _buildProfile(AppLocalizations l10n, String initials) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
       child: Column(
@@ -143,18 +145,19 @@ class ProfileSidebar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          _ProgressBar(percent: profile.perfilCompleto),
+          _ProgressBar(percent: profile.perfilCompleto, label: l10n.profileCompletion),
         ],
       ),
     );
   }
 
-  Widget _buildNav() {
+  Widget _buildNav(AppLocalizations l10n) {
+    final items = _navItems(l10n);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      itemCount: _navItems.length,
+      itemCount: items.length,
       itemBuilder: (context, i) {
-        final item = _navItems[i];
+        final item = items[i];
         final isSelected = selectedIndex == i;
         return _NavItem(
           icon: item.icon,
@@ -166,12 +169,12 @@ class ProfileSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildLogout(BuildContext context) {
+  Widget _buildLogout(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: _NavItem(
         icon: Icons.logout,
-        label: 'Sair',
+        label: l10n.navLogout,
         isSelected: false,
         isDanger: true,
         onTap: () => context.go('/'),
@@ -265,8 +268,9 @@ class _NavItemState extends State<_NavItem> {
 
 class _ProgressBar extends StatelessWidget {
   final int percent;
+  final String label;
 
-  const _ProgressBar({required this.percent});
+  const _ProgressBar({required this.percent, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -274,9 +278,9 @@ class _ProgressBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
-              'Perfil completo',
-              style: TextStyle(color: AppColors.textLight, fontSize: 11),
+            Text(
+              label,
+              style: const TextStyle(color: AppColors.textLight, fontSize: 11),
             ),
             const Spacer(),
             Text(

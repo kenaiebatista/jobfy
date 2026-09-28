@@ -2,6 +2,7 @@ import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/data/repositories/auth_repository_impl.dart';
 import 'package:aplicativo_jobfy/domain/usecases/auth_usecase.dart';
 import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:aplicativo_jobfy/shared/widgets/app_chip.dart';
 import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
@@ -68,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
     return ListenableBuilder(
       listenable: _authController,
       builder: (context, _) {
+        final l10n = AppLocalizations.of(context)!;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.all(32),
@@ -103,32 +105,32 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
               const SizedBox(height: 24),
-              const Text(
-                'Bem-vindo de volta',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Text(
+                l10n.loginWelcomeBack,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Insira suas credenciais para acessar.',
-                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+              Text(
+                l10n.loginSubtitle,
+                style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
               ),
               const SizedBox(height: 28),
               TextField(
                 controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'seu@email.com',
-                  prefixIcon: Icon(Icons.email_outlined, size: 18),
+                decoration: InputDecoration(
+                  labelText: l10n.emailLabel,
+                  hintText: l10n.emailHint,
+                  prefixIcon: const Icon(Icons.email_outlined, size: 18),
                 ),
               ),
               const SizedBox(height: 16),
               TextField(
                 controller: _senhaController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Senha',
-                  hintText: 'Mínimo 6 caracteres',
-                  prefixIcon: Icon(Icons.lock_outline, size: 18),
+                decoration: InputDecoration(
+                  labelText: l10n.passwordLabel,
+                  hintText: l10n.passwordHintMin6,
+                  prefixIcon: const Icon(Icons.lock_outline, size: 18),
                 ),
                 onSubmitted: (_) => _handleLogin(),
               ),
@@ -147,10 +149,10 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text('Lembre-me', style: TextStyle(fontSize: 13)),
+                  Text(l10n.rememberMe, style: const TextStyle(fontSize: 13)),
                 ],
               ),
-              if (_authController.errorMessage.isNotEmpty) ...[
+              if (_authController.error != null) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -164,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                       const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
                       const SizedBox(width: 8),
                       Text(
-                        _authController.errorMessage,
+                        l10n.authErrorInvalidCredentials,
                         style: const TextStyle(color: AppColors.danger, fontSize: 13),
                       ),
                     ],
@@ -194,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                             strokeWidth: 2,
                           ),
                         )
-                      : const Text('Entrar', style: TextStyle(fontSize: 15)),
+                      : Text(l10n.loginButton, style: const TextStyle(fontSize: 15)),
                 ),
               ),
               const SizedBox(height: 16),
@@ -207,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: GestureDetector(
                       onTap: () {},
                       child: Text(
-                        'Esqueceu a senha?',
+                        l10n.forgotPassword,
                         style: TextStyle(
                           fontSize: 12,
                           color: _hoverEsqueci ? AppColors.accent : AppColors.textMuted,
@@ -222,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: GestureDetector(
                       onTap: () => context.go('/register'),
                       child: Text(
-                        'Criar conta',
+                        l10n.createAccount,
                         style: TextStyle(
                           fontSize: 12,
                           color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
@@ -237,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: GestureDetector(
                       onTap: () => context.go('/company'),
                       child: Text(
-                        'Sou empresa',
+                        l10n.iAmCompany,
                         style: TextStyle(
                           fontSize: 12,
                           color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
@@ -261,6 +263,7 @@ class _LeftPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -289,8 +292,8 @@ class _LeftPanel extends StatelessWidget {
           padding: const EdgeInsets.all(48),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Row(
+            children: [
+              const Row(
                 children: [
                   Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
                   SizedBox(width: 10),
@@ -305,33 +308,33 @@ class _LeftPanel extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 64),
+              const SizedBox(height: 64),
               Text(
-                'Conecte-se ao\nseu próximo emprego.',
-                style: TextStyle(
+                l10n.loginHeroTitle,
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 38,
                   fontWeight: FontWeight.bold,
                   height: 1.25,
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
-                'A Jobfy conecta talentos a oportunidades reais.\nPublique suas habilidades, encontre vagas\npersonalizadas e acelere sua carreira\ncom inteligência.',
-                style: TextStyle(
+                l10n.loginHeroSubtitle,
+                style: const TextStyle(
                   color: AppColors.textLight,
                   fontSize: 15,
                   height: 1.7,
                 ),
               ),
-              SizedBox(height: 48),
+              const SizedBox(height: 48),
               Wrap(
                 spacing: 12,
                 runSpacing: 8,
                 children: [
-                  AppChip(icon: Icons.work_outline, label: 'Vagas personalizadas'),
-                  AppChip(icon: Icons.bolt_outlined, label: 'Match inteligente'),
-                  AppChip(icon: Icons.trending_up, label: 'Crescimento de carreira'),
+                  AppChip(icon: Icons.work_outline, label: l10n.chipCustomJobs),
+                  AppChip(icon: Icons.bolt_outlined, label: l10n.chipSmartMatch),
+                  AppChip(icon: Icons.trending_up, label: l10n.chipCareerGrowth),
                 ],
               ),
             ],

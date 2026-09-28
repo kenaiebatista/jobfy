@@ -1,5 +1,6 @@
 import 'package:aplicativo_jobfy/core/routes/app_router.dart';
 import 'package:aplicativo_jobfy/core/theme/app_theme.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,6 +17,8 @@ class JobfyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routerConfig: appRouter,
       theme: AppTheme.theme,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
