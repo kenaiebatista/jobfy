@@ -49,6 +49,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
         AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
         AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+        AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
         AuthErrorCode.network => l10n.authErrorNetwork,
       };
 

@@ -87,6 +87,9 @@ class AppLocalizationsPt extends AppLocalizations {
       'Erro ao criar conta. Tente novamente.';
 
   @override
+  String get authErrorEmailInUse => 'Este email já está cadastrado.';
+
+  @override
   String get authErrorNetwork =>
       'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
 
@@ -500,6 +503,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get authErrorRegistrationFailed =>
       'Erro ao criar conta. Tente novamente.';
+
+  @override
+  String get authErrorEmailInUse => 'Este email já está cadastrado.';
 
   @override
   String get authErrorNetwork =>

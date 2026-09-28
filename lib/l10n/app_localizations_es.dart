@@ -87,6 +87,9 @@ class AppLocalizationsEs extends AppLocalizations {
       'No se pudo crear la cuenta. Inténtalo de nuevo.';
 
   @override
+  String get authErrorEmailInUse => 'Este correo ya está registrado.';
+
+  @override
   String get authErrorNetwork =>
       'No se pudo conectar con el servidor. Inténtalo más tarde.';
 

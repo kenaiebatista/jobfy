@@ -87,6 +87,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not create your account. Please try again.';
 
   @override
+  String get authErrorEmailInUse => 'This email is already registered.';
+
+  @override
   String get authErrorNetwork =>
       'Could not reach the server. Please try again later.';
 

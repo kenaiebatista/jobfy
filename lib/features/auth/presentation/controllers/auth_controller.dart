@@ -8,7 +8,7 @@ enum AuthStatus { idle, loading, success, error }
 
 /// Machine-readable error codes. The presentation layer maps these to
 /// localized copy — see [AppLocalizations].
-enum AuthErrorCode { invalidCredentials, registrationFailed, network }
+enum AuthErrorCode { invalidCredentials, registrationFailed, emailInUse, network }
 
 class AuthController extends ChangeNotifier {
   final LoginUsecase _loginUsecase;
@@ -74,6 +74,10 @@ class AuthController extends ChangeNotifier {
         return true;
       }
       _errorCode = AuthErrorCode.registrationFailed;
+    } on ApiStatusException catch (e) {
+      _errorCode = e.statusCode == 409
+          ? AuthErrorCode.emailInUse
+          : AuthErrorCode.registrationFailed;
     } on ApiException {
       _errorCode = AuthErrorCode.network;
     }

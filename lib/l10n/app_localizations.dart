@@ -251,6 +251,12 @@ abstract class AppLocalizations {
   /// **'Could not create your account. Please try again.'**
   String get authErrorRegistrationFailed;
 
+  /// No description provided for @authErrorEmailInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered.'**
+  String get authErrorEmailInUse;
+
   /// No description provided for @authErrorNetwork.
   ///
   /// In en, this message translates to:
