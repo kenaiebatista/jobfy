@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:jobfy/core/database/database_service.dart';
 import 'package:jobfy/core/network/api_exception.dart';
 import 'auth_data_source.dart';
@@ -12,6 +13,7 @@ class AuthMysqlDataSource implements AuthDataSource {
     try {
       row = await DatabaseService.login(email, password);
     } catch (e) {
+      debugPrint('MySQL error (host ${DatabaseService.host}): $e');
       throw ApiUnreachableException(e.toString());
     }
     if (row == null) return null;
@@ -38,6 +40,7 @@ class AuthMysqlDataSource implements AuthDataSource {
     } on EmailAlreadyInUseException {
       throw const ApiStatusException(409, 'Email already registered.');
     } catch (e) {
+      debugPrint('MySQL error (host ${DatabaseService.host}): $e');
       throw ApiUnreachableException(e.toString());
     }
     return login(email, password);

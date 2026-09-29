@@ -3,7 +3,7 @@ import 'package:jobfy/core/network/api_client.dart';
 import '../../domain/entities/job_listing_entity.dart';
 import '../../domain/repositories/job_repository.dart';
 import '../datasources/job_data_source.dart';
-import '../datasources/job_fake_data_source.dart';
+import '../datasources/job_mysql_data_source.dart';
 import '../datasources/job_remote_data_source.dart';
 
 class JobRepositoryImpl implements JobRepository {
@@ -11,8 +11,8 @@ class JobRepositoryImpl implements JobRepository {
 
   JobRepositoryImpl([JobDataSource? dataSource])
       : _dataSource = dataSource ??
-            (AppConfig.useFakeBackend
-                ? JobFakeDataSource()
+            (AppConfig.useMysql
+                ? JobMysqlDataSource()
                 : JobRemoteDataSource(ApiClient()));
 
   @override

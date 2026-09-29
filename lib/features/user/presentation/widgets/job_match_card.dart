@@ -17,7 +17,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
 
   Color _matchColor(BuildContext context) {
     final colors = context.colors;
-    final p = widget.job.matchPercent;
+    final p = widget.job.matchPercent ?? 0;
     if (p >= 90) return colors.success;
     if (p >= 70) return colors.warning;
     return colors.textMuted;
@@ -92,6 +92,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     ],
                   ),
                 ),
+                if (widget.job.matchPercent != null)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(

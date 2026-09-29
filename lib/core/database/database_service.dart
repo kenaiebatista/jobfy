@@ -18,7 +18,7 @@ class DatabaseService {
   /// The PC's IP on the Wi-Fi network (run `ipconfig` and look at the
   /// "Wi-Fi" adapter). Used by Android phones on the same Wi-Fi; the
   /// emulator reaches it too. Update it whenever you change networks.
-  static const lanHost = '10.61.60.7';
+  static const lanHost = '192.168.1.9';
 
   /// Optional override without editing code: `--dart-define=DB_HOST=x.x.x.x`.
   static const _hostOverride = String.fromEnvironment('DB_HOST');
@@ -91,6 +91,35 @@ class DatabaseService {
       if (hash == null || !BCrypt.checkpw(password, hash)) return null;
 
       return row..remove('password_hash');
+    } finally {
+      await conn.close();
+    }
+  }
+
+  // Open jobs with the company name, already in the shape the app shows
+  // (column names match JobListingModel). [query] searches title/company,
+  // [location] searches the city.
+  static Future<List<Map<String, String?>>> getOpenJobs({
+    String? query,
+    String? location,
+  }) async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        "SELECT CAST(j.job_id AS CHAR) AS id, j.title, "
+        "c.company_name AS company, j.location, j.work_mode AS type, "
+        "CONCAT('R\$ ', FORMAT(j.salary_min, 0, 'de_DE'), ' – ', "
+        "FORMAT(j.salary_max, 0, 'de_DE')) AS salary, j.description "
+        "FROM jobs j JOIN companies c ON c.company_id = j.company_id "
+        "WHERE j.status = 'open' "
+        "AND (j.title LIKE :query OR c.company_name LIKE :query) "
+        "AND j.location LIKE :location "
+        "ORDER BY j.published_at DESC",
+        {'query': '%${query ?? ''}%', 'location': '%${location ?? ''}%'},
+      );
+
+      return result.rows.map((row) => row.assoc()).toList();
     } finally {
       await conn.close();
     }

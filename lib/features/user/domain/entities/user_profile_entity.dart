@@ -3,7 +3,8 @@ class JobMatchEntity {
   final String company;
   final String location;
   final String type;
-  final int matchPercent;
+  /// Null when there is no match score for this job (jobs from MySQL).
+  final int? matchPercent;
   final String salary;
 
   const JobMatchEntity({
@@ -11,7 +12,7 @@ class JobMatchEntity {
     required this.company,
     required this.location,
     required this.type,
-    required this.matchPercent,
+    this.matchPercent,
     required this.salary,
   });
 }

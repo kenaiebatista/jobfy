@@ -5,10 +5,13 @@ import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/settings/settings_controller.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
+import 'package:jobfy/features/user/data/datasources/user_fake_data_source.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
+import 'helpers/empty_job_data_source.dart';
 
 Widget _wrap(SettingsController settings, Widget home) {
   return MultiProvider(
@@ -16,7 +19,7 @@ Widget _wrap(SettingsController settings, Widget home) {
       ChangeNotifierProvider.value(value: settings),
       ChangeNotifierProvider(
         create: (_) => UserSessionController(
-          GetUserProfileUsecase(UserRepositoryImpl()),
+          GetUserProfileUsecase(UserRepositoryImpl(UserFakeDataSource(EmptyJobDataSource()))),
         ),
       ),
     ],

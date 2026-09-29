@@ -57,7 +57,7 @@ JobMatchEntity _jobMatchFromJson(Map<String, dynamic> json) => JobMatchEntity(
       company: json['company'] as String,
       location: json['location'] as String,
       type: json['type'] as String,
-      matchPercent: json['match_percent'] as int,
+      matchPercent: json['match_percent'] as int?,
       salary: json['salary'] as String,
     );
 

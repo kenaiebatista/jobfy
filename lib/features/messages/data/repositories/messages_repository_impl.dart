@@ -6,15 +6,15 @@ class MessagesRepositoryImpl implements MessagesRepository {
   final List<ConversationModel> _conversas = [
     const ConversationModel(
       id: 'conv_001',
-      nome: 'Nubank · Recrutamento',
-      subtitulo: 'Flutter Developer Senior',
+      nome: 'TechNova Soluções Digitais · RH',
+      subtitulo: 'Desenvolvedor(a) Flutter Pleno',
       online: true,
       naoLidas: 2,
       mensagens: [
         MessageEntity(
           id: 'm1',
           texto:
-              'Olá! Vimos seu perfil e gostaríamos de conversar sobre a vaga de Flutter Developer Senior.',
+              'Olá! Vimos seu perfil e gostaríamos de conversar sobre a vaga de Desenvolvedor(a) Flutter Pleno.',
           hora: '09:12',
           deUsuario: false,
         ),
@@ -41,14 +41,14 @@ class MessagesRepositoryImpl implements MessagesRepository {
     ),
     const ConversationModel(
       id: 'conv_002',
-      nome: 'iFood · RH',
-      subtitulo: 'Mobile Engineer',
+      nome: 'Verde Agro Analytics · RH',
+      subtitulo: 'Analista de Dados Júnior',
       online: false,
       naoLidas: 0,
       mensagens: [
         MessageEntity(
           id: 'm1',
-          texto: 'Boa tarde! Recebemos sua candidatura para Mobile Engineer.',
+          texto: 'Boa tarde! Recebemos sua candidatura para Analista de Dados Júnior.',
           hora: 'ontem',
           deUsuario: false,
         ),
@@ -68,8 +68,8 @@ class MessagesRepositoryImpl implements MessagesRepository {
     ),
     const ConversationModel(
       id: 'conv_003',
-      nome: 'PicPay · Talent Acquisition',
-      subtitulo: 'Dart/Flutter Developer',
+      nome: 'Pixel Criativo Studio · Talentos',
+      subtitulo: 'Designer UX/UI',
       online: true,
       naoLidas: 0,
       mensagens: [
