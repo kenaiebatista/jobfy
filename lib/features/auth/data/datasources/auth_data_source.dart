@@ -1,3 +1,4 @@
+import '../../domain/entities/registration_entity.dart';
 import '../models/user_model.dart';
 
 /// Where [AuthRepositoryImpl] gets its data from. [AuthRemoteDataSource] is
@@ -7,13 +8,10 @@ import '../models/user_model.dart';
 abstract class AuthDataSource {
   Future<UserModel?> login(String email, String password);
 
-  Future<UserModel?> register({
-    required String name,
-    required String email,
-    required String cpf,
-    required String password,
-    required String gender,
-  });
+  Future<UserModel?> register(RegistrationEntity data);
+
+  /// Names in the skills catalog, offered as choices in the sign-up form.
+  Future<List<String>> getSkillNames();
 
   Future<void> logout();
 }

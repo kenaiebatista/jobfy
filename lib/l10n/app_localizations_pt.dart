@@ -170,7 +170,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get statApplications => 'Candidaturas';
 
   @override
-  String get statApplicationsSub => 'este mês';
+  String get statApplicationsSub => 'no total';
 
   @override
   String get statMatchScore => 'Match Score';
@@ -420,6 +420,152 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get jobViewDetails => 'Ver detalhes';
+
+  @override
+  String get authErrorCpfInUse => 'Este CPF já está cadastrado.';
+
+  @override
+  String get registerSectionPersonal => 'Dados pessoais';
+
+  @override
+  String get registerSectionSkills => 'Habilidades';
+
+  @override
+  String get registerSectionExperience => 'Experiência';
+
+  @override
+  String get registerSkillsHint =>
+      'Toque nas habilidades que você tem e escolha o seu nível.';
+
+  @override
+  String get registerSkillsLoadError =>
+      'Não foi possível carregar a lista de habilidades.';
+
+  @override
+  String get otherSkillHint => 'Outra habilidade...';
+
+  @override
+  String get phoneLabel => 'Telefone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Data de nascimento';
+
+  @override
+  String get educationLevelLabel => 'Escolaridade';
+
+  @override
+  String get optionalSuffix => '(opcional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Ensino fundamental (incompleto)';
+
+  @override
+  String get educationElementaryComplete => 'Ensino fundamental (completo)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'Ensino médio (incompleto)';
+
+  @override
+  String get educationHighSchoolComplete => 'Ensino médio (completo)';
+
+  @override
+  String get educationTechnical => 'Curso técnico';
+
+  @override
+  String get educationBachelorIncomplete => 'Ensino superior (incompleto)';
+
+  @override
+  String get educationBachelorComplete => 'Ensino superior (completo)';
+
+  @override
+  String get educationPostgraduate => 'Pós-graduação';
+
+  @override
+  String get skillLevelBeginner => 'Iniciante';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediário';
+
+  @override
+  String get skillLevelAdvanced => 'Avançado';
+
+  @override
+  String get addExperience => 'Adicionar experiência';
+
+  @override
+  String get noExperiencesYet =>
+      'Nenhuma experiência adicionada. Trabalho voluntário também conta!';
+
+  @override
+  String get experienceJobTitleLabel => 'Cargo';
+
+  @override
+  String get experienceCompanyLabel => 'Empresa';
+
+  @override
+  String get experienceDescriptionLabel => 'O que você fazia?';
+
+  @override
+  String get experienceStartLabel => 'Início';
+
+  @override
+  String get experienceEndLabel => 'Fim';
+
+  @override
+  String get experienceCurrentJob => 'Trabalho aqui atualmente';
+
+  @override
+  String get experiencePresent => 'Atual';
+
+  @override
+  String get dialogCancel => 'Cancelar';
+
+  @override
+  String get dialogAdd => 'Adicionar';
+
+  @override
+  String get fieldRequired => 'Campo obrigatório';
+
+  @override
+  String get emailInvalid => 'Digite um email válido';
+
+  @override
+  String get passwordTooShort => 'Use pelo menos 6 caracteres';
+
+  @override
+  String get cpfInvalid => 'O CPF deve ter 11 dígitos';
+
+  @override
+  String get experienceDatesInvalid =>
+      'A data de fim não pode ser antes da data de início';
+
+  @override
+  String get statSkills => 'Habilidades';
+
+  @override
+  String get statSkillsSub => 'cadastradas';
+
+  @override
+  String get statExperiences => 'Experiências';
+
+  @override
+  String get statExperiencesSub => 'no seu currículo';
+
+  @override
+  String get personalInfoTitle => 'Dados pessoais';
+
+  @override
+  String get notInformed => 'Não informado';
+
+  @override
+  String get noSkillsYet => 'Nenhuma habilidade cadastrada ainda.';
+
+  @override
+  String get noRecentActivity =>
+      'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -588,7 +734,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get statApplications => 'Candidaturas';
 
   @override
-  String get statApplicationsSub => 'este mês';
+  String get statApplicationsSub => 'no total';
 
   @override
   String get statMatchScore => 'Match Score';
@@ -838,4 +984,150 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get jobViewDetails => 'Ver detalhes';
+
+  @override
+  String get authErrorCpfInUse => 'Este CPF já está cadastrado.';
+
+  @override
+  String get registerSectionPersonal => 'Dados pessoais';
+
+  @override
+  String get registerSectionSkills => 'Habilidades';
+
+  @override
+  String get registerSectionExperience => 'Experiência';
+
+  @override
+  String get registerSkillsHint =>
+      'Toque nas habilidades que você tem e escolha o seu nível.';
+
+  @override
+  String get registerSkillsLoadError =>
+      'Não foi possível carregar a lista de habilidades.';
+
+  @override
+  String get otherSkillHint => 'Outra habilidade...';
+
+  @override
+  String get phoneLabel => 'Telefone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Data de nascimento';
+
+  @override
+  String get educationLevelLabel => 'Escolaridade';
+
+  @override
+  String get optionalSuffix => '(opcional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Ensino fundamental (incompleto)';
+
+  @override
+  String get educationElementaryComplete => 'Ensino fundamental (completo)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'Ensino médio (incompleto)';
+
+  @override
+  String get educationHighSchoolComplete => 'Ensino médio (completo)';
+
+  @override
+  String get educationTechnical => 'Curso técnico';
+
+  @override
+  String get educationBachelorIncomplete => 'Ensino superior (incompleto)';
+
+  @override
+  String get educationBachelorComplete => 'Ensino superior (completo)';
+
+  @override
+  String get educationPostgraduate => 'Pós-graduação';
+
+  @override
+  String get skillLevelBeginner => 'Iniciante';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediário';
+
+  @override
+  String get skillLevelAdvanced => 'Avançado';
+
+  @override
+  String get addExperience => 'Adicionar experiência';
+
+  @override
+  String get noExperiencesYet =>
+      'Nenhuma experiência adicionada. Trabalho voluntário também conta!';
+
+  @override
+  String get experienceJobTitleLabel => 'Cargo';
+
+  @override
+  String get experienceCompanyLabel => 'Empresa';
+
+  @override
+  String get experienceDescriptionLabel => 'O que você fazia?';
+
+  @override
+  String get experienceStartLabel => 'Início';
+
+  @override
+  String get experienceEndLabel => 'Fim';
+
+  @override
+  String get experienceCurrentJob => 'Trabalho aqui atualmente';
+
+  @override
+  String get experiencePresent => 'Atual';
+
+  @override
+  String get dialogCancel => 'Cancelar';
+
+  @override
+  String get dialogAdd => 'Adicionar';
+
+  @override
+  String get fieldRequired => 'Campo obrigatório';
+
+  @override
+  String get emailInvalid => 'Digite um email válido';
+
+  @override
+  String get passwordTooShort => 'Use pelo menos 6 caracteres';
+
+  @override
+  String get cpfInvalid => 'O CPF deve ter 11 dígitos';
+
+  @override
+  String get experienceDatesInvalid =>
+      'A data de fim não pode ser antes da data de início';
+
+  @override
+  String get statSkills => 'Habilidades';
+
+  @override
+  String get statSkillsSub => 'cadastradas';
+
+  @override
+  String get statExperiences => 'Experiências';
+
+  @override
+  String get statExperiencesSub => 'no seu currículo';
+
+  @override
+  String get personalInfoTitle => 'Dados pessoais';
+
+  @override
+  String get notInformed => 'Não informado';
+
+  @override
+  String get noSkillsYet => 'Nenhuma habilidade cadastrada ainda.';
+
+  @override
+  String get noRecentActivity =>
+      'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
 }

@@ -46,7 +46,13 @@ class UserFakeDataSource implements UserDataSource {
       applications: 12,
       matchScore: 89,
       profileViews: 234,
-      skills: const ['Flutter', 'Dart', 'Firebase', 'UI/UX', 'REST APIs'],
+      skills: const [
+        UserSkillEntity(name: 'Flutter', level: SkillLevel.advanced),
+        UserSkillEntity(name: 'Dart', level: SkillLevel.advanced),
+        UserSkillEntity(name: 'Firebase', level: SkillLevel.intermediate),
+        UserSkillEntity(name: 'UI/UX'),
+        UserSkillEntity(name: 'REST APIs', level: SkillLevel.intermediate),
+      ],
       recommendedJobs: recommendedJobs,
       activities: const [
         ActivityEntity(

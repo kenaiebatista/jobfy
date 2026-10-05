@@ -23,9 +23,9 @@ class JobMysqlDataSource implements JobDataSource {
         .toList();
   }
 
-  // The app has no real signed-in user id yet (screens use 'usr_001'), so
-  // the application can't be saved to the `applications` table. The button
-  // only marks the job as applied on screen for now.
+  // Not saved to the `applications` table yet: the button only marks the
+  // job as applied on screen. (The signed-in user's id is available from
+  // UserSessionController, so this is the next step.)
   @override
   Future<void> applyToJob(String jobId) async {}
 }

@@ -20,7 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    context.read<UserSessionController>().ensureLoaded('usr_001');
+    context.read<UserSessionController>().ensureLoaded();
   }
 
   @override

@@ -1,9 +1,11 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 /// Which part of the authenticated app is currently showing, so the
 /// sidebar (shared across the dashboard, jobs and settings screens) can
@@ -132,6 +134,9 @@ class ProfileSidebar extends StatelessWidget {
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
+          // Role and location are hidden when the profile doesn't have them
+          // (e.g. no experience registered yet).
+          if (profile.role.isNotEmpty)
           Text(
             profile.role,
             style: const TextStyle(color: AppColors.textLight, fontSize: 11),
@@ -139,6 +144,7 @@ class ProfileSidebar extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
+          if (profile.location.isNotEmpty)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             spacing: 3,
@@ -196,7 +202,11 @@ class ProfileSidebar extends StatelessWidget {
             label: l10n.navLogout,
             isSelected: false,
             isDanger: true,
-            onTap: () => context.go('/'),
+            onTap: () {
+              final session = context.read<UserSessionController>();
+              context.go('/');
+              session.clear();
+            },
           ),
         ],
       ),

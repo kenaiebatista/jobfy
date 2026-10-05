@@ -1,3 +1,4 @@
+import '../../domain/entities/registration_entity.dart';
 import 'auth_data_source.dart';
 import '../models/user_model.dart';
 
@@ -38,23 +39,21 @@ class AuthFakeDataSource implements AuthDataSource {
   }
 
   @override
-  Future<UserModel?> register({
-    required String name,
-    required String email,
-    required String cpf,
-    required String password,
-    required String gender,
-  }) async {
+  Future<UserModel?> register(RegistrationEntity data) async {
     await Future.delayed(const Duration(milliseconds: 800));
     _currentUser = UserModel(
       id: 'usr_${DateTime.now().millisecondsSinceEpoch}',
-      name: name,
-      email: email,
-      cpf: cpf,
-      gender: gender,
+      name: data.name,
+      email: data.email,
+      cpf: data.cpf,
+      gender: data.gender.name,
     );
     return _currentUser;
   }
+
+  @override
+  Future<List<String>> getSkillNames() async =>
+      const ['Communication', 'Dart', 'English', 'Flutter', 'Git', 'SQL'];
 
   @override
   Future<void> logout() async {

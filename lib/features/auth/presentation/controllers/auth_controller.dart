@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:jobfy/core/network/api_exception.dart';
+import '../../domain/entities/registration_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
@@ -8,7 +9,13 @@ enum AuthStatus { idle, loading, success, error }
 
 /// Machine-readable error codes. The presentation layer maps these to
 /// localized copy — see [AppLocalizations].
-enum AuthErrorCode { invalidCredentials, registrationFailed, emailInUse, network }
+enum AuthErrorCode {
+  invalidCredentials,
+  registrationFailed,
+  emailInUse,
+  cpfInUse,
+  network,
+}
 
 class AuthController extends ChangeNotifier {
   final LoginUsecase _loginUsecase;
@@ -48,25 +55,13 @@ class AuthController extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> register({
-    required String name,
-    required String email,
-    required String cpf,
-    required String password,
-    required String gender,
-  }) async {
+  Future<bool> register(RegistrationEntity data) async {
     _status = AuthStatus.loading;
     _errorCode = null;
     notifyListeners();
 
     try {
-      final user = await _registerUsecase(
-        name: name,
-        email: email,
-        cpf: cpf,
-        password: password,
-        gender: gender,
-      );
+      final user = await _registerUsecase(data);
       if (user != null) {
         _user = user;
         _status = AuthStatus.success;
@@ -75,9 +70,12 @@ class AuthController extends ChangeNotifier {
       }
       _errorCode = AuthErrorCode.registrationFailed;
     } on ApiStatusException catch (e) {
-      _errorCode = e.statusCode == 409
-          ? AuthErrorCode.emailInUse
-          : AuthErrorCode.registrationFailed;
+      // 409 = duplicate; the message says which unique field ('email'/'cpf').
+      _errorCode = e.statusCode != 409
+          ? AuthErrorCode.registrationFailed
+          : e.message == 'cpf'
+              ? AuthErrorCode.cpfInUse
+              : AuthErrorCode.emailInUse;
     } on ApiException {
       _errorCode = AuthErrorCode.network;
     }

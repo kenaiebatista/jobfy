@@ -169,7 +169,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statApplications => 'Applications';
 
   @override
-  String get statApplicationsSub => 'this month';
+  String get statApplicationsSub => 'in total';
 
   @override
   String get statMatchScore => 'Match score';
@@ -416,4 +416,149 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get jobViewDetails => 'View details';
+
+  @override
+  String get authErrorCpfInUse => 'This CPF is already registered.';
+
+  @override
+  String get registerSectionPersonal => 'Personal data';
+
+  @override
+  String get registerSectionSkills => 'Skills';
+
+  @override
+  String get registerSectionExperience => 'Experience';
+
+  @override
+  String get registerSkillsHint =>
+      'Tap the skills you have and choose your level.';
+
+  @override
+  String get registerSkillsLoadError => 'Could not load the skills list.';
+
+  @override
+  String get otherSkillHint => 'Other skill...';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Date of birth';
+
+  @override
+  String get educationLevelLabel => 'Education';
+
+  @override
+  String get optionalSuffix => '(optional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Elementary school (incomplete)';
+
+  @override
+  String get educationElementaryComplete => 'Elementary school (complete)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'High school (incomplete)';
+
+  @override
+  String get educationHighSchoolComplete => 'High school (complete)';
+
+  @override
+  String get educationTechnical => 'Technical course';
+
+  @override
+  String get educationBachelorIncomplete => 'Bachelor\'s degree (incomplete)';
+
+  @override
+  String get educationBachelorComplete => 'Bachelor\'s degree (complete)';
+
+  @override
+  String get educationPostgraduate => 'Postgraduate';
+
+  @override
+  String get skillLevelBeginner => 'Beginner';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediate';
+
+  @override
+  String get skillLevelAdvanced => 'Advanced';
+
+  @override
+  String get addExperience => 'Add experience';
+
+  @override
+  String get noExperiencesYet =>
+      'No experience added. Volunteer work counts too!';
+
+  @override
+  String get experienceJobTitleLabel => 'Job title';
+
+  @override
+  String get experienceCompanyLabel => 'Company';
+
+  @override
+  String get experienceDescriptionLabel => 'What did you do?';
+
+  @override
+  String get experienceStartLabel => 'Start';
+
+  @override
+  String get experienceEndLabel => 'End';
+
+  @override
+  String get experienceCurrentJob => 'I currently work here';
+
+  @override
+  String get experiencePresent => 'Present';
+
+  @override
+  String get dialogCancel => 'Cancel';
+
+  @override
+  String get dialogAdd => 'Add';
+
+  @override
+  String get fieldRequired => 'Required field';
+
+  @override
+  String get emailInvalid => 'Enter a valid email';
+
+  @override
+  String get passwordTooShort => 'Use at least 6 characters';
+
+  @override
+  String get cpfInvalid => 'The CPF must have 11 digits';
+
+  @override
+  String get experienceDatesInvalid =>
+      'The end date can\'t be before the start date';
+
+  @override
+  String get statSkills => 'Skills';
+
+  @override
+  String get statSkillsSub => 'registered';
+
+  @override
+  String get statExperiences => 'Experiences';
+
+  @override
+  String get statExperiencesSub => 'on your resume';
+
+  @override
+  String get personalInfoTitle => 'Personal data';
+
+  @override
+  String get notInformed => 'Not informed';
+
+  @override
+  String get noSkillsYet => 'No skills registered yet.';
+
+  @override
+  String get noRecentActivity =>
+      'No recent activity. Apply to a job to see it here.';
 }

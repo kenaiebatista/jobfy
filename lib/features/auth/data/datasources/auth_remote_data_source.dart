@@ -1,4 +1,5 @@
 import 'package:jobfy/core/network/api_client.dart';
+import '../../domain/entities/registration_entity.dart';
 import 'auth_data_source.dart';
 import '../models/user_model.dart';
 
@@ -28,19 +29,29 @@ class AuthRemoteDataSource implements AuthDataSource {
   }
 
   @override
-  Future<UserModel?> register({
-    required String name,
-    required String email,
-    required String cpf,
-    required String password,
-    required String gender,
-  }) async {
+  Future<UserModel?> register(RegistrationEntity data) async {
     final json = await _client.post('/auth/register', body: {
-      'name': name,
-      'email': email,
-      'cpf': cpf,
-      'password': password,
-      'gender': gender,
+      'name': data.name,
+      'email': data.email,
+      'cpf': data.cpf,
+      'password': data.password,
+      'gender': data.gender.name,
+      'phone': data.phone,
+      'birth_date': data.birthDate?.toIso8601String().substring(0, 10),
+      'education_level': data.educationLevel?.dbValue,
+      'skills': [
+        for (final s in data.skills) {'name': s.name, 'level': s.level.name},
+      ],
+      'experiences': [
+        for (final e in data.experiences)
+          {
+            'job_title': e.jobTitle,
+            'company_name': e.companyName,
+            'description': e.description,
+            'start_date': e.startDate.toIso8601String().substring(0, 10),
+            'end_date': e.endDate?.toIso8601String().substring(0, 10),
+          },
+      ],
     }) as Map<String, dynamic>?;
     if (json == null) return null;
 
@@ -48,6 +59,13 @@ class AuthRemoteDataSource implements AuthDataSource {
     if (token != null) _client.setAuthToken(token);
 
     return UserModel.fromJson(json['user'] as Map<String, dynamic>);
+  }
+
+  /// Expected contract: GET /skills -> ["Flutter", "SQL", ...]
+  @override
+  Future<List<String>> getSkillNames() async {
+    final json = await _client.get('/skills') as List;
+    return json.cast<String>();
   }
 
   @override

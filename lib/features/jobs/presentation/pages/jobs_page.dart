@@ -34,7 +34,7 @@ class _JobsPageState extends State<JobsPage> {
       ApplyToJobUsecase(repo),
     );
     _controller.search();
-    context.read<UserSessionController>().ensureLoaded('usr_001');
+    context.read<UserSessionController>().ensureLoaded();
   }
 
   @override

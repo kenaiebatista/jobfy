@@ -11,6 +11,12 @@ class EmailAlreadyInUseException implements Exception {
   const EmailAlreadyInUseException();
 }
 
+/// Thrown by [DatabaseService.registerUser] when the CPF is already taken
+/// (`uq_users_cpf`).
+class CpfAlreadyInUseException implements Exception {
+  const CpfAlreadyInUseException();
+}
+
 class DatabaseService {
   /// MySQL error code for a duplicate key on a UNIQUE constraint.
   static const _duplicateEntry = 1062;
@@ -18,7 +24,7 @@ class DatabaseService {
   /// The PC's IP on the Wi-Fi network (run `ipconfig` and look at the
   /// "Wi-Fi" adapter). Used by Android phones on the same Wi-Fi; the
   /// emulator reaches it too. Update it whenever you change networks.
-  static const lanHost = '192.168.1.9';
+  static const lanHost = '10.61.60.7';
 
   /// Optional override without editing code: `--dart-define=DB_HOST=x.x.x.x`.
   static const _hostOverride = String.fromEnvironment('DB_HOST');
@@ -42,28 +48,178 @@ class DatabaseService {
     return conn;
   }
 
-  /// Creates the `accounts` row (password hashed with bcrypt) and its
-  /// `users` profile in one transaction, so a failure never leaves an
-  /// account without a profile.
-  static Future<void> registerUser(String name, String email, String password) async {
+  /// Creates the whole sign-up in one transaction, so a failure never
+  /// leaves half a user behind:
+  ///   1. `accounts` (password hashed with bcrypt)
+  ///   2. `users` (the profile, linked by account_id)
+  ///   3. `skills` (only names that don't exist yet) + `user_skills`
+  ///   4. `experiences`
+  /// Dates are 'YYYY-MM-DD' strings; levels use the database ENUM values.
+  static Future<void> registerUser({
+    required String name,
+    required String email,
+    required String password,
+    required String cpf,
+    required String gender,
+    String? phone,
+    String? birthDate,
+    String? educationLevel,
+    List<({String name, String level})> skills = const [],
+    List<
+      ({
+        String jobTitle,
+        String companyName,
+        String? description,
+        String startDate,
+        String? endDate,
+      })
+    >
+    experiences = const [],
+  }) async {
     final conn = await connect();
 
     try {
       await conn.transactional((conn) async {
-        final result = await conn.execute(
+        final account = await conn.execute(
           "INSERT INTO accounts (email, password_hash, account_type) "
           "VALUES (:email, :hash, 'user')",
           {'email': email, 'hash': BCrypt.hashpw(password, BCrypt.gensalt())},
         );
 
-        await conn.execute(
-          'INSERT INTO users (account_id, name) VALUES (:id, :name)',
-          {'id': result.lastInsertID.toInt(), 'name': name},
+        final user = await conn.execute(
+          'INSERT INTO users (account_id, name, cpf, gender, birth_date, '
+          'phone, education_level) '
+          'VALUES (:account, :name, :cpf, :gender, :birth, :phone, :education)',
+          {
+            'account': account.lastInsertID.toInt(),
+            'name': name,
+            'cpf': cpf,
+            'gender': gender,
+            'birth': birthDate,
+            'phone': phone,
+            'education': educationLevel,
+          },
         );
+        final userId = user.lastInsertID.toInt();
+
+        for (final skill in skills) {
+          // Reuses the existing skill if the name is already registered;
+          // LAST_INSERT_ID(skill_id) makes lastInsertID return its id.
+          final row = await conn.execute(
+            'INSERT INTO skills (name) VALUES (:name) '
+            'ON DUPLICATE KEY UPDATE skill_id = LAST_INSERT_ID(skill_id)',
+            {'name': skill.name},
+          );
+          await conn.execute(
+            'INSERT INTO user_skills (user_id, skill_id, level) '
+            'VALUES (:user, :skill, :level)',
+            {
+              'user': userId,
+              'skill': row.lastInsertID.toInt(),
+              'level': skill.level,
+            },
+          );
+        }
+
+        for (final exp in experiences) {
+          await conn.execute(
+            'INSERT INTO experiences (user_id, job_title, company_name, '
+            'description, start_date, end_date) '
+            'VALUES (:user, :title, :company, :description, :start, :end)',
+            {
+              'user': userId,
+              'title': exp.jobTitle,
+              'company': exp.companyName,
+              'description': exp.description,
+              'start': exp.startDate,
+              'end': exp.endDate,
+            },
+          );
+        }
       });
     } on MySQLServerException catch (e) {
-      if (e.errorCode == _duplicateEntry) throw const EmailAlreadyInUseException();
+      if (e.errorCode == _duplicateEntry) {
+        if (e.message.contains('uq_users_cpf')) {
+          throw const CpfAlreadyInUseException();
+        }
+        throw const EmailAlreadyInUseException();
+      }
       rethrow;
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Names of every skill in the `skills` table, for the sign-up form.
+  static Future<List<String>> getSkillNames() async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute('SELECT name FROM skills ORDER BY name');
+      return [for (final row in result.rows) row.colAt(0) ?? ''];
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Everything the dashboard shows about one user, read in a single
+  /// connection. Returns null when [userId] doesn't exist.
+  static Future<
+    ({
+      Map<String, String?> user,
+      List<Map<String, String?>> skills,
+      List<Map<String, String?>> experiences,
+      int applications,
+      List<Map<String, String?>> recentApplications,
+    })?
+  >
+  getUserProfile(int userId) async {
+    final conn = await connect();
+
+    try {
+      final user = await conn.execute(
+        'SELECT u.*, a.email FROM users u '
+        'JOIN accounts a ON a.account_id = u.account_id '
+        'WHERE u.user_id = :id',
+        {'id': userId},
+      );
+      if (user.rows.isEmpty) return null;
+
+      final skills = await conn.execute(
+        'SELECT s.name, us.level FROM user_skills us '
+        'JOIN skills s ON s.skill_id = us.skill_id '
+        'WHERE us.user_id = :id ORDER BY s.name',
+        {'id': userId},
+      );
+
+      // Current job (end_date NULL) first, then the most recent ones.
+      final experiences = await conn.execute(
+        'SELECT job_title, company_name, description, start_date, end_date '
+        'FROM experiences WHERE user_id = :id '
+        'ORDER BY end_date IS NULL DESC, start_date DESC',
+        {'id': userId},
+      );
+
+      final count = await conn.execute(
+        'SELECT COUNT(*) FROM applications WHERE user_id = :id',
+        {'id': userId},
+      );
+
+      final recent = await conn.execute(
+        'SELECT j.title, c.company_name, ap.applied_at FROM applications ap '
+        'JOIN jobs j ON j.job_id = ap.job_id '
+        'JOIN companies c ON c.company_id = j.company_id '
+        'WHERE ap.user_id = :id ORDER BY ap.applied_at DESC LIMIT 5',
+        {'id': userId},
+      );
+
+      return (
+        user: user.rows.first.assoc(),
+        skills: [for (final r in skills.rows) r.assoc()],
+        experiences: [for (final r in experiences.rows) r.assoc()],
+        applications: int.parse(count.rows.first.colAt(0) ?? '0'),
+        recentApplications: [for (final r in recent.rows) r.assoc()],
+      );
     } finally {
       await conn.close();
     }
@@ -71,7 +227,10 @@ class DatabaseService {
 
   // Returns the account row joined with its user profile (columns from
   // `accounts` + `users`), or null if the email/password don't match.
-  static Future<Map<String, String?>?> login(String email, String password) async {
+  static Future<Map<String, String?>?> login(
+    String email,
+    String password,
+  ) async {
     final conn = await connect();
 
     try {

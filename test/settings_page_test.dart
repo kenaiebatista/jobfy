@@ -20,7 +20,7 @@ Widget _wrap(SettingsController settings, Widget home) {
       ChangeNotifierProvider(
         create: (_) => UserSessionController(
           GetUserProfileUsecase(UserRepositoryImpl(UserFakeDataSource(EmptyJobDataSource()))),
-        ),
+        )..start('usr_001'),
       ),
     ],
     child: MaterialApp(

@@ -1,5 +1,6 @@
 import 'package:jobfy/core/config/app_config.dart';
 import 'package:jobfy/core/network/api_client.dart';
+import '../../domain/entities/registration_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_data_source.dart';
@@ -24,21 +25,12 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<UserEntity?> register({
-    required String name,
-    required String email,
-    required String cpf,
-    required String password,
-    required String gender,
-  }) {
-    return _dataSource.register(
-      name: name,
-      email: email,
-      cpf: cpf,
-      password: password,
-      gender: gender,
-    );
+  Future<UserEntity?> register(RegistrationEntity data) {
+    return _dataSource.register(data);
   }
+
+  @override
+  Future<List<String>> getSkillNames() => _dataSource.getSkillNames();
 
   @override
   Future<void> logout() => _dataSource.logout();

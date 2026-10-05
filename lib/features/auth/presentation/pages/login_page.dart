@@ -1,3 +1,4 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
@@ -12,6 +13,7 @@ import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -50,13 +52,17 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text.trim(),
       _passwordController.text,
     );
-    if (ok && mounted) context.go('/user');
+    if (ok && mounted) {
+      context.read<UserSessionController>().start(_authController.user!.id);
+      context.go('/user');
+    }
   }
 
   String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
         AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
         AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
         AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
+        AuthErrorCode.cpfInUse => l10n.authErrorCpfInUse,
         AuthErrorCode.network => l10n.authErrorNetwork,
       };
 

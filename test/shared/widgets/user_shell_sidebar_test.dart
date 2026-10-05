@@ -24,7 +24,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => UserSessionController(
             GetUserProfileUsecase(UserRepositoryImpl(UserFakeDataSource(EmptyJobDataSource()))),
-          ),
+          )..start('usr_001'),
         ),
         ChangeNotifierProvider(create: (_) => SettingsController()),
       ],

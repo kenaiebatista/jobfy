@@ -410,7 +410,7 @@ abstract class AppLocalizations {
   /// No description provided for @statApplicationsSub.
   ///
   /// In en, this message translates to:
-  /// **'this month'**
+  /// **'in total'**
   String get statApplicationsSub;
 
   /// No description provided for @statMatchScore.
@@ -874,6 +874,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View details'**
   String get jobViewDetails;
+
+  /// No description provided for @authErrorCpfInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This CPF is already registered.'**
+  String get authErrorCpfInUse;
+
+  /// No description provided for @registerSectionPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal data'**
+  String get registerSectionPersonal;
+
+  /// No description provided for @registerSectionSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get registerSectionSkills;
+
+  /// No description provided for @registerSectionExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get registerSectionExperience;
+
+  /// No description provided for @registerSkillsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the skills you have and choose your level.'**
+  String get registerSkillsHint;
+
+  /// No description provided for @registerSkillsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the skills list.'**
+  String get registerSkillsLoadError;
+
+  /// No description provided for @otherSkillHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Other skill...'**
+  String get otherSkillHint;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'(00) 00000-0000'**
+  String get phoneHint;
+
+  /// No description provided for @birthDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get birthDateLabel;
+
+  /// No description provided for @educationLevelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get educationLevelLabel;
+
+  /// No description provided for @optionalSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'(optional)'**
+  String get optionalSuffix;
+
+  /// No description provided for @educationElementaryIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Elementary school (incomplete)'**
+  String get educationElementaryIncomplete;
+
+  /// No description provided for @educationElementaryComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Elementary school (complete)'**
+  String get educationElementaryComplete;
+
+  /// No description provided for @educationHighSchoolIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'High school (incomplete)'**
+  String get educationHighSchoolIncomplete;
+
+  /// No description provided for @educationHighSchoolComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'High school (complete)'**
+  String get educationHighSchoolComplete;
+
+  /// No description provided for @educationTechnical.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical course'**
+  String get educationTechnical;
+
+  /// No description provided for @educationBachelorIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor\'s degree (incomplete)'**
+  String get educationBachelorIncomplete;
+
+  /// No description provided for @educationBachelorComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor\'s degree (complete)'**
+  String get educationBachelorComplete;
+
+  /// No description provided for @educationPostgraduate.
+  ///
+  /// In en, this message translates to:
+  /// **'Postgraduate'**
+  String get educationPostgraduate;
+
+  /// No description provided for @skillLevelBeginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get skillLevelBeginner;
+
+  /// No description provided for @skillLevelIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get skillLevelIntermediate;
+
+  /// No description provided for @skillLevelAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get skillLevelAdvanced;
+
+  /// No description provided for @addExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Add experience'**
+  String get addExperience;
+
+  /// No description provided for @noExperiencesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No experience added. Volunteer work counts too!'**
+  String get noExperiencesYet;
+
+  /// No description provided for @experienceJobTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get experienceJobTitleLabel;
+
+  /// No description provided for @experienceCompanyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get experienceCompanyLabel;
+
+  /// No description provided for @experienceDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?'**
+  String get experienceDescriptionLabel;
+
+  /// No description provided for @experienceStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get experienceStartLabel;
+
+  /// No description provided for @experienceEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get experienceEndLabel;
+
+  /// No description provided for @experienceCurrentJob.
+  ///
+  /// In en, this message translates to:
+  /// **'I currently work here'**
+  String get experienceCurrentJob;
+
+  /// No description provided for @experiencePresent.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get experiencePresent;
+
+  /// No description provided for @dialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get dialogCancel;
+
+  /// No description provided for @dialogAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get dialogAdd;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required field'**
+  String get fieldRequired;
+
+  /// No description provided for @emailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
+  String get emailInvalid;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 6 characters'**
+  String get passwordTooShort;
+
+  /// No description provided for @cpfInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The CPF must have 11 digits'**
+  String get cpfInvalid;
+
+  /// No description provided for @experienceDatesInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The end date can\'t be before the start date'**
+  String get experienceDatesInvalid;
+
+  /// No description provided for @statSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get statSkills;
+
+  /// No description provided for @statSkillsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'registered'**
+  String get statSkillsSub;
+
+  /// No description provided for @statExperiences.
+  ///
+  /// In en, this message translates to:
+  /// **'Experiences'**
+  String get statExperiences;
+
+  /// No description provided for @statExperiencesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'on your resume'**
+  String get statExperiencesSub;
+
+  /// No description provided for @personalInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal data'**
+  String get personalInfoTitle;
+
+  /// No description provided for @notInformed.
+  ///
+  /// In en, this message translates to:
+  /// **'Not informed'**
+  String get notInformed;
+
+  /// No description provided for @noSkillsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No skills registered yet.'**
+  String get noSkillsYet;
+
+  /// No description provided for @noRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity. Apply to a job to see it here.'**
+  String get noRecentActivity;
 }
 
 class _AppLocalizationsDelegate
