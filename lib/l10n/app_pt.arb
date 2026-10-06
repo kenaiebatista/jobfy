@@ -126,6 +126,8 @@
   "themeLight": "Claro",
   "themeDark": "Escuro",
   "themeSystem": "Sistema",
+  "themeToggleToLight": "Usar tema claro",
+  "themeToggleToDark": "Usar tema escuro",
 
   "languageTitle": "Idioma",
   "languageSubtitle": "Escolha o idioma do aplicativo.",

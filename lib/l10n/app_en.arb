@@ -123,6 +123,8 @@
   "themeLight": "Light",
   "themeDark": "Dark",
   "themeSystem": "System",
+  "themeToggleToLight": "Use light theme",
+  "themeToggleToDark": "Use dark theme",
 
   "languageTitle": "Language",
   "languageSubtitle": "Choose the app language.",

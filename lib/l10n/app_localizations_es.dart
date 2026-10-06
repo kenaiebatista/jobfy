@@ -358,6 +358,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get themeSystem => 'Sistema';
 
   @override
+  String get themeToggleToLight => 'Usar tema claro';
+
+  @override
+  String get themeToggleToDark => 'Usar tema oscuro';
+
+  @override
   String get languageTitle => 'Idioma';
 
   @override

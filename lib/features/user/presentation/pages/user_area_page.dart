@@ -10,6 +10,7 @@ import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_ca
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
 import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:aplicativo_jobfy/shared/widgets/theme_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -231,6 +232,8 @@ class _TopBar extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
+          const ThemeToggleButton(),
+          const SizedBox(width: 8),
           CircleAvatar(
             radius: 18,
             backgroundColor: AppColors.accent,

@@ -12,6 +12,7 @@ import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_enti
 import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:aplicativo_jobfy/shared/widgets/theme_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -264,11 +265,11 @@ class _SettingsContent extends StatelessWidget {
                   children: [
                     ListenableBuilder(
                       listenable: appSettings,
-                      builder: (_, _) => const _AparenciaCard(),
+                      builder: (_, _) => _AparenciaCard(themeMode: appSettings.themeMode),
                     ),
                     ListenableBuilder(
                       listenable: appSettings,
-                      builder: (_, _) => const _IdiomaCard(),
+                      builder: (_, _) => _IdiomaCard(locale: appSettings.locale),
                     ),
                   ],
                 ),
@@ -376,6 +377,8 @@ class _SettingsTopBar extends StatelessWidget {
             ),
             const SizedBox(width: 8),
           ],
+          const ThemeToggleButton(),
+          const SizedBox(width: 8),
           CircleAvatar(
             radius: 18,
             backgroundColor: AppColors.accent,
@@ -764,7 +767,9 @@ class _ResponsiveGrid extends StatelessWidget {
 }
 
 class _AparenciaCard extends StatelessWidget {
-  const _AparenciaCard();
+  final ThemeMode themeMode;
+
+  const _AparenciaCard({required this.themeMode});
 
   @override
   Widget build(BuildContext context) {
@@ -803,7 +808,7 @@ class _AparenciaCard extends StatelessWidget {
                   label: Text(l10n.themeSystem),
                 ),
               ],
-              selected: {appSettings.themeMode},
+              selected: {themeMode},
               onSelectionChanged: (s) => appSettings.setThemeMode(s.first),
             ),
           ),
@@ -814,12 +819,14 @@ class _AparenciaCard extends StatelessWidget {
 }
 
 class _IdiomaCard extends StatelessWidget {
-  const _IdiomaCard();
+  final Locale locale;
+
+  const _IdiomaCard({required this.locale});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final atual = appSettings.locale.languageCode;
+    final atual = locale.languageCode;
     final idiomas = AppSettingsController.supportedLanguages;
 
     return _SectionCard(

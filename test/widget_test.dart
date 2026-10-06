@@ -4,6 +4,7 @@ import 'package:aplicativo_jobfy/features/settings/data/repositories/settings_re
 import 'package:aplicativo_jobfy/features/settings/domain/entities/user_preferences_entity.dart';
 import 'package:aplicativo_jobfy/features/settings/presentation/pages/settings_page.dart';
 import 'package:aplicativo_jobfy/main.dart';
+import 'package:aplicativo_jobfy/shared/widgets/theme_toggle_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +42,18 @@ void main() {
 
     final prefs = await SharedPreferences.getInstance();
     expect(prefs.getString('app.theme_mode'), 'dark');
+  });
+
+  testWidgets('botão sol/lua atualiza o seletor de tema', (tester) async {
+    await abrir(tester, '/settings');
+
+    await tester.tap(find.byType(ThemeToggleButton));
+    await tester.pumpAndSettle();
+
+    final seletor = tester.widget<SegmentedButton<ThemeMode>>(
+      find.byType(SegmentedButton<ThemeMode>),
+    );
+    expect(seletor.selected, {ThemeMode.dark});
   });
 
   testWidgets('trocar idioma traduz o app e é salvo', (tester) async {

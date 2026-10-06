@@ -772,6 +772,18 @@ abstract class AppLocalizations {
   /// **'Sistema'**
   String get themeSystem;
 
+  /// No description provided for @themeToggleToLight.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usar tema claro'**
+  String get themeToggleToLight;
+
+  /// No description provided for @themeToggleToDark.
+  ///
+  /// In pt, this message translates to:
+  /// **'Usar tema escuro'**
+  String get themeToggleToDark;
+
   /// No description provided for @languageTitle.
   ///
   /// In pt, this message translates to:
