@@ -1,4 +1,5 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
 import 'package:flutter/material.dart';
 
 class StatsCard extends StatelessWidget {
@@ -24,9 +25,9 @@ class StatsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -53,7 +54,7 @@ class StatsCard extends StatelessWidget {
               children: [
                 Text(
                   valor,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     height: 1,
@@ -62,10 +63,10 @@ class StatsCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   titulo,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: context.palette.textPrimary,
                   ),
                 ),
                 Text(

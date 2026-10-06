@@ -2,11 +2,18 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../models/user_profile_model.dart';
 
+/// Fake in-memory repository. Edits made in the settings page are kept in
+/// [_savedProfile] so every page sees them until the app is restarted.
 class UserRepositoryImpl implements UserRepository {
+  static UserProfileEntity? _savedProfile;
+
   @override
   Future<UserProfileEntity> getUserProfile(String userId) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return const UserProfileModel(
+    return _savedProfile ?? _defaultProfile;
+  }
+
+  static const _defaultProfile = UserProfileModel(
       id: 'usr_001',
       nome: 'Victor hahaha',
       email: 'HenriqueDevJunior@email.com',
@@ -70,11 +77,19 @@ class UserRepositoryImpl implements UserRepository {
           tipo: 'vaga',
         ),
       ],
-    );
-  }
+  );
 
   @override
   Future<void> updateProfile(UserProfileEntity profile) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    _savedProfile = profile;
+  }
+
+  @override
+  Future<void> changePassword({
+    required String senhaAtual,
+    required String novaSenha,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 400));
   }
 }

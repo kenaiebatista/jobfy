@@ -1,16 +1,23 @@
+import 'package:aplicativo_jobfy/core/settings/app_settings_controller.dart';
 import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
+import 'package:aplicativo_jobfy/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:aplicativo_jobfy/features/settings/domain/entities/user_preferences_entity.dart';
+import 'package:aplicativo_jobfy/features/settings/domain/usecases/get_user_preferences_usecase.dart';
+import 'package:aplicativo_jobfy/features/settings/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:aplicativo_jobfy/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Settings screen. Follows the same shell used by the dashboard
-/// (UserAreaPage): a dark ProfileSidebar for navigation and a light
-/// scrollable content area made of rounded white cards.
+/// (UserAreaPage): a dark ProfileSidebar for navigation and a scrollable
+/// content area made of rounded cards.
 ///
 /// Below [AppBreakpoints.mobile] the fixed sidebar becomes a Drawer opened
 /// from a menu button in the top bar, and every multi-column section
@@ -26,6 +33,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   late final SettingsController _controller;
 
+  final _formKey = GlobalKey<FormState>();
   final _nomeCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _localizacaoCtrl = TextEditingController();
@@ -36,9 +44,12 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
     final repository = UserRepositoryImpl();
+    final settingsRepository = SettingsRepositoryImpl();
     _controller = SettingsController(
       GetUserProfileUsecase(repository),
       repository,
+      GetUserPreferencesUsecase(settingsRepository),
+      SaveUserPreferencesUsecase(settingsRepository),
     );
     _controller.loadProfile('usr_001');
   }
@@ -52,43 +63,57 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Future<void> _salvarPerfil() async {
+    if (!_formKey.currentState!.validate()) return;
+
     await _controller.salvarPerfil(
       nome: _nomeCtrl.text.trim(),
       email: _emailCtrl.text.trim(),
       localizacao: _localizacaoCtrl.text.trim(),
     );
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Alterações salvas com sucesso.')),
+    _showSnack(AppLocalizations.of(context).settingsSaved);
+  }
+
+  Future<void> _alterarSenha() async {
+    final alterou = await showDialog<bool>(
+      context: context,
+      builder: (_) => _ChangePasswordDialog(controller: _controller),
     );
+    if (alterou == true && mounted) {
+      _showSnack(AppLocalizations.of(context).passwordChanged);
+    }
   }
 
   Future<void> _confirmarExclusao() async {
+    final l10n = AppLocalizations.of(context);
     final confirmar = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Excluir conta'),
-        content: const Text(
-          'Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.',
-        ),
+        title: Text(l10n.deleteAccount),
+        content: Text(l10n.deleteAccountConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancelar'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: TextButton.styleFrom(foregroundColor: AppColors.danger),
-            child: const Text('Excluir'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
     );
     if (confirmar == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Conta marcada para exclusão.')),
-      );
+      _showSnack(l10n.accountDeleted);
+      context.go('/');
     }
   }
 
@@ -98,20 +123,25 @@ class _SettingsPageState extends State<SettingsPage> {
     }
     if (index == 0) {
       context.go('/user');
+    } else if (index != 4) {
+      // Vagas, Currículo e Mensagens ainda não têm tela própria.
+      // index 4 (Configurações) já é a página atual.
+      _showSnack(AppLocalizations.of(context).comingSoon);
     }
-    // Vagas, Currículo e Mensagens ainda não têm tela própria.
-    // index 4 (Configurações) já é a página atual.
   }
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context);
+
     return ListenableBuilder(
       listenable: _controller,
       builder: (context, _) {
         if (_controller.isLoading) {
-          return const Scaffold(
-            backgroundColor: AppColors.backgroundLight,
-            body: Center(
+          return Scaffold(
+            backgroundColor: palette.background,
+            body: const Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             ),
           );
@@ -119,9 +149,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
         final profile = _controller.profile;
         if (profile == null) {
-          return const Scaffold(
-            backgroundColor: AppColors.backgroundLight,
-            body: Center(child: Text('Erro ao carregar perfil.')),
+          return Scaffold(
+            backgroundColor: palette.background,
+            body: Center(child: Text(l10n.errorLoadingProfile)),
           );
         }
 
@@ -141,7 +171,7 @@ class _SettingsPageState extends State<SettingsPage> {
         );
 
         return Scaffold(
-          backgroundColor: AppColors.backgroundLight,
+          backgroundColor: palette.background,
           drawer: isMobile ? Drawer(child: sidebar) : null,
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -152,11 +182,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   controller: _controller,
                   profile: profile,
                   isMobile: isMobile,
+                  formKey: _formKey,
                   nomeCtrl: _nomeCtrl,
                   emailCtrl: _emailCtrl,
                   localizacaoCtrl: _localizacaoCtrl,
                   onSalvarPerfil: _salvarPerfil,
+                  onAlterarSenha: _alterarSenha,
                   onExcluirConta: _confirmarExclusao,
+                  onEmBreve: () => _showSnack(l10n.comingSoon),
                 ),
               ),
             ],
@@ -171,21 +204,27 @@ class _SettingsContent extends StatelessWidget {
   final SettingsController controller;
   final UserProfileEntity profile;
   final bool isMobile;
+  final GlobalKey<FormState> formKey;
   final TextEditingController nomeCtrl;
   final TextEditingController emailCtrl;
   final TextEditingController localizacaoCtrl;
   final VoidCallback onSalvarPerfil;
+  final VoidCallback onAlterarSenha;
   final VoidCallback onExcluirConta;
+  final VoidCallback onEmBreve;
 
   const _SettingsContent({
     required this.controller,
     required this.profile,
     required this.isMobile,
+    required this.formKey,
     required this.nomeCtrl,
     required this.emailCtrl,
     required this.localizacaoCtrl,
     required this.onSalvarPerfil,
+    required this.onAlterarSenha,
     required this.onExcluirConta,
+    required this.onEmBreve,
   });
 
   @override
@@ -194,7 +233,11 @@ class _SettingsContent extends StatelessWidget {
 
     return Column(
       children: [
-        _SettingsTopBar(profile: profile, isMobile: isMobile),
+        _SettingsTopBar(
+          profile: profile,
+          isMobile: isMobile,
+          onEmBreve: onEmBreve,
+        ),
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(pad, 0, pad, pad),
@@ -207,6 +250,7 @@ class _SettingsContent extends StatelessWidget {
                 _ProfileSummaryCard(profile: profile, isMobile: isMobile),
                 SizedBox(height: pad),
                 _ContaCard(
+                  formKey: formKey,
                   nomeCtrl: nomeCtrl,
                   emailCtrl: emailCtrl,
                   localizacaoCtrl: localizacaoCtrl,
@@ -218,8 +262,14 @@ class _SettingsContent extends StatelessWidget {
                   isMobile: isMobile,
                   spacing: pad,
                   children: [
-                    _NotificacoesCard(controller: controller),
-                    _PrivacidadeCard(controller: controller),
+                    ListenableBuilder(
+                      listenable: appSettings,
+                      builder: (_, _) => const _AparenciaCard(),
+                    ),
+                    ListenableBuilder(
+                      listenable: appSettings,
+                      builder: (_, _) => const _IdiomaCard(),
+                    ),
                   ],
                 ),
                 SizedBox(height: pad),
@@ -227,10 +277,15 @@ class _SettingsContent extends StatelessWidget {
                   isMobile: isMobile,
                   spacing: pad,
                   children: [
-                    _PreferenciasVagaCard(controller: controller),
-                    _AparenciaCard(controller: controller),
+                    _NotificacoesCard(controller: controller),
+                    _PrivacidadeCard(
+                      controller: controller,
+                      onAlterarSenha: onAlterarSenha,
+                    ),
                   ],
                 ),
+                SizedBox(height: pad),
+                _PreferenciasVagaCard(controller: controller),
                 SizedBox(height: pad),
                 _DangerZoneCard(onExcluirConta: onExcluirConta),
               ],
@@ -245,19 +300,27 @@ class _SettingsContent extends StatelessWidget {
 class _SettingsTopBar extends StatelessWidget {
   final UserProfileEntity profile;
   final bool isMobile;
+  final VoidCallback onEmBreve;
 
-  const _SettingsTopBar({required this.profile, required this.isMobile});
+  const _SettingsTopBar({
+    required this.profile,
+    required this.isMobile,
+    required this.onEmBreve,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 16 : 28,
         vertical: 14,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+      decoration: BoxDecoration(
+        color: palette.surface,
+        border: Border(bottom: BorderSide(color: palette.border)),
       ),
       child: Row(
         children: [
@@ -277,30 +340,38 @@ class _SettingsTopBar extends StatelessWidget {
           ),
           const Spacer(),
           if (!isMobile) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.cardBorder),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.search, size: 16, color: AppColors.textMuted),
-                  SizedBox(width: 6),
-                  Text(
-                    'Buscar vagas...',
-                    style: TextStyle(fontSize: 13, color: AppColors.textMuted),
-                  ),
-                ],
+            InkWell(
+              onTap: onEmBreve,
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: palette.background,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: palette.border),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.search, size: 16, color: AppColors.textMuted),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.searchJobsHint,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 16),
             IconButton(
               icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {},
+              tooltip: l10n.notificationsTooltip,
+              onPressed: onEmBreve,
               style: IconButton.styleFrom(
-                backgroundColor: AppColors.backgroundLight,
+                backgroundColor: palette.background,
               ),
             ),
             const SizedBox(width: 8),
@@ -328,21 +399,39 @@ class _PageHeading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final l10n = AppLocalizations.of(context);
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Configurações',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          l10n.settingsTitle,
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(
-          'Gerencie sua conta, notificações e preferências.',
-          style: TextStyle(fontSize: 14, color: AppColors.textMuted),
+          l10n.settingsSubtitle,
+          style: const TextStyle(fontSize: 14, color: AppColors.textMuted),
         ),
       ],
     );
   }
+}
+
+/// Rounded card container shared by every block of the page.
+BoxDecoration _cardDecoration(AppPalette palette, {Color? borderColor}) {
+  return BoxDecoration(
+    color: palette.surface,
+    borderRadius: BorderRadius.circular(16),
+    border: Border.all(color: borderColor ?? palette.border),
+    boxShadow: [
+      BoxShadow(
+        color: Colors.black.withValues(alpha: 0.03),
+        blurRadius: 8,
+        offset: const Offset(0, 2),
+      ),
+    ],
+  );
 }
 
 class _ProfileSummaryCard extends StatelessWidget {
@@ -353,8 +442,9 @@ class _ProfileSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initials = profile.nome.isNotEmpty
-        ? profile.nome.trim().split(' ').take(2).map((w) => w[0]).join()
+    final l10n = AppLocalizations.of(context);
+    final initials = profile.nome.trim().isNotEmpty
+        ? profile.nome.trim().split(RegExp(r'\s+')).take(2).map((w) => w[0]).join()
         : '?';
 
     final avatar = Container(
@@ -404,27 +494,19 @@ class _ProfileSummaryCard extends StatelessWidget {
       mainAxisAlignment:
           isMobile ? MainAxisAlignment.center : MainAxisAlignment.end,
       children: [
-        _StatBadge(label: 'Perfil completo', value: '${profile.perfilCompleto}%'),
+        _StatBadge(
+          label: l10n.profileComplete,
+          value: '${profile.perfilCompleto}%',
+        ),
         const SizedBox(width: 12),
-        _StatBadge(label: 'Match médio', value: '${profile.matchScore}%'),
+        _StatBadge(label: l10n.averageMatch, value: '${profile.matchScore}%'),
       ],
     );
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: _cardDecoration(context.palette),
       child: isMobile
           ? Column(
               children: [
@@ -503,18 +585,7 @@ class _SectionCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: _cardDecoration(context.palette),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -556,7 +627,10 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
+final _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+
 class _ContaCard extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
   final TextEditingController nomeCtrl;
   final TextEditingController emailCtrl;
   final TextEditingController localizacaoCtrl;
@@ -564,6 +638,7 @@ class _ContaCard extends StatelessWidget {
   final VoidCallback onSalvar;
 
   const _ContaCard({
+    required this.formKey,
     required this.nomeCtrl,
     required this.emailCtrl,
     required this.localizacaoCtrl,
@@ -573,64 +648,75 @@ class _ContaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return _SectionCard(
       icon: Icons.person_outline,
-      title: 'Informações da conta',
-      subtitle: 'Seus dados básicos de perfil.',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: nomeCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Nome completo',
-              prefixIcon: Icon(Icons.badge_outlined, size: 18),
+      title: l10n.accountInfoTitle,
+      subtitle: l10n.accountInfoSubtitle,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextFormField(
+              controller: nomeCtrl,
+              decoration: InputDecoration(
+                labelText: l10n.fullNameLabel,
+                prefixIcon: const Icon(Icons.badge_outlined, size: 18),
+              ),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? l10n.nameRequired : null,
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: emailCtrl,
-            decoration: const InputDecoration(
-              labelText: 'E-mail',
-              prefixIcon: Icon(Icons.email_outlined, size: 18),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: l10n.emailLabel,
+                prefixIcon: const Icon(Icons.email_outlined, size: 18),
+              ),
+              validator: (v) => _emailRegex.hasMatch(v?.trim() ?? '')
+                  ? null
+                  : l10n.emailInvalid,
             ),
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: localizacaoCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Localização',
-              prefixIcon: Icon(Icons.location_on_outlined, size: 18),
-            ),
-          ),
-          const SizedBox(height: 20),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton.icon(
-              onPressed: isSaving ? null : onSalvar,
-              icon: isSaving
-                  ? const SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Icon(Icons.check, size: 16),
-              label: Text(isSaving ? 'Salvando...' : 'Salvar alterações'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.accent,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                elevation: 0,
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: localizacaoCtrl,
+              decoration: InputDecoration(
+                labelText: l10n.locationLabel,
+                prefixIcon: const Icon(Icons.location_on_outlined, size: 18),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: isSaving ? null : onSalvar,
+                icon: isSaving
+                    ? const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.check, size: 16),
+                label: Text(isSaving ? l10n.saving : l10n.saveChanges),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.accent,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -677,6 +763,157 @@ class _ResponsiveGrid extends StatelessWidget {
   }
 }
 
+class _AparenciaCard extends StatelessWidget {
+  const _AparenciaCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return _SectionCard(
+      icon: Icons.palette_outlined,
+      title: l10n.appearanceTitle,
+      subtitle: l10n.appearanceSubtitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.themeLabel,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<ThemeMode>(
+              showSelectedIcon: false,
+              segments: [
+                ButtonSegment(
+                  value: ThemeMode.light,
+                  icon: const Icon(Icons.light_mode_outlined, size: 18),
+                  label: Text(l10n.themeLight),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.dark,
+                  icon: const Icon(Icons.dark_mode_outlined, size: 18),
+                  label: Text(l10n.themeDark),
+                ),
+                ButtonSegment(
+                  value: ThemeMode.system,
+                  icon: const Icon(Icons.settings_suggest_outlined, size: 18),
+                  label: Text(l10n.themeSystem),
+                ),
+              ],
+              selected: {appSettings.themeMode},
+              onSelectionChanged: (s) => appSettings.setThemeMode(s.first),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IdiomaCard extends StatelessWidget {
+  const _IdiomaCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final atual = appSettings.locale.languageCode;
+    final idiomas = AppSettingsController.supportedLanguages;
+
+    return _SectionCard(
+      icon: Icons.language,
+      title: l10n.languageTitle,
+      subtitle: l10n.languageSubtitle,
+      child: Column(
+        children: [
+          for (var i = 0; i < idiomas.length; i++)
+            _LanguageOption(
+              code: idiomas[i].locale.languageCode,
+              name: idiomas[i].name,
+              selected: idiomas[i].locale.languageCode == atual,
+              onTap: () => appSettings.setLocale(idiomas[i].locale),
+              showDivider: i != idiomas.length - 1,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LanguageOption extends StatelessWidget {
+  final String code;
+  final String name;
+  final bool selected;
+  final VoidCallback onTap;
+  final bool showDivider;
+
+  const _LanguageOption({
+    required this.code,
+    required this.name,
+    required this.selected,
+    required this.onTap,
+    required this.showDivider,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.accent
+                        : AppColors.accent.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    code.toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: selected ? Colors.white : AppColors.accent,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                  ),
+                ),
+                Icon(
+                  selected ? Icons.check_circle : Icons.circle_outlined,
+                  size: 20,
+                  color: selected ? AppColors.accent : palette.border,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (showDivider) Divider(height: 1, color: palette.border),
+      ],
+    );
+  }
+}
+
 class _NotificacoesCard extends StatelessWidget {
   final SettingsController controller;
 
@@ -684,34 +921,37 @@ class _NotificacoesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = controller.preferences;
+
     return _SectionCard(
       icon: Icons.notifications_outlined,
-      title: 'Notificações',
-      subtitle: 'Escolha o que você quer ser avisado.',
+      title: l10n.notificationsTitle,
+      subtitle: l10n.notificationsSubtitle,
       child: Column(
         children: [
           _ToggleRow(
-            title: 'Novas vagas compatíveis',
-            subtitle: 'Avise quando surgirem vagas com alto match.',
-            value: controller.notifNovasVagas,
+            title: l10n.notifNewJobsTitle,
+            subtitle: l10n.notifNewJobsSubtitle,
+            value: prefs.notifNovasVagas,
             onChanged: controller.setNotifNovasVagas,
           ),
           _ToggleRow(
-            title: 'Mensagens de empresas',
-            subtitle: 'Notificar sobre novas mensagens de recrutadores.',
-            value: controller.notifMensagens,
+            title: l10n.notifMessagesTitle,
+            subtitle: l10n.notifMessagesSubtitle,
+            value: prefs.notifMensagens,
             onChanged: controller.setNotifMensagens,
           ),
           _ToggleRow(
-            title: 'Resumo semanal por e-mail',
-            subtitle: 'Receba um resumo das suas candidaturas.',
-            value: controller.notifEmailSemanal,
+            title: l10n.notifWeeklyTitle,
+            subtitle: l10n.notifWeeklySubtitle,
+            value: prefs.notifEmailSemanal,
             onChanged: controller.setNotifEmailSemanal,
           ),
           _ToggleRow(
-            title: 'Notificações push',
-            subtitle: 'Alertas em tempo real no dispositivo.',
-            value: controller.notifPush,
+            title: l10n.notifPushTitle,
+            subtitle: l10n.notifPushSubtitle,
+            value: prefs.notifPush,
             onChanged: controller.setNotifPush,
             showDivider: false,
           ),
@@ -723,32 +963,43 @@ class _NotificacoesCard extends StatelessWidget {
 
 class _PrivacidadeCard extends StatelessWidget {
   final SettingsController controller;
+  final VoidCallback onAlterarSenha;
 
-  const _PrivacidadeCard({required this.controller});
+  const _PrivacidadeCard({
+    required this.controller,
+    required this.onAlterarSenha,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final prefs = controller.preferences;
+
     return _SectionCard(
       icon: Icons.shield_outlined,
-      title: 'Privacidade e segurança',
-      subtitle: 'Controle quem vê suas informações.',
+      title: l10n.privacyTitle,
+      subtitle: l10n.privacySubtitle,
       child: Column(
         children: [
           _ToggleRow(
-            title: 'Perfil visível para empresas',
-            subtitle: 'Empresas podem encontrar seu perfil nas buscas.',
-            value: controller.perfilVisivelParaEmpresas,
+            title: l10n.privacyVisibleTitle,
+            subtitle: l10n.privacyVisibleSubtitle,
+            value: prefs.perfilVisivelParaEmpresas,
             onChanged: controller.setPerfilVisivelParaEmpresas,
           ),
           _ToggleRow(
-            title: 'Mostrar e-mail no perfil',
-            subtitle: 'Exibir seu e-mail para recrutadores.',
-            value: controller.mostrarEmailNoPerfil,
+            title: l10n.privacyShowEmailTitle,
+            subtitle: l10n.privacyShowEmailSubtitle,
+            value: prefs.mostrarEmailNoPerfil,
             onChanged: controller.setMostrarEmailNoPerfil,
             showDivider: false,
           ),
           const SizedBox(height: 4),
-          _ActionRow(icon: Icons.lock_outline, label: 'Alterar senha', onTap: () {}),
+          _ActionRow(
+            icon: Icons.lock_outline,
+            label: l10n.changePassword,
+            onTap: onAlterarSenha,
+          ),
         ],
       ),
     );
@@ -836,11 +1087,15 @@ class _ToggleRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Switch(value: value, activeColor: AppColors.accent, onChanged: onChanged),
+              Switch(
+                value: value,
+                activeThumbColor: AppColors.accent,
+                onChanged: onChanged,
+              ),
             ],
           ),
         ),
-        if (showDivider) const Divider(height: 1, color: AppColors.cardBorder),
+        if (showDivider) Divider(height: 1, color: context.palette.border),
       ],
     );
   }
@@ -851,22 +1106,28 @@ class _PreferenciasVagaCard extends StatelessWidget {
 
   const _PreferenciasVagaCard({required this.controller});
 
-  static const _tipos = ['Remoto', 'Híbrido', 'Presencial'];
+  String _label(AppLocalizations l10n, TipoVaga tipo) => switch (tipo) {
+        TipoVaga.remoto => l10n.jobTypeRemote,
+        TipoVaga.hibrido => l10n.jobTypeHybrid,
+        TipoVaga.presencial => l10n.jobTypeOnsite,
+      };
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return _SectionCard(
       icon: Icons.work_outline,
-      title: 'Preferências de vaga',
-      subtitle: 'Tipos de trabalho que você aceita.',
+      title: l10n.jobPrefsTitle,
+      subtitle: l10n.jobPrefsSubtitle,
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: _tipos
+        children: TipoVaga.values
             .map(
               (tipo) => _SelectableChip(
-                label: tipo,
-                selected: controller.tiposVagaPreferidos.contains(tipo),
+                label: _label(l10n, tipo),
+                selected: controller.preferences.tiposVaga.contains(tipo),
                 onTap: () => controller.toggleTipoVaga(tipo),
               ),
             )
@@ -923,24 +1184,119 @@ class _SelectableChip extends StatelessWidget {
   }
 }
 
-class _AparenciaCard extends StatelessWidget {
+class _ChangePasswordDialog extends StatefulWidget {
   final SettingsController controller;
 
-  const _AparenciaCard({required this.controller});
+  const _ChangePasswordDialog({required this.controller});
+
+  @override
+  State<_ChangePasswordDialog> createState() => _ChangePasswordDialogState();
+}
+
+class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _atualCtrl = TextEditingController();
+  final _novaCtrl = TextEditingController();
+  final _confirmarCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _atualCtrl.dispose();
+    _novaCtrl.dispose();
+    _confirmarCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _salvar() async {
+    if (!_formKey.currentState!.validate()) return;
+    await widget.controller.alterarSenha(
+      senhaAtual: _atualCtrl.text,
+      novaSenha: _novaCtrl.text,
+    );
+    if (mounted) Navigator.pop(context, true);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
-      icon: Icons.palette_outlined,
-      title: 'Aparência',
-      subtitle: 'Personalize a interface.',
-      child: _ToggleRow(
-        title: 'Tema escuro',
-        subtitle: 'Prévia do tema escuro — em breve para o app inteiro.',
-        value: controller.temaEscuro,
-        onChanged: controller.setTemaEscuro,
-        showDivider: false,
-      ),
+    final l10n = AppLocalizations.of(context);
+
+    return ListenableBuilder(
+      listenable: widget.controller,
+      builder: (context, _) {
+        final salvando = widget.controller.isChangingPassword;
+
+        return AlertDialog(
+          title: Text(l10n.changePassword),
+          content: SizedBox(
+            width: 400,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: _atualCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.currentPasswordLabel,
+                      prefixIcon: const Icon(Icons.lock_outline, size: 18),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.isEmpty) ? l10n.passwordRequired : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _novaCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.newPasswordLabel,
+                      prefixIcon: const Icon(Icons.lock_reset, size: 18),
+                    ),
+                    validator: (v) =>
+                        (v == null || v.length < 6) ? l10n.passwordTooShort : null,
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmarCtrl,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.confirmPasswordLabel,
+                      prefixIcon: const Icon(Icons.lock_reset, size: 18),
+                    ),
+                    validator: (v) =>
+                        v != _novaCtrl.text ? l10n.passwordsDontMatch : null,
+                    onFieldSubmitted: (_) => _salvar(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: salvando ? null : () => Navigator.pop(context, false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: salvando ? null : _salvar,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              child: salvando
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : Text(l10n.save),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -952,24 +1308,26 @@ class _DangerZoneCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.danger.withValues(alpha: 0.25)),
+      decoration: _cardDecoration(
+        palette,
+        borderColor: AppColors.danger.withValues(alpha: 0.25),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.warning_amber_rounded, color: AppColors.danger, size: 20),
-              SizedBox(width: 10),
+              const Icon(Icons.warning_amber_rounded, color: AppColors.danger, size: 20),
+              const SizedBox(width: 10),
               Text(
-                'Zona de risco',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                l10n.dangerZoneTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ],
           ),
@@ -981,10 +1339,10 @@ class _DangerZoneCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () => context.go('/'),
                 icon: const Icon(Icons.logout, size: 16),
-                label: const Text('Sair da conta'),
+                label: Text(l10n.logoutAccount),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.black87,
-                  side: const BorderSide(color: AppColors.cardBorder),
+                  foregroundColor: palette.textPrimary,
+                  side: BorderSide(color: palette.border),
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 ),
@@ -992,7 +1350,7 @@ class _DangerZoneCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onExcluirConta,
                 icon: const Icon(Icons.delete_outline, size: 16),
-                label: const Text('Excluir conta'),
+                label: Text(l10n.deleteAccount),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.danger,
                   side: BorderSide(color: AppColors.danger.withValues(alpha: 0.4)),

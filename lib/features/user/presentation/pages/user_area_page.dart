@@ -1,5 +1,6 @@
 import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
 import 'package:aplicativo_jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:aplicativo_jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
@@ -8,6 +9,7 @@ import 'package:aplicativo_jobfy/features/user/presentation/widgets/activity_ite
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/job_match_card.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:aplicativo_jobfy/features/user/presentation/widgets/stats_card.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -53,9 +55,9 @@ class _UserAreaPageState extends State<UserAreaPage> {
       listenable: _controller,
       builder: (context, _) {
         if (_controller.isLoading) {
-          return const Scaffold(
-            backgroundColor: AppColors.backgroundLight,
-            body: Center(
+          return Scaffold(
+            backgroundColor: context.palette.background,
+            body: const Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             ),
           );
@@ -63,9 +65,11 @@ class _UserAreaPageState extends State<UserAreaPage> {
 
         final profile = _controller.profile;
         if (profile == null) {
-          return const Scaffold(
-            backgroundColor: AppColors.backgroundLight,
-            body: Center(child: Text('Erro ao carregar perfil.')),
+          return Scaffold(
+            backgroundColor: context.palette.background,
+            body: Center(
+              child: Text(AppLocalizations.of(context).errorLoadingProfile),
+            ),
           );
         }
 
@@ -78,7 +82,7 @@ class _UserAreaPageState extends State<UserAreaPage> {
         );
 
         return Scaffold(
-          backgroundColor: AppColors.backgroundLight,
+          backgroundColor: context.palette.background,
           drawer: isMobile ? Drawer(child: sidebar) : null,
           body: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -176,9 +180,9 @@ class _TopBar extends StatelessWidget {
         horizontal: isMobile ? 16 : 28,
         vertical: 14,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+      decoration: BoxDecoration(
+        color: context.palette.surface,
+        border: Border(bottom: BorderSide(color: context.palette.border)),
       ),
       child: Row(
         children: [
@@ -201,18 +205,18 @@ class _TopBar extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.backgroundLight,
+                color: context.palette.background,
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: context.palette.border),
               ),
               child: Row(
                 children: [
                   const Icon(Icons.search, size: 16, color: AppColors.textMuted),
                   const SizedBox(width: 6),
-                  const Text(
-                    'Buscar vagas...',
+                  Text(
+                    AppLocalizations.of(context).searchJobsHint,
                     style:
-                        TextStyle(fontSize: 13, color: AppColors.textMuted),
+                        const TextStyle(fontSize: 13, color: AppColors.textMuted),
                   ),
                 ],
               ),
@@ -222,7 +226,7 @@ class _TopBar extends StatelessWidget {
               icon: const Icon(Icons.notifications_outlined),
               onPressed: () {},
               style: IconButton.styleFrom(
-                backgroundColor: AppColors.backgroundLight,
+                backgroundColor: context.palette.background,
               ),
             ),
             const SizedBox(width: 8),
@@ -253,13 +257,14 @@ class _WelcomeBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final firstName = profile.nome.trim().split(' ').first;
 
     final texto = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Olá, $firstName! 👋',
+          l10n.dashboardGreeting(firstName),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 24,
@@ -267,9 +272,9 @@ class _WelcomeBanner extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        const Text(
-          'Você tem novas vagas compatíveis com seu perfil.',
-          style: TextStyle(
+        Text(
+          l10n.dashboardNewMatches,
+          style: const TextStyle(
             color: AppColors.textLight,
             fontSize: 14,
             height: 1.5,
@@ -279,9 +284,9 @@ class _WelcomeBanner extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: () {},
           icon: const Icon(Icons.bolt_outlined, size: 16),
-          label: const Text(
-            'Ver vagas recomendadas',
-            style: TextStyle(fontSize: 13),
+          label: Text(
+            l10n.dashboardSeeRecommended,
+            style: const TextStyle(fontSize: 13),
           ),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.accent,
@@ -319,9 +324,9 @@ class _WelcomeBanner extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const Text(
-            'Match médio',
-            style: TextStyle(
+          Text(
+            l10n.averageMatch,
+            style: const TextStyle(
               color: AppColors.textLight,
               fontSize: 12,
             ),
@@ -369,27 +374,28 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final cards = [
       StatsCard(
         valor: '${profile.candidaturas}',
-        titulo: 'Candidaturas',
-        subtitulo: 'este mês',
+        titulo: l10n.statsApplications,
+        subtitulo: l10n.statsApplicationsSub,
         icon: Icons.send_outlined,
         iconColor: AppColors.accent,
         iconBg: AppColors.accent.withValues(alpha: 0.1),
       ),
       StatsCard(
         valor: '${profile.matchScore}%',
-        titulo: 'Match Score',
-        subtitulo: 'média geral',
+        titulo: l10n.statsMatchScore,
+        subtitulo: l10n.statsMatchScoreSub,
         icon: Icons.bolt_outlined,
         iconColor: AppColors.warning,
         iconBg: AppColors.warning.withValues(alpha: 0.1),
       ),
       StatsCard(
         valor: '${profile.visualizacoes}',
-        titulo: 'Visualizações',
-        subtitulo: 'do seu perfil',
+        titulo: l10n.statsViews,
+        subtitulo: l10n.statsViewsSub,
         icon: Icons.visibility_outlined,
         iconColor: AppColors.success,
         iconBg: AppColors.success.withValues(alpha: 0.1),
@@ -432,9 +438,9 @@ class _SkillsRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -447,9 +453,9 @@ class _SkillsRow extends StatelessWidget {
         children: [
           const Icon(Icons.auto_awesome, color: AppColors.accent, size: 20),
           const SizedBox(width: 10),
-          const Text(
-            'Habilidades',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+          Text(
+            AppLocalizations.of(context).skillsTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -464,7 +470,10 @@ class _SkillsRow extends StatelessWidget {
           TextButton.icon(
             onPressed: () {},
             icon: const Icon(Icons.add, size: 16),
-            label: const Text('Adicionar', style: TextStyle(fontSize: 13)),
+            label: Text(
+              AppLocalizations.of(context).skillsAdd,
+              style: const TextStyle(fontSize: 13),
+            ),
             style: TextButton.styleFrom(foregroundColor: AppColors.accent),
           ),
         ],
@@ -509,9 +518,9 @@ class _VagasSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -525,9 +534,9 @@ class _VagasSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
-                'Vagas Recomendadas',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              Text(
+                AppLocalizations.of(context).recommendedJobs,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
               const Spacer(),
               TextButton(
@@ -535,9 +544,9 @@ class _VagasSection extends StatelessWidget {
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.accent,
                 ),
-                child: const Text(
-                  'Ver todas',
-                  style: TextStyle(fontSize: 13),
+                child: Text(
+                  AppLocalizations.of(context).seeAll,
+                  style: const TextStyle(fontSize: 13),
                 ),
               ),
             ],
@@ -563,9 +572,9 @@ class _AtividadeSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.palette.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.border),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -577,16 +586,16 @@ class _AtividadeSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Atividade Recente',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          Text(
+            AppLocalizations.of(context).recentActivity,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
           ),
           const SizedBox(height: 12),
-          const Divider(height: 1, color: AppColors.cardBorder),
+          Divider(height: 1, color: context.palette.border),
           ...atividades.map((a) => Column(
                 children: [
                   ActivityItem(activity: a),
-                  const Divider(height: 1, color: AppColors.cardBorder),
+                  Divider(height: 1, color: context.palette.border),
                 ],
               )),
         ],

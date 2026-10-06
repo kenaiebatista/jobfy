@@ -1,30 +1,86 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:aplicativo_jobfy/core/routes/app_router.dart';
+import 'package:aplicativo_jobfy/core/settings/app_settings_controller.dart';
+import 'package:aplicativo_jobfy/features/settings/data/repositories/settings_repository_impl.dart';
+import 'package:aplicativo_jobfy/features/settings/domain/entities/user_preferences_entity.dart';
+import 'package:aplicativo_jobfy/features/settings/presentation/pages/settings_page.dart';
+import 'package:aplicativo_jobfy/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:aplicativo_jobfy/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await appSettings.setThemeMode(ThemeMode.light);
+    await appSettings.setLocale(const Locale('pt'));
+  });
+
+  Future<void> abrir(WidgetTester tester, String rota) async {
+    tester.view.physicalSize = const Size(1400, 2600);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(const JobfyApp());
+    appRouter.go(rota);
+    await tester.pumpAndSettle();
+  }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  testWidgets('home abre em português', (tester) async {
+    await abrir(tester, '/');
+    expect(find.text('Começar agora'), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  testWidgets('tema escuro é aplicado e salvo', (tester) async {
+    await abrir(tester, '/settings');
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('Escuro'));
+    await tester.pumpAndSettle();
+
+    final ctx = tester.element(find.byType(SettingsPage));
+    expect(Theme.of(ctx).brightness, Brightness.dark);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('app.theme_mode'), 'dark');
+  });
+
+  testWidgets('trocar idioma traduz o app e é salvo', (tester) async {
+    await abrir(tester, '/settings');
+
+    await tester.ensureVisible(find.text('English'));
+    await tester.tap(find.text('English'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Language'), findsOneWidget);
+    expect(find.text('Notifications'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Español'));
+    await tester.tap(find.text('Español'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Idioma'), findsOneWidget);
+    expect(find.text('Notificaciones'), findsOneWidget);
+
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString('app.locale'), 'es');
+  });
+
+  testWidgets('preferências de notificação ficam salvas', (tester) async {
+    await abrir(tester, '/settings');
+
+    final toggle = find.byType(Switch).first;
+    await tester.ensureVisible(toggle);
+    await tester.tap(toggle);
+    await tester.pumpAndSettle();
+
+    final salvas = await SettingsRepositoryImpl().getPreferences();
+    expect(salvas.notifNovasVagas, isFalse);
+  });
+
+  test('tipos de vaga são lidos de volta', () async {
+    final repo = SettingsRepositoryImpl();
+    await repo.savePreferences(
+      const UserPreferencesEntity(tiposVaga: {TipoVaga.hibrido}),
+    );
+    expect((await repo.getPreferences()).tiposVaga, {TipoVaga.hibrido});
   });
 }

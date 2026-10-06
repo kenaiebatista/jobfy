@@ -1,5 +1,6 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,12 +17,12 @@ class ProfileSidebar extends StatelessWidget {
     required this.onNavTap,
   });
 
-  static const _navItems = [
-    (icon: Icons.dashboard_outlined, label: 'Dashboard'),
-    (icon: Icons.work_outline, label: 'Vagas'),
-    (icon: Icons.description_outlined, label: 'Currículo'),
-    (icon: Icons.chat_bubble_outline, label: 'Mensagens'),
-    (icon: Icons.settings_outlined, label: 'Configurações'),
+  static List<({IconData icon, String label})> _navItems(AppLocalizations l10n) => [
+    (icon: Icons.dashboard_outlined, label: l10n.navDashboard),
+    (icon: Icons.work_outline, label: l10n.navJobs),
+    (icon: Icons.description_outlined, label: l10n.navResume),
+    (icon: Icons.chat_bubble_outline, label: l10n.navMessages),
+    (icon: Icons.settings_outlined, label: l10n.navSettings),
   ];
 
   @override
@@ -56,7 +57,7 @@ class ProfileSidebar extends StatelessWidget {
             children: [
               _buildProfile(initials),
               const Divider(color: Colors.white12, height: 1),
-              Expanded(child: _buildNav()),
+              Expanded(child: _buildNav(AppLocalizations.of(context))),
               const Divider(color: Colors.white12, height: 1),
               _buildLogout(context),
             ],
@@ -149,12 +150,13 @@ class ProfileSidebar extends StatelessWidget {
     );
   }
 
-  Widget _buildNav() {
+  Widget _buildNav(AppLocalizations l10n) {
+    final items = _navItems(l10n);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-      itemCount: _navItems.length,
+      itemCount: items.length,
       itemBuilder: (context, i) {
-        final item = _navItems[i];
+        final item = items[i];
         final isSelected = selectedIndex == i;
         return _NavItem(
           icon: item.icon,
@@ -171,7 +173,7 @@ class ProfileSidebar extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       child: _NavItem(
         icon: Icons.logout,
-        label: 'Sair',
+        label: AppLocalizations.of(context).navLogout,
         isSelected: false,
         isDanger: true,
         onTap: () => context.go('/'),
@@ -234,18 +236,20 @@ class _NavItemState extends State<_NavItem> {
             children: [
               Icon(widget.icon, color: baseColor, size: 18),
               const SizedBox(width: 12),
-              Text(
-                widget.label,
-                style: TextStyle(
-                  color: baseColor,
-                  fontSize: 14,
-                  fontWeight: widget.isSelected
-                      ? FontWeight.w600
-                      : FontWeight.normal,
+              Expanded(
+                child: Text(
+                  widget.label,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: baseColor,
+                    fontSize: 14,
+                    fontWeight: widget.isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                  ),
                 ),
               ),
               if (widget.isSelected) ...[
-                const Spacer(),
                 Container(
                   width: 6,
                   height: 6,
@@ -274,9 +278,9 @@ class _ProgressBar extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text(
-              'Perfil completo',
-              style: TextStyle(color: AppColors.textLight, fontSize: 11),
+            Text(
+              AppLocalizations.of(context).profileComplete,
+              style: const TextStyle(color: AppColors.textLight, fontSize: 11),
             ),
             const Spacer(),
             Text(

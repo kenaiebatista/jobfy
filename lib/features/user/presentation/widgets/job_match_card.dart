@@ -1,5 +1,7 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobMatchCard extends StatefulWidget {
@@ -30,10 +32,10 @@ class _JobMatchCardState extends State<JobMatchCard> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: context.palette.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : AppColors.cardBorder,
+            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : context.palette.border,
           ),
           boxShadow: [
             BoxShadow(
@@ -70,7 +72,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     children: [
                       Text(
                         widget.job.titulo,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
@@ -116,10 +118,10 @@ class _JobMatchCardState extends State<JobMatchCard> {
               children: [
                 Text(
                   widget.job.salario,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: context.palette.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -128,7 +130,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: context.palette.strongButton,
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       shape: RoundedRectangleBorder(
@@ -136,9 +138,9 @@ class _JobMatchCardState extends State<JobMatchCard> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Candidatar',
-                      style: TextStyle(fontSize: 12),
+                    child: Text(
+                      AppLocalizations.of(context).applyButton,
+                      style: const TextStyle(fontSize: 12),
                     ),
                   ),
                 ),
@@ -162,9 +164,9 @@ class _Tag extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
+        color: context.palette.background,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: context.palette.border),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

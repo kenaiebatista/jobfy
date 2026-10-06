@@ -1,4 +1,5 @@
 import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
+import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
 import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -46,10 +47,10 @@ class ActivityItem extends StatelessWidget {
               children: [
                 Text(
                   activity.descricao,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black87,
+                    color: context.palette.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 2),
