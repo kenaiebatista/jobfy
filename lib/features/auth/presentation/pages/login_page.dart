@@ -1,15 +1,19 @@
-import 'package:aplicativo_jobfy/core/theme/app_breakpoints.dart';
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
-import 'package:aplicativo_jobfy/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/login_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/domain/usecases/register_usecase.dart';
-import 'package:aplicativo_jobfy/features/auth/presentation/controllers/auth_controller.dart';
-import 'package:aplicativo_jobfy/shared/widgets/app_chip.dart';
-import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
+import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
+import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/app_chip.dart';
+import 'package:jobfy/shared/widgets/glow_circle.dart';
+import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -20,10 +24,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
-  final _senhaController = TextEditingController();
-  bool _lembreMe = false;
-  bool _hoverEsqueci = false;
-  bool _hoverCadastro = false;
+  final _passwordController = TextEditingController();
+  bool _rememberMe = false;
 
   late final AuthController _authController;
 
@@ -40,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _emailController.dispose();
-    _senhaController.dispose();
+    _passwordController.dispose();
     _authController.dispose();
     super.dispose();
   }
@@ -48,58 +50,71 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin() async {
     final ok = await _authController.login(
       _emailController.text.trim(),
-      _senhaController.text,
+      _passwordController.text,
     );
-    if (ok && mounted) context.go('/user');
+    if (ok && mounted) {
+      context.read<UserSessionController>().start(_authController.user!.id);
+      context.go('/user');
+    }
   }
+
+  String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
+        AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
+        AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+        AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
+        AuthErrorCode.cpfInUse => l10n.authErrorCpfInUse,
+        AuthErrorCode.network => l10n.authErrorNetwork,
+      };
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.sizeOf(context).width < AppBreakpoints.mobile;
-
-    return Scaffold(
-      body: isMobile
-          ? SingleChildScrollView(
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: _buildForm(isMobile: true),
-                ),
+    // This screen's split dark-hero / light-form design is intentionally
+    // fixed regardless of the device's theme, so force the light theme here
+    // instead of letting text/icon colors drift with dark mode.
+    return Theme(
+      data: AppTheme.light,
+      child: Scaffold(
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final form = Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: SingleChildScrollView(child: _buildForm()),
               ),
-            )
-          : Row(
+            );
+
+            if (constraints.maxWidth < AppBreakpoints.laptop) {
+              // Narrow screens (phones, small windows): the side-by-side
+              // hero doesn't fit, so show the form alone.
+              return form;
+            }
+
+            return Row(
               children: [
                 const Expanded(child: _LeftPanel()),
-                Expanded(
-                  child: Center(
-                    child: SizedBox(
-                      width: 480,
-                      child: _buildForm(isMobile: false),
-                    ),
-                  ),
-                ),
+                Expanded(child: form),
               ],
-            ),
+            );
+          },
+        ),
+      ),
     );
   }
 
-  Widget _buildForm({required bool isMobile}) {
+  Widget _buildForm() {
     return ListenableBuilder(
       listenable: _authController,
       builder: (context, _) {
-        final l10n = AppLocalizations.of(context);
-        final palette = context.palette;
+        final l10n = AppLocalizations.of(context)!;
+        final colors = context.colors;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          margin: EdgeInsets.symmetric(
-            horizontal: isMobile ? 16 : 32,
-            vertical: 32,
-          ),
-          padding: EdgeInsets.all(isMobile ? 24 : 32),
+          margin: EdgeInsets.all(context.responsive(mobile: 16.0, laptop: 32.0)),
+          padding: EdgeInsets.all(context.responsive(mobile: 20.0, laptop: 32.0)),
           decoration: BoxDecoration(
-            color: palette.surface,
+            color: colors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: palette.border),
+            border: Border.all(color: colors.surfaceBorder),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.06),
@@ -111,14 +126,15 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 16,
             children: [
-              const Row(
+              Row(
+                spacing: 8,
                 children: [
-                  Icon(Icons.lightbulb_circle, size: 36),
-                  SizedBox(width: 8),
+                  const Icon(Icons.lightbulb_circle, size: 36),
                   Text(
-                    'Jobfy',
-                    style: TextStyle(
+                    l10n.appName,
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
                       letterSpacing: 0.3,
@@ -126,17 +142,20 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              Text(
-                l10n.loginWelcomeBack,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 4,
+                children: [
+                  Text(
+                    l10n.loginWelcomeBack,
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    l10n.loginSubtitle,
+                    style: TextStyle(fontSize: 13, color: colors.textMuted),
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                l10n.loginSubtitle,
-                style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
-              ),
-              const SizedBox(height: 28),
               TextField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -145,64 +164,61 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: const Icon(Icons.email_outlined, size: 18),
                 ),
               ),
-              const SizedBox(height: 16),
               TextField(
-                controller: _senhaController,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: l10n.passwordLabel,
-                  hintText: l10n.passwordHint,
+                  hintText: l10n.passwordHintMin6,
                   prefixIcon: const Icon(Icons.lock_outline, size: 18),
                 ),
                 onSubmitted: (_) => _handleLogin(),
               ),
-              const SizedBox(height: 12),
               Row(
+                spacing: 8,
                 children: [
                   SizedBox(
                     width: 20,
                     height: 20,
                     child: Checkbox(
-                      value: _lembreMe,
-                      onChanged: (v) => setState(() => _lembreMe = v!),
+                      value: _rememberMe,
+                      onChanged: (v) => setState(() => _rememberMe = v!),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(l10n.loginRememberMe, style: const TextStyle(fontSize: 13)),
+                  Text(l10n.rememberMe, style: const TextStyle(fontSize: 13)),
                 ],
               ),
-              if (_authController.error != null) ...[
-                const SizedBox(height: 12),
+              if (_authController.errorCode != null)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppColors.danger.withValues(alpha: 0.08),
+                    color: colors.danger.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColors.danger.withValues(alpha: 0.3)),
+                    border: Border.all(color: colors.danger.withValues(alpha: 0.3)),
                   ),
                   child: Row(
+                    spacing: 8,
                     children: [
-                      const Icon(Icons.error_outline, color: AppColors.danger, size: 16),
-                      const SizedBox(width: 8),
-                      Text(
-                        l10n.authErrorInvalidCredentials,
-                        style: const TextStyle(color: AppColors.danger, fontSize: 13),
+                      Icon(Icons.error_outline, color: colors.danger, size: 16),
+                      Expanded(
+                        child: Text(
+                          _errorMessage(l10n, _authController.errorCode!),
+                          style: TextStyle(color: colors.danger, fontSize: 13),
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-              const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 height: 48,
                 child: ElevatedButton(
                   onPressed: _authController.isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: palette.strongButton,
+                    backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -221,53 +237,36 @@ class _LoginPageState extends State<LoginPage> {
                       : Text(l10n.loginButton, style: const TextStyle(fontSize: 15)),
                 ),
               ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 16,
+                runSpacing: 8,
                 children: [
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverEsqueci = true),
-                    onExit: (_) => setState(() => _hoverEsqueci = false),
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        l10n.loginForgotPassword,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverEsqueci ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.forgotPassword,
+                    onTap: () {},
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverCadastro = true),
-                    onExit: (_) => setState(() => _hoverCadastro = false),
-                    child: GestureDetector(
-                      onTap: () => context.go('/register'),
-                      child: Text(
-                        l10n.createAccount,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.createAccount,
+                    onTap: () => context.go('/register'),
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
-                  MouseRegion(
-                    onEnter: (_) => setState(() => _hoverCadastro = true),
-                    onExit: (_) => setState(() => _hoverCadastro = false),
-                    child: GestureDetector(
-                      onTap: () => context.go('/company'),
-                      child: Text(
-                        l10n.loginIamCompany,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: _hoverCadastro ? AppColors.accent : AppColors.textMuted,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
+                  HoverLink(
+                    label: l10n.iAmCompany,
+                    onTap: () => context.go('/company'),
+                    style: (hovered) => TextStyle(
+                      fontSize: 12,
+                      color: hovered ? colors.accent : colors.textMuted,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ],
@@ -285,8 +284,7 @@ class _LeftPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-
+    final l10n = AppLocalizations.of(context)!;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -312,17 +310,17 @@ class _LeftPanel extends StatelessWidget {
           child: GlowCircle(size: 180, color: Color(0x260EA5E9)),
         ),
         Padding(
-          padding: const EdgeInsets.all(48),
+          padding: EdgeInsets.all(context.responsive(mobile: 32.0, desktop: 48.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
+                spacing: 10,
                 children: [
-                  Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
-                  SizedBox(width: 10),
+                  const Icon(Icons.lightbulb_circle, color: Colors.white, size: 36),
                   Text(
-                    'Jobfy',
-                    style: TextStyle(
+                    l10n.appName,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 26,
@@ -334,16 +332,16 @@ class _LeftPanel extends StatelessWidget {
               const SizedBox(height: 64),
               Text(
                 l10n.loginHeroTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: context.responsive(mobile: 30.0, desktop: 38.0),
                   fontWeight: FontWeight.bold,
                   height: 1.25,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
-                l10n.loginHeroDescription,
+                l10n.loginHeroSubtitle,
                 style: const TextStyle(
                   color: AppColors.textLight,
                   fontSize: 15,
@@ -355,7 +353,7 @@ class _LeftPanel extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 8,
                 children: [
-                  AppChip(icon: Icons.work_outline, label: l10n.chipPersonalizedJobs),
+                  AppChip(icon: Icons.work_outline, label: l10n.chipCustomJobs),
                   AppChip(icon: Icons.bolt_outlined, label: l10n.chipSmartMatch),
                   AppChip(icon: Icons.trending_up, label: l10n.chipCareerGrowth),
                 ],

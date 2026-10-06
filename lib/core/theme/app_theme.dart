@@ -1,49 +1,83 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
-import 'app_palette.dart';
+import 'app_semantic_colors.dart';
 
 class AppTheme {
-  static ThemeData get theme => light;
+  static ThemeData get light => ThemeData(
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: AppColors.backgroundLight,
+    cardColor: AppColors.white,
+    dividerColor: AppColors.cardBorder,
+    extensions: const [AppSemanticColors.light],
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.backgroundDark,
+      foregroundColor: Colors.white,
+      elevation: 0,
+    ),
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.accent,
+      brightness: Brightness.light,
+    ).copyWith(
+      surface: AppColors.white,
+      onSurface: Colors.black87,
+      onSurfaceVariant: AppColors.textMuted,
+      outlineVariant: AppColors.cardBorder,
+    ),
+    inputDecorationTheme: _inputDecorationTheme(
+      borderColor: AppColors.cardBorder,
+      labelColor: Colors.black87,
+      hintColor: AppColors.textMuted,
+    ),
+  );
 
-  static ThemeData get light => _build(Brightness.light, AppPalette.light);
+  static ThemeData get dark => ThemeData(
+    brightness: Brightness.dark,
+    scaffoldBackgroundColor: AppColors.backgroundDark,
+    cardColor: AppColors.surfaceDark,
+    dividerColor: AppColors.cardBorderDark,
+    extensions: const [AppSemanticColors.dark],
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.backgroundDark,
+      foregroundColor: Colors.white,
+      elevation: 0,
+    ),
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: AppColors.accent,
+      brightness: Brightness.dark,
+    ).copyWith(
+      surface: AppColors.surfaceDark,
+      onSurface: Colors.white,
+      onSurfaceVariant: AppColors.textMutedDark,
+      outlineVariant: AppColors.cardBorderDark,
+    ),
+    inputDecorationTheme: _inputDecorationTheme(
+      borderColor: AppColors.cardBorderDark,
+      labelColor: Colors.white,
+      hintColor: AppColors.textMutedDark,
+    ),
+  );
 
-  static ThemeData get dark => _build(Brightness.dark, AppPalette.dark);
-
-  static ThemeData _build(Brightness brightness, AppPalette palette) {
-    final isDark = brightness == Brightness.dark;
-
-    return ThemeData(
-      brightness: brightness,
-      scaffoldBackgroundColor: isDark ? palette.background : AppColors.white,
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.backgroundDark,
-        elevation: 0,
+  static InputDecorationTheme _inputDecorationTheme({
+    required Color borderColor,
+    required Color labelColor,
+    required Color hintColor,
+  }) {
+    return InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: borderColor),
       ),
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.accent,
-        brightness: brightness,
-        surface: palette.surface,
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: borderColor),
       ),
-      dividerColor: palette.border,
-      dialogTheme: DialogThemeData(backgroundColor: palette.surface),
-      extensions: [palette],
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: palette.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: palette.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.accent, width: 2),
-        ),
-        labelStyle: TextStyle(color: palette.textPrimary, fontSize: 14),
-        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppColors.accent, width: 2),
       ),
+      labelStyle: TextStyle(color: labelColor, fontSize: 14),
+      hintStyle: TextStyle(color: hintColor, fontSize: 13),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     );
   }
 }

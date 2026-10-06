@@ -1,3 +1,4 @@
+import '../entities/registration_entity.dart';
 import '../entities/user_entity.dart';
 import '../repositories/auth_repository.dart';
 
@@ -6,19 +7,7 @@ class RegisterUsecase {
 
   RegisterUsecase(this._repository);
 
-  Future<UserEntity?> call({
-    required String nome,
-    required String email,
-    required String cpf,
-    required String senha,
-    required String genero,
-  }) {
-    return _repository.register(
-      nome: nome,
-      email: email,
-      cpf: cpf,
-      senha: senha,
-      genero: genero,
-    );
+  Future<UserEntity?> call(RegistrationEntity data) {
+    return _repository.register(data);
   }
 }

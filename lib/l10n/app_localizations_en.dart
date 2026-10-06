@@ -9,81 +9,36 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get errorLoadingProfile => 'Could not load profile.';
+  String get appName => 'Jobfy';
 
   @override
-  String get searchJobsHint => 'Search jobs...';
+  String get headerSettingsTooltip => 'Settings';
 
   @override
-  String get comingSoon => 'Coming soon!';
-
-  @override
-  String get cancel => 'Cancel';
-
-  @override
-  String get save => 'Save';
-
-  @override
-  String get userAreaTooltip => 'User area';
-
-  @override
-  String get notificationsTooltip => 'Notifications';
+  String get headerUserAreaTooltip => 'User area';
 
   @override
   String get homeHeadline => 'Find the job\nof your dreams.';
 
   @override
-  String get homeSubtitle =>
-      'Jobfy uses intelligence to connect talent\nwith real opportunities in the market.';
+  String get homeSubheadline =>
+      'Jobfy uses intelligence to connect talent\nto real opportunities in the market.';
 
   @override
-  String get homeGetStarted => 'Get started';
+  String get homeCtaPrimary => 'Get started';
 
   @override
-  String get homeHaveAccount => 'I have an account';
-
-  @override
-  String get loginWelcomeBack => 'Welcome back';
-
-  @override
-  String get loginSubtitle => 'Enter your credentials to sign in.';
-
-  @override
-  String get emailLabel => 'E-mail';
-
-  @override
-  String get emailHint => 'you@email.com';
-
-  @override
-  String get passwordLabel => 'Password';
-
-  @override
-  String get passwordHint => 'At least 6 characters';
-
-  @override
-  String get loginRememberMe => 'Remember me';
-
-  @override
-  String get loginButton => 'Sign in';
-
-  @override
-  String get loginForgotPassword => 'Forgot your password?';
-
-  @override
-  String get createAccount => 'Create account';
-
-  @override
-  String get loginIamCompany => 'I\'m a company';
+  String get homeCtaSecondary => 'I already have an account';
 
   @override
   String get loginHeroTitle => 'Connect to\nyour next job.';
 
   @override
-  String get loginHeroDescription =>
-      'Jobfy connects talent with real opportunities.\nShowcase your skills, find personalized\njobs and accelerate your career\nwith intelligence.';
+  String get loginHeroSubtitle =>
+      'Jobfy connects talent to real opportunities.\nShowcase your skills, find tailored jobs\nand accelerate your career\nwith intelligence.';
 
   @override
-  String get chipPersonalizedJobs => 'Personalized jobs';
+  String get chipCustomJobs => 'Tailored jobs';
 
   @override
   String get chipSmartMatch => 'Smart match';
@@ -92,20 +47,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chipCareerGrowth => 'Career growth';
 
   @override
-  String get authErrorInvalidCredentials => 'Invalid e-mail or password.';
+  String get loginWelcomeBack => 'Welcome back';
 
   @override
-  String get authErrorRegisterFailed =>
-      'Could not create account. Please try again.';
+  String get loginSubtitle => 'Enter your credentials to continue.';
 
   @override
-  String get registerTermsRequired => 'You must accept the terms.';
+  String get emailLabel => 'Email';
+
+  @override
+  String get emailHint => 'you@email.com';
+
+  @override
+  String get passwordLabel => 'Password';
+
+  @override
+  String get passwordHintMin6 => 'At least 6 characters';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get loginButton => 'Sign in';
+
+  @override
+  String get forgotPassword => 'Forgot your password?';
+
+  @override
+  String get createAccount => 'Create account';
+
+  @override
+  String get iAmCompany => 'I\'m a company';
+
+  @override
+  String get authErrorInvalidCredentials => 'Invalid email or password.';
+
+  @override
+  String get authErrorRegistrationFailed =>
+      'Could not create your account. Please try again.';
+
+  @override
+  String get authErrorEmailInUse => 'This email is already registered.';
+
+  @override
+  String get authErrorNetwork =>
+      'Could not reach the server. Please try again later.';
 
   @override
   String get registerTitle => 'Create your account';
 
   @override
-  String get registerSubtitle => 'To grow your career';
+  String get registerSubtitle => 'For the growth of your career';
 
   @override
   String get fullNameLabel => 'Full name';
@@ -115,6 +107,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cpfLabel => 'CPF';
+
+  @override
+  String get cpfHint => '000.000.000-00';
 
   @override
   String get genderLabel => 'Gender';
@@ -129,20 +124,85 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genderOther => 'Other';
 
   @override
-  String get registerAcceptTermsPrefix => 'I accept the ';
+  String get acceptTermsPrefix => 'I accept the ';
 
   @override
-  String get registerTermsLink => 'terms of service';
+  String get termsOfService => 'terms of service';
 
   @override
-  String get registerGoToLogin => 'I have an account → Sign in';
+  String get termsRequiredError => 'You need to accept the terms.';
 
   @override
-  String get termsTitle => 'Terms of Service';
+  String get registerButton => 'Create account';
 
   @override
-  String get termsBody =>
-      'By creating a Jobfy account, you agree to our privacy policy and terms of use. Your data will be used exclusively to connect you with relevant job opportunities.';
+  String get alreadyHaveAccount => 'Already have an account? Sign in';
+
+  @override
+  String get termsDialogTitle => 'Terms of Service';
+
+  @override
+  String get termsDialogBody =>
+      'By creating a Jobfy account, you agree to our privacy policy and terms of use. Your data will be used exclusively to connect you to relevant job opportunities.';
+
+  @override
+  String get userAreaLoadError => 'Could not load your profile.';
+
+  @override
+  String get searchJobsPlaceholder => 'Search jobs...';
+
+  @override
+  String welcomeGreeting(String name) {
+    return 'Hi, $name! 👋';
+  }
+
+  @override
+  String get welcomeSubtitle => 'You have new jobs matching your profile.';
+
+  @override
+  String get viewRecommendedJobs => 'View recommended jobs';
+
+  @override
+  String get avgMatch => 'Average match';
+
+  @override
+  String get statApplications => 'Applications';
+
+  @override
+  String get statApplicationsSub => 'in total';
+
+  @override
+  String get statMatchScore => 'Match score';
+
+  @override
+  String get statMatchScoreSub => 'overall average';
+
+  @override
+  String get statProfileViews => 'Views';
+
+  @override
+  String get statProfileViewsSub => 'of your profile';
+
+  @override
+  String get skillsTitle => 'Skills';
+
+  @override
+  String get addSkill => 'Add';
+
+  @override
+  String get recommendedJobsTitle => 'Recommended jobs';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get applyButton => 'Apply';
+
+  @override
+  String get recentActivityTitle => 'Recent activity';
+
+  @override
+  String get profileCompletion => 'Profile completion';
 
   @override
   String get navDashboard => 'Dashboard';
@@ -163,225 +223,505 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navLogout => 'Log out';
 
   @override
-  String get profileComplete => 'Profile complete';
-
-  @override
-  String dashboardGreeting(String name) {
-    return 'Hi, $name! 👋';
-  }
-
-  @override
-  String get dashboardNewMatches => 'You have new jobs matching your profile.';
-
-  @override
-  String get dashboardSeeRecommended => 'See recommended jobs';
-
-  @override
-  String get averageMatch => 'Average match';
-
-  @override
-  String get statsApplications => 'Applications';
-
-  @override
-  String get statsApplicationsSub => 'this month';
-
-  @override
-  String get statsMatchScore => 'Match Score';
-
-  @override
-  String get statsMatchScoreSub => 'overall average';
-
-  @override
-  String get statsViews => 'Views';
-
-  @override
-  String get statsViewsSub => 'of your profile';
-
-  @override
-  String get skillsTitle => 'Skills';
-
-  @override
-  String get skillsAdd => 'Add';
-
-  @override
-  String get recommendedJobs => 'Recommended Jobs';
-
-  @override
-  String get seeAll => 'See all';
-
-  @override
-  String get recentActivity => 'Recent Activity';
-
-  @override
-  String get applyButton => 'Apply';
-
-  @override
   String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Choose how Jobfy looks on this device.';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsLanguage => 'Language';
+
+  @override
+  String get settingsLanguageDescription => 'Choose the app language.';
+
+  @override
+  String get settingsLanguageSystem => 'System default';
+
+  @override
+  String get settingsBack => 'Back';
 
   @override
   String get settingsSubtitle =>
       'Manage your account, notifications and preferences.';
 
   @override
+  String get settingsAccountTitle => 'Account information';
+
+  @override
+  String get settingsAccountDescription => 'Your basic profile data.';
+
+  @override
+  String get settingsSaveChanges => 'Save changes';
+
+  @override
+  String get settingsSaving => 'Saving...';
+
+  @override
   String get settingsSaved => 'Changes saved successfully.';
 
   @override
-  String get accountInfoTitle => 'Account information';
+  String get settingsSaveError =>
+      'Could not save your changes. Please try again.';
 
   @override
-  String get accountInfoSubtitle => 'Your basic profile data.';
+  String get settingsNameRequired => 'Please enter your name.';
 
   @override
-  String get locationLabel => 'Location';
+  String get settingsEmailInvalid => 'Please enter a valid email.';
 
   @override
-  String get saving => 'Saving...';
+  String get settingsNotifications => 'Notifications';
 
   @override
-  String get saveChanges => 'Save changes';
-
-  @override
-  String get nameRequired => 'Please enter your name.';
-
-  @override
-  String get emailInvalid => 'Please enter a valid e-mail.';
-
-  @override
-  String get notificationsTitle => 'Notifications';
-
-  @override
-  String get notificationsSubtitle =>
+  String get settingsNotificationsDescription =>
       'Choose what you want to be notified about.';
 
   @override
-  String get notifNewJobsTitle => 'New matching jobs';
+  String get settingsNotifNewJobs => 'New matching jobs';
 
   @override
-  String get notifNewJobsSubtitle => 'Notify me when high-match jobs appear.';
+  String get settingsNotifNewJobsDescription =>
+      'Notify me when high-match jobs appear.';
 
   @override
-  String get notifMessagesTitle => 'Messages from companies';
+  String get settingsNotifMessages => 'Messages from companies';
 
   @override
-  String get notifMessagesSubtitle =>
+  String get settingsNotifMessagesDescription =>
       'Notify me about new messages from recruiters.';
 
   @override
-  String get notifWeeklyTitle => 'Weekly e-mail summary';
+  String get settingsNotifWeekly => 'Weekly email summary';
 
   @override
-  String get notifWeeklySubtitle => 'Get a summary of your applications.';
+  String get settingsNotifWeeklyDescription =>
+      'Get a summary of your applications.';
 
   @override
-  String get notifPushTitle => 'Push notifications';
+  String get settingsNotifPush => 'Push notifications';
 
   @override
-  String get notifPushSubtitle => 'Real-time alerts on your device.';
+  String get settingsNotifPushDescription => 'Real-time alerts on your device.';
 
   @override
-  String get privacyTitle => 'Privacy and security';
+  String get settingsPrivacy => 'Privacy and security';
 
   @override
-  String get privacySubtitle => 'Control who sees your information.';
+  String get settingsPrivacyDescription => 'Control who sees your information.';
 
   @override
-  String get privacyVisibleTitle => 'Profile visible to companies';
+  String get settingsProfileVisible => 'Profile visible to companies';
 
   @override
-  String get privacyVisibleSubtitle =>
+  String get settingsProfileVisibleDescription =>
       'Companies can find your profile in searches.';
 
   @override
-  String get privacyShowEmailTitle => 'Show e-mail on profile';
+  String get settingsShowEmail => 'Show email on profile';
 
   @override
-  String get privacyShowEmailSubtitle => 'Display your e-mail to recruiters.';
+  String get settingsShowEmailDescription =>
+      'Display your email to recruiters.';
 
   @override
-  String get changePassword => 'Change password';
+  String get settingsChangePassword => 'Change password';
 
   @override
-  String get currentPasswordLabel => 'Current password';
+  String get settingsCurrentPassword => 'Current password';
 
   @override
-  String get newPasswordLabel => 'New password';
+  String get settingsNewPassword => 'New password';
 
   @override
-  String get confirmPasswordLabel => 'Confirm new password';
+  String get settingsConfirmPassword => 'Confirm new password';
 
   @override
-  String get passwordRequired => 'Please enter your current password.';
+  String get settingsPasswordRequired => 'Please enter your current password.';
 
   @override
-  String get passwordTooShort => 'Password must be at least 6 characters.';
+  String get settingsPasswordTooShort =>
+      'Password must be at least 6 characters.';
 
   @override
-  String get passwordsDontMatch => 'Passwords do not match.';
+  String get settingsPasswordsDontMatch => 'Passwords do not match.';
 
   @override
-  String get passwordChanged => 'Password changed successfully.';
+  String get settingsWrongPassword => 'Current password is incorrect.';
 
   @override
-  String get jobPrefsTitle => 'Job preferences';
+  String get settingsPasswordChanged => 'Password changed successfully.';
 
   @override
-  String get jobPrefsSubtitle => 'Work arrangements you accept.';
+  String get settingsPasswordError =>
+      'Could not change your password. Please try again.';
 
   @override
-  String get jobTypeRemote => 'Remote';
+  String get settingsSave => 'Save';
 
   @override
-  String get jobTypeHybrid => 'Hybrid';
+  String get settingsJobPreferences => 'Job preferences';
 
   @override
-  String get jobTypeOnsite => 'On-site';
+  String get settingsJobPreferencesDescription =>
+      'Work arrangements you accept.';
 
   @override
-  String get appearanceTitle => 'Appearance';
+  String get settingsJobTypeRemote => 'Remote';
 
   @override
-  String get appearanceSubtitle => 'Customize the interface.';
+  String get settingsJobTypeHybrid => 'Hybrid';
 
   @override
-  String get themeLabel => 'Theme';
+  String get settingsJobTypeOnsite => 'On-site';
 
   @override
-  String get themeLight => 'Light';
+  String get settingsDangerZone => 'Danger zone';
 
   @override
-  String get themeDark => 'Dark';
+  String get settingsLogout => 'Log out';
 
   @override
-  String get themeSystem => 'System';
+  String get settingsDeleteAccount => 'Delete account';
 
   @override
-  String get themeToggleToLight => 'Use light theme';
+  String get settingsDeleteAccountConfirm =>
+      'Are you sure you want to delete your account? You will no longer be able to sign in.';
 
   @override
-  String get themeToggleToDark => 'Use dark theme';
+  String get settingsDelete => 'Delete';
 
   @override
-  String get languageTitle => 'Language';
+  String get settingsAccountDeleted => 'Account deleted.';
 
   @override
-  String get languageSubtitle => 'Choose the app language.';
+  String get settingsDeleteError =>
+      'Could not delete your account. Please try again.';
 
   @override
-  String get dangerZoneTitle => 'Danger zone';
+  String get settingsThemeToggleToLight => 'Use light theme';
 
   @override
-  String get logoutAccount => 'Log out';
+  String get settingsThemeToggleToDark => 'Use dark theme';
 
   @override
-  String get deleteAccount => 'Delete account';
+  String get companyRegisterTitle => 'Register your company';
 
   @override
-  String get deleteAccountConfirm =>
-      'Are you sure you want to delete your account? This action cannot be undone.';
+  String get companyRegisterSubtitle =>
+      'Start publishing jobs and finding talent on Jobfy.';
 
   @override
-  String get delete => 'Delete';
+  String get companyNameLabel => 'Company name';
 
   @override
-  String get accountDeleted => 'Account deleted.';
+  String get companyNameHint => 'Your company\'s name...';
+
+  @override
+  String get companyCnpjLabel => 'CNPJ';
+
+  @override
+  String get companyCnpjHint => '00.000.000/0000-00';
+
+  @override
+  String get companyPhoneLabel => 'Phone';
+
+  @override
+  String get companyPhoneHint => '(00) 00000-0000';
+
+  @override
+  String get companyRegisterButton => 'Register company';
+
+  @override
+  String get companyRegisterError =>
+      'Could not register the company. Please try again.';
+
+  @override
+  String companyWelcome(String companyName) {
+    return 'Welcome, $companyName';
+  }
+
+  @override
+  String get companyPublishJobTitle => 'Publish a job';
+
+  @override
+  String get jobTitleLabel => 'Job title';
+
+  @override
+  String get jobTitleHint => 'e.g. Flutter Developer';
+
+  @override
+  String get jobDescriptionLabel => 'Description';
+
+  @override
+  String get jobDescriptionHint => 'Responsibilities, requirements...';
+
+  @override
+  String get jobLocationLabel => 'Location';
+
+  @override
+  String get jobLocationHint => 'e.g. Remote, São Paulo';
+
+  @override
+  String get jobContractTypeLabel => 'Contract type';
+
+  @override
+  String get jobContractTypeHint => 'e.g. Full-time, Contract';
+
+  @override
+  String get jobSalaryLabel => 'Salary range';
+
+  @override
+  String get jobSalaryHint => 'e.g. \$4,000 – \$6,000';
+
+  @override
+  String get companyPublishJobButton => 'Publish job';
+
+  @override
+  String get companyJobPublishError =>
+      'Could not publish the job. Please try again.';
+
+  @override
+  String get companyJobsTitle => 'Published jobs';
+
+  @override
+  String get companyNoJobsYet =>
+      'No jobs published yet. Publish your first one above.';
+
+  @override
+  String get companyViewCandidates => 'View candidates';
+
+  @override
+  String companyCandidatesTitle(String jobTitle) {
+    return 'Candidates for $jobTitle';
+  }
+
+  @override
+  String get companyRoleFilterLabel => 'Filter by desired role';
+
+  @override
+  String companyMinMatchLabel(int percent) {
+    return 'Minimum match: $percent%';
+  }
+
+  @override
+  String get companyNoCandidates => 'No candidates match this filter yet.';
+
+  @override
+  String get companyCandidateFilterError =>
+      'Could not load candidates. Please try again.';
+
+  @override
+  String get companyRateCandidate => 'Rate';
+
+  @override
+  String get companyMessageCandidate => 'Message';
+
+  @override
+  String get companyRatingLabel => 'Rating (0-5)';
+
+  @override
+  String get companyMessageLabel => 'Message';
+
+  @override
+  String get companyMessageHint => 'Write a message to this candidate...';
+
+  @override
+  String get companySend => 'Send';
+
+  @override
+  String get companyCandidateRateError =>
+      'Could not save the rating. Please try again.';
+
+  @override
+  String get companyMessageSendError =>
+      'Could not send the message. Please try again.';
+
+  @override
+  String get companyRatingSaved => 'Rating saved.';
+
+  @override
+  String get companyMessageSent => 'Message sent.';
+
+  @override
+  String get jobsPageTitle => 'Jobs';
+
+  @override
+  String get jobsLocationHint => 'Location...';
+
+  @override
+  String get jobsNoResults => 'No jobs found for this search.';
+
+  @override
+  String get jobSearchError => 'Could not load jobs. Please try again.';
+
+  @override
+  String get jobApplyError =>
+      'Could not submit your application. Please try again.';
+
+  @override
+  String get jobApplySuccess => 'Application submitted!';
+
+  @override
+  String get jobAlreadyApplied => 'Applied';
+
+  @override
+  String get jobViewDetails => 'View details';
+
+  @override
+  String get authErrorCpfInUse => 'This CPF is already registered.';
+
+  @override
+  String get registerSectionPersonal => 'Personal data';
+
+  @override
+  String get registerSectionSkills => 'Skills';
+
+  @override
+  String get registerSectionExperience => 'Experience';
+
+  @override
+  String get registerSkillsHint =>
+      'Tap the skills you have and choose your level.';
+
+  @override
+  String get registerSkillsLoadError => 'Could not load the skills list.';
+
+  @override
+  String get otherSkillHint => 'Other skill...';
+
+  @override
+  String get phoneLabel => 'Phone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Date of birth';
+
+  @override
+  String get educationLevelLabel => 'Education';
+
+  @override
+  String get optionalSuffix => '(optional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Elementary school (incomplete)';
+
+  @override
+  String get educationElementaryComplete => 'Elementary school (complete)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'High school (incomplete)';
+
+  @override
+  String get educationHighSchoolComplete => 'High school (complete)';
+
+  @override
+  String get educationTechnical => 'Technical course';
+
+  @override
+  String get educationBachelorIncomplete => 'Bachelor\'s degree (incomplete)';
+
+  @override
+  String get educationBachelorComplete => 'Bachelor\'s degree (complete)';
+
+  @override
+  String get educationPostgraduate => 'Postgraduate';
+
+  @override
+  String get skillLevelBeginner => 'Beginner';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediate';
+
+  @override
+  String get skillLevelAdvanced => 'Advanced';
+
+  @override
+  String get addExperience => 'Add experience';
+
+  @override
+  String get noExperiencesYet =>
+      'No experience added. Volunteer work counts too!';
+
+  @override
+  String get experienceJobTitleLabel => 'Job title';
+
+  @override
+  String get experienceCompanyLabel => 'Company';
+
+  @override
+  String get experienceDescriptionLabel => 'What did you do?';
+
+  @override
+  String get experienceStartLabel => 'Start';
+
+  @override
+  String get experienceEndLabel => 'End';
+
+  @override
+  String get experienceCurrentJob => 'I currently work here';
+
+  @override
+  String get experiencePresent => 'Present';
+
+  @override
+  String get dialogCancel => 'Cancel';
+
+  @override
+  String get dialogAdd => 'Add';
+
+  @override
+  String get fieldRequired => 'Required field';
+
+  @override
+  String get emailInvalid => 'Enter a valid email';
+
+  @override
+  String get passwordTooShort => 'Use at least 6 characters';
+
+  @override
+  String get cpfInvalid => 'The CPF must have 11 digits';
+
+  @override
+  String get experienceDatesInvalid =>
+      'The end date can\'t be before the start date';
+
+  @override
+  String get statSkills => 'Skills';
+
+  @override
+  String get statSkillsSub => 'registered';
+
+  @override
+  String get statExperiences => 'Experiences';
+
+  @override
+  String get statExperiencesSub => 'on your resume';
+
+  @override
+  String get personalInfoTitle => 'Personal data';
+
+  @override
+  String get notInformed => 'Not informed';
+
+  @override
+  String get noSkillsYet => 'No skills registered yet.';
+
+  @override
+  String get noRecentActivity =>
+      'No recent activity. Apply to a job to see it here.';
 }

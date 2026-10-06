@@ -1,7 +1,6 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobMatchCard extends StatefulWidget {
@@ -16,15 +15,18 @@ class JobMatchCard extends StatefulWidget {
 class _JobMatchCardState extends State<JobMatchCard> {
   bool _hovered = false;
 
-  Color get _matchColor {
-    final p = widget.job.matchPercent;
-    if (p >= 90) return AppColors.success;
-    if (p >= 70) return AppColors.warning;
-    return AppColors.textMuted;
+  Color _matchColor(BuildContext context) {
+    final colors = context.colors;
+    final p = widget.job.matchPercent ?? 0;
+    if (p >= 90) return colors.success;
+    if (p >= 70) return colors.warning;
+    return colors.textMuted;
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+    final matchColor = _matchColor(context);
     return MouseRegion(
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
@@ -32,15 +34,15 @@ class _JobMatchCardState extends State<JobMatchCard> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: context.palette.surface,
+          color: colors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: _hovered ? AppColors.accent.withValues(alpha: 0.4) : context.palette.border,
+            color: _hovered ? colors.accent.withValues(alpha: 0.4) : colors.surfaceBorder,
           ),
           boxShadow: [
             BoxShadow(
               color: _hovered
-                  ? AppColors.accent.withValues(alpha: 0.08)
+                  ? colors.accent.withValues(alpha: 0.08)
                   : Colors.black.withValues(alpha: 0.03),
               blurRadius: _hovered ? 16 : 8,
               offset: const Offset(0, 4),
@@ -49,49 +51,52 @@ class _JobMatchCardState extends State<JobMatchCard> {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 10,
           children: [
             Row(
+              spacing: 12,
               children: [
                 Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withValues(alpha: 0.1),
+                    color: colors.accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.business_outlined,
-                    color: AppColors.accent,
+                    color: colors.accent,
                     size: 20,
                   ),
                 ),
-                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.job.titulo,
+                        widget.job.title,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
+                          color: colors.textPrimary,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        widget.job.empresa,
-                        style: const TextStyle(
+                        widget.job.company,
+                        style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textMuted,
+                          color: colors.textMuted,
                         ),
                       ),
                     ],
                   ),
                 ),
+                if (widget.job.matchPercent != null)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: _matchColor.withValues(alpha: 0.12),
+                    color: matchColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -99,29 +104,27 @@ class _JobMatchCardState extends State<JobMatchCard> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: _matchColor,
+                      color: matchColor,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
             Row(
+              spacing: 8,
               children: [
-                _Tag(icon: Icons.location_on_outlined, label: widget.job.local),
-                const SizedBox(width: 8),
-                _Tag(icon: Icons.work_outline, label: widget.job.tipo),
+                _Tag(icon: Icons.location_on_outlined, label: widget.job.location),
+                _Tag(icon: Icons.work_outline, label: widget.job.type),
               ],
             ),
-            const SizedBox(height: 10),
             Row(
               children: [
                 Text(
-                  widget.job.salario,
+                  widget.job.salary,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: context.palette.textPrimary,
+                    color: colors.textPrimary,
                   ),
                 ),
                 const Spacer(),
@@ -130,8 +133,8 @@ class _JobMatchCardState extends State<JobMatchCard> {
                   child: ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: context.palette.strongButton,
-                      foregroundColor: Colors.white,
+                      backgroundColor: colors.accent,
+                      foregroundColor: colors.onAccent,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -139,7 +142,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
                       elevation: 0,
                     ),
                     child: Text(
-                      AppLocalizations.of(context).applyButton,
+                      AppLocalizations.of(context)!.applyButton,
                       style: const TextStyle(fontSize: 12),
                     ),
                   ),
@@ -161,21 +164,22 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: context.palette.background,
+        color: colors.background,
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: context.palette.border),
+        border: Border.all(color: colors.surfaceBorder),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
+        spacing: 4,
         children: [
-          Icon(icon, size: 11, color: AppColors.textMuted),
-          const SizedBox(width: 4),
+          Icon(icon, size: 11, color: colors.textMuted),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 11, color: colors.textMuted),
           ),
         ],
       ),

@@ -1,12 +1,21 @@
 import 'package:flutter/foundation.dart';
+import 'package:jobfy/core/network/api_exception.dart';
+import '../../domain/entities/registration_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
 
 enum AuthStatus { idle, loading, success, error }
 
-/// Why the last login/register failed. The page maps it to translated text.
-enum AuthError { invalidCredentials, registerFailed }
+/// Machine-readable error codes. The presentation layer maps these to
+/// localized copy — see [AppLocalizations].
+enum AuthErrorCode {
+  invalidCredentials,
+  registrationFailed,
+  emailInUse,
+  cpfInUse,
+  network,
+}
 
 class AuthController extends ChangeNotifier {
   final LoginUsecase _loginUsecase;
@@ -16,59 +25,61 @@ class AuthController extends ChangeNotifier {
 
   AuthStatus _status = AuthStatus.idle;
   UserEntity? _user;
-  AuthError? _error;
+  AuthErrorCode? _errorCode;
 
   AuthStatus get status => _status;
   UserEntity? get user => _user;
-  AuthError? get error => _error;
+  AuthErrorCode? get errorCode => _errorCode;
   bool get isLoading => _status == AuthStatus.loading;
 
-  Future<bool> login(String email, String senha) async {
+  Future<bool> login(String email, String password) async {
     _status = AuthStatus.loading;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
 
-    final user = await _loginUsecase(email, senha);
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _loginUsecase(email, password);
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.invalidCredentials;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _error = AuthError.invalidCredentials;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
   }
 
-  Future<bool> register({
-    required String nome,
-    required String email,
-    required String cpf,
-    required String senha,
-    required String genero,
-  }) async {
+  Future<bool> register(RegistrationEntity data) async {
     _status = AuthStatus.loading;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
 
-    final user = await _registerUsecase(
-      nome: nome,
-      email: email,
-      cpf: cpf,
-      senha: senha,
-      genero: genero,
-    );
-
-    if (user != null) {
-      _user = user;
-      _status = AuthStatus.success;
-      notifyListeners();
-      return true;
+    try {
+      final user = await _registerUsecase(data);
+      if (user != null) {
+        _user = user;
+        _status = AuthStatus.success;
+        notifyListeners();
+        return true;
+      }
+      _errorCode = AuthErrorCode.registrationFailed;
+    } on ApiStatusException catch (e) {
+      // 409 = duplicate; the message says which unique field ('email'/'cpf').
+      _errorCode = e.statusCode != 409
+          ? AuthErrorCode.registrationFailed
+          : e.message == 'cpf'
+              ? AuthErrorCode.cpfInUse
+              : AuthErrorCode.emailInUse;
+    } on ApiException {
+      _errorCode = AuthErrorCode.network;
     }
 
-    _error = AuthError.registerFailed;
     _status = AuthStatus.error;
     notifyListeners();
     return false;
@@ -82,7 +93,7 @@ class AuthController extends ChangeNotifier {
 
   void resetStatus() {
     _status = AuthStatus.idle;
-    _error = null;
+    _errorCode = null;
     notifyListeners();
   }
 }

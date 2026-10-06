@@ -1,48 +1,37 @@
+import 'package:jobfy/core/config/app_config.dart';
+import 'package:jobfy/core/network/api_client.dart';
+import '../../domain/entities/registration_entity.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../models/user_model.dart';
+import '../datasources/auth_data_source.dart';
+import '../datasources/auth_fake_data_source.dart';
+import '../datasources/auth_mysql_data_source.dart';
+import '../datasources/auth_remote_data_source.dart';
 
-// Mock implementation — substitua por integração real com Firebase/API
 class AuthRepositoryImpl implements AuthRepository {
-  static UserModel? _currentUser;
+  final AuthDataSource _dataSource;
+
+  AuthRepositoryImpl([AuthDataSource? dataSource])
+      : _dataSource = dataSource ??
+            (AppConfig.useMysql
+                ? AuthMysqlDataSource()
+                : AppConfig.useFakeBackend
+                    ? AuthFakeDataSource()
+                    : AuthRemoteDataSource(ApiClient()));
 
   @override
-  Future<UserEntity?> login(String email, String senha) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (email.isNotEmpty && senha.length >= 6) {
-      _currentUser = UserModel(
-        id: 'usr_001',
-        nome: email.split('@').first,
-        email: email,
-        cpf: '000.000.000-00',
-        genero: 'Não informado',
-      );
-      return _currentUser;
-    }
-    return null;
+  Future<UserEntity?> login(String email, String password) {
+    return _dataSource.login(email, password);
   }
 
   @override
-  Future<UserEntity?> register({
-    required String nome,
-    required String email,
-    required String cpf,
-    required String senha,
-    required String genero,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    _currentUser = UserModel(
-      id: 'usr_${DateTime.now().millisecondsSinceEpoch}',
-      nome: nome,
-      email: email,
-      cpf: cpf,
-      genero: genero,
-    );
-    return _currentUser;
+  Future<UserEntity?> register(RegistrationEntity data) {
+    return _dataSource.register(data);
   }
 
   @override
-  Future<void> logout() async {
-    _currentUser = null;
-  }
+  Future<List<String>> getSkillNames() => _dataSource.getSkillNames();
+
+  @override
+  Future<void> logout() => _dataSource.logout();
 }

@@ -1,38 +1,47 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
-import 'package:aplicativo_jobfy/shared/widgets/glow_circle.dart';
+import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
+/// Which part of the authenticated app is currently showing, so the
+/// sidebar (shared across the dashboard, jobs and settings screens) can
+/// highlight the right entry regardless of which page rendered it.
+enum SidebarSection { dashboard, jobs, resume, messages, settings }
 
 class ProfileSidebar extends StatelessWidget {
   final UserProfileEntity profile;
-  final int selectedIndex;
-  final ValueChanged<int> onNavTap;
+  final SidebarSection current;
 
   const ProfileSidebar({
     super.key,
     required this.profile,
-    required this.selectedIndex,
-    required this.onNavTap,
+    required this.current, required void Function() onNavTap, int? selectedIndex,
   });
 
-  static List<({IconData icon, String label})> _navItems(AppLocalizations l10n) => [
-    (icon: Icons.dashboard_outlined, label: l10n.navDashboard),
-    (icon: Icons.work_outline, label: l10n.navJobs),
-    (icon: Icons.description_outlined, label: l10n.navResume),
-    (icon: Icons.chat_bubble_outline, label: l10n.navMessages),
-    (icon: Icons.settings_outlined, label: l10n.navSettings),
-  ];
+  List<({IconData icon, String label, SidebarSection section, String? route})> _navItems(
+    AppLocalizations l10n,
+  ) =>
+      [
+        (icon: Icons.dashboard_outlined, label: l10n.navDashboard, section: SidebarSection.dashboard, route: '/user'),
+        (icon: Icons.work_outline, label: l10n.navJobs, section: SidebarSection.jobs, route: '/jobs'),
+        (icon: Icons.description_outlined, label: l10n.navResume, section: SidebarSection.resume, route: null),
+        (icon: Icons.chat_bubble_outline, label: l10n.navMessages, section: SidebarSection.messages, route: null),
+      ];
+
+  static const double width = 216;
 
   @override
   Widget build(BuildContext context) {
-    final initials = profile.nome.isNotEmpty
-        ? profile.nome.trim().split(' ').take(2).map((w) => w[0]).join()
+    final initials = profile.name.isNotEmpty
+        ? profile.name.trim().split(' ').take(2).map((w) => w[0]).join()
         : '?';
 
     return SizedBox(
-      width: 260,
+      width: width,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -47,19 +56,19 @@ class ProfileSidebar extends StatelessWidget {
           ),
           const Positioned(
             top: -60, left: -60,
-            child: GlowCircle(size: 280, color: Color(0x331D4ED8)),
+            child: GlowCircle(size: 220, color: Color(0x331D4ED8)),
           ),
           const Positioned(
             bottom: 40, right: -60,
-            child: GlowCircle(size: 250, color: Color(0x264F46E5)),
+            child: GlowCircle(size: 200, color: Color(0x264F46E5)),
           ),
           Column(
             children: [
               _buildProfile(initials),
               const Divider(color: Colors.white12, height: 1),
-              Expanded(child: _buildNav(AppLocalizations.of(context))),
+              Expanded(child: _buildNav(context)),
               const Divider(color: Colors.white12, height: 1),
-              _buildLogout(context),
+              _buildSettingsAndLogout(context),
             ],
           ),
         ],
@@ -69,14 +78,15 @@ class ProfileSidebar extends StatelessWidget {
 
   Widget _buildProfile(String initials) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 20),
       child: Column(
+        spacing: 3,
         children: [
           Stack(
             children: [
               Container(
-                width: 72,
-                height: 72,
+                width: 60,
+                height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   gradient: const LinearGradient(
@@ -92,7 +102,7 @@ class ProfileSidebar extends StatelessWidget {
                     initials.toUpperCase(),
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -102,8 +112,8 @@ class ProfileSidebar extends StatelessWidget {
                 bottom: 0,
                 right: 0,
                 child: Container(
-                  width: 18,
-                  height: 18,
+                  width: 15,
+                  height: 15,
                   decoration: BoxDecoration(
                     color: AppColors.success,
                     shape: BoxShape.circle,
@@ -113,70 +123,92 @@ class ProfileSidebar extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 8),
           Text(
-            profile.nome,
+            profile.name,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 15,
+              fontSize: 14,
             ),
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          // Role and location are hidden when the profile doesn't have them
+          // (e.g. no experience registered yet).
+          if (profile.role.isNotEmpty)
           Text(
-            profile.cargo,
-            style: const TextStyle(color: AppColors.textLight, fontSize: 12),
+            profile.role,
+            style: const TextStyle(color: AppColors.textLight, fontSize: 11),
             textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 4),
+          if (profile.location.isNotEmpty)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 3,
             children: [
               const Icon(Icons.location_on_outlined,
-                  color: AppColors.textMuted, size: 13),
-              const SizedBox(width: 3),
-              Text(
-                profile.localizacao,
-                style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
+                  color: AppColors.textMuted, size: 12),
+              Flexible(
+                child: Text(
+                  profile.location,
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _ProgressBar(percent: profile.perfilCompleto),
+          const SizedBox(height: 10),
+          _ProgressBar(percent: profile.profileCompletion),
         ],
       ),
     );
   }
 
-  Widget _buildNav(AppLocalizations l10n) {
-    final items = _navItems(l10n);
+  Widget _buildNav(BuildContext context) {
+    final items = _navItems(AppLocalizations.of(context)!);
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
       itemCount: items.length,
       itemBuilder: (context, i) {
         final item = items[i];
-        final isSelected = selectedIndex == i;
         return _NavItem(
           icon: item.icon,
           label: item.label,
-          isSelected: isSelected,
-          onTap: () => onNavTap(i),
+          isSelected: current == item.section,
+          onTap: item.route == null ? () {} : () => context.go(item.route!),
         );
       },
     );
   }
 
-  Widget _buildLogout(BuildContext context) {
+  Widget _buildSettingsAndLogout(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: _NavItem(
-        icon: Icons.logout,
-        label: AppLocalizations.of(context).navLogout,
-        isSelected: false,
-        isDanger: true,
-        onTap: () => context.go('/'),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        spacing: 2,
+        children: [
+          _NavItem(
+            icon: Icons.settings_outlined,
+            label: l10n.navSettings,
+            isSelected: current == SidebarSection.settings,
+            onTap: () => context.go('/settings'),
+          ),
+          _NavItem(
+            icon: Icons.logout,
+            label: l10n.navLogout,
+            isSelected: false,
+            isDanger: true,
+            onTap: () {
+              final session = context.read<UserSessionController>();
+              context.go('/');
+              session.clear();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -213,6 +245,7 @@ class _NavItemState extends State<_NavItem> {
             : AppColors.textLight;
 
     return MouseRegion(
+      cursor: SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
       child: GestureDetector(
@@ -220,45 +253,44 @@ class _NavItemState extends State<_NavItem> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),
           margin: const EdgeInsets.symmetric(vertical: 2),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           decoration: BoxDecoration(
             color: widget.isSelected
                 ? AppColors.accent.withValues(alpha: 0.2)
                 : _hovered
                     ? Colors.white.withValues(alpha: 0.06)
                     : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(9),
             border: widget.isSelected
                 ? Border.all(color: AppColors.accent.withValues(alpha: 0.5))
                 : null,
           ),
           child: Row(
+            spacing: 10,
             children: [
-              Icon(widget.icon, color: baseColor, size: 18),
-              const SizedBox(width: 12),
+              Icon(widget.icon, color: baseColor, size: 16),
               Expanded(
                 child: Text(
                   widget.label,
-                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: baseColor,
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: widget.isSelected
                         ? FontWeight.w600
                         : FontWeight.normal,
                   ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (widget.isSelected) ...[
+              if (widget.isSelected)
                 Container(
-                  width: 6,
-                  height: 6,
+                  width: 5,
+                  height: 5,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.accentLight,
                   ),
                 ),
-              ],
             ],
           ),
         ),
@@ -275,25 +307,27 @@ class _ProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 6,
       children: [
         Row(
           children: [
-            Text(
-              AppLocalizations.of(context).profileComplete,
-              style: const TextStyle(color: AppColors.textLight, fontSize: 11),
+            Expanded(
+              child: Text(
+                AppLocalizations.of(context)!.profileCompletion,
+                style: const TextStyle(color: AppColors.textLight, fontSize: 10),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            const Spacer(),
             Text(
               '$percent%',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(

@@ -1,95 +1,68 @@
+import 'package:jobfy/core/config/app_config.dart';
+import 'package:jobfy/core/network/api_client.dart';
 import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../datasources/user_data_source.dart';
+import '../datasources/user_fake_data_source.dart';
+import '../datasources/user_mysql_data_source.dart';
+import '../datasources/user_remote_data_source.dart';
 import '../models/user_profile_model.dart';
 
-/// Fake in-memory repository. Edits made in the settings page are kept in
-/// [_savedProfile] so every page sees them until the app is restarted.
 class UserRepositoryImpl implements UserRepository {
-  static UserProfileEntity? _savedProfile;
+  final UserDataSource _dataSource;
+
+  UserRepositoryImpl([UserDataSource? dataSource])
+      : _dataSource = dataSource ??
+            (AppConfig.useMysql
+                ? UserMysqlDataSource()
+                : AppConfig.useFakeBackend
+                    ? UserFakeDataSource()
+                    : UserRemoteDataSource(ApiClient()));
 
   @override
-  Future<UserProfileEntity> getUserProfile(String userId) async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return _savedProfile ?? _defaultProfile;
-  }
-
-  static const _defaultProfile = UserProfileModel(
-      id: 'usr_001',
-      nome: 'Victor hahaha',
-      email: 'HenriqueDevJunior@email.com',
-      cargo: 'Desenvolvedor Pro MAXXXX EM Flutter',
-      localizacao: 'Gaspar, SC',
-      perfilCompleto: 75,
-      candidaturas: 12,
-      matchScore: 89,
-      visualizacoes: 234,
-      habilidades: ['Flutter', 'Dart', 'Firebase', 'UI/UX', 'REST APIs'],
-      vagasRecomendadas: [
-        JobMatchEntity(
-          titulo: 'Flutter Developer Senior',
-          empresa: 'Nubank',
-          local: 'São Paulo, SP',
-          tipo: 'Remoto',
-          matchPercent: 97,
-          salario: 'R\$ 12.000 – 18.000',
-        ),
-        JobMatchEntity(
-          titulo: 'Mobile Engineer',
-          empresa: 'iFood',
-          local: 'Campinas, SP',
-          tipo: 'Híbrido',
-          matchPercent: 91,
-          salario: 'R\$ 10.000 – 15.000',
-        ),
-        JobMatchEntity(
-          titulo: 'Dart/Flutter Developer',
-          empresa: 'PicPay',
-          local: 'Remoto',
-          tipo: 'Remoto',
-          matchPercent: 85,
-          salario: 'R\$ 9.000 – 14.000',
-        ),
-      ],
-      atividades: [
-        ActivityEntity(
-          descricao: 'Candidatura enviada para Nubank',
-          tempo: 'há 2 horas',
-          tipo: 'candidatura',
-        ),
-        ActivityEntity(
-          descricao: 'Perfil visualizado por iFood',
-          tempo: 'há 5 horas',
-          tipo: 'visualizacao',
-        ),
-        ActivityEntity(
-          descricao: 'Match de 91% com iFood',
-          tempo: 'ontem',
-          tipo: 'match',
-        ),
-        ActivityEntity(
-          descricao: 'Currículo atualizado',
-          tempo: 'há 2 dias',
-          tipo: 'perfil',
-        ),
-        ActivityEntity(
-          descricao: '3 novas vagas compatíveis',
-          tempo: 'há 3 dias',
-          tipo: 'vaga',
-        ),
-      ],
-  );
-
-  @override
-  Future<void> updateProfile(UserProfileEntity profile) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    _savedProfile = profile;
+  Future<UserProfileEntity> getUserProfile(String userId) {
+    return _dataSource.getUserProfile(userId);
   }
 
   @override
-  Future<void> changePassword({
-    required String senhaAtual,
-    required String novaSenha,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 400));
+  Future<void> updateProfile(UserProfileEntity profile) {
+    return _dataSource.updateProfile(UserProfileModel(
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      role: profile.role,
+      location: profile.location,
+      profileCompletion: profile.profileCompletion,
+      applications: profile.applications,
+      matchScore: profile.matchScore,
+      profileViews: profile.profileViews,
+      skills: profile.skills,
+      recommendedJobs: profile.recommendedJobs,
+      activities: profile.activities,
+      cpf: profile.cpf,
+      gender: profile.gender,
+      phone: profile.phone,
+      birthDate: profile.birthDate,
+      educationLevel: profile.educationLevel,
+      experiences: profile.experiences,
+    ));
+  }
+
+  @override
+  Future<bool> changePassword({
+    required String userId,
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return _dataSource.changePassword(
+      userId: userId,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
+  @override
+  Future<void> deleteAccount(String userId) {
+    return _dataSource.deleteAccount(userId);
   }
 }

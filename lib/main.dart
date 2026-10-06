@@ -1,12 +1,15 @@
-import 'package:aplicativo_jobfy/core/routes/app_router.dart';
-import 'package:aplicativo_jobfy/core/settings/app_settings_controller.dart';
-import 'package:aplicativo_jobfy/core/theme/app_theme.dart';
-import 'package:aplicativo_jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/core/routes/app_router.dart';
+import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/settings/settings_controller.dart';
+import 'package:jobfy/core/theme/app_theme.dart';
+import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
+import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await appSettings.load();
+void main() {
   runApp(const JobfyApp());
 }
 
@@ -15,21 +18,35 @@ class JobfyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: appSettings,
-      builder: (context, _) {
-        return MaterialApp.router(
-          title: 'Jobfy',
-          debugShowCheckedModeBanner: false,
-          routerConfig: appRouter,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          themeMode: appSettings.themeMode,
-          locale: appSettings.locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-        );
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => SettingsController()..load()),
+        ChangeNotifierProvider(
+          create: (_) => UserSessionController(
+            GetUserProfileUsecase(UserRepositoryImpl()),
+          ),
+        ),
+      ],
+      child: Consumer<SettingsController>(
+        builder: (context, settings, _) {
+          return MaterialApp.router(
+            title: 'Jobfy',
+            debugShowCheckedModeBanner: false,
+            routerConfig: appRouter,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: settings.themeMode,
+            locale: settings.locale,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+          );
+        },
+      ),
     );
   }
 }

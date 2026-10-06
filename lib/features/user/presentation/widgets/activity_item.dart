@@ -1,6 +1,5 @@
-import 'package:aplicativo_jobfy/core/theme/app_colors.dart';
-import 'package:aplicativo_jobfy/core/theme/app_palette.dart';
-import 'package:aplicativo_jobfy/features/user/domain/entities/user_profile_entity.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:flutter/material.dart';
 
 class ActivityItem extends StatelessWidget {
@@ -8,57 +7,62 @@ class ActivityItem extends StatelessWidget {
 
   const ActivityItem({super.key, required this.activity});
 
-  IconData get _icon => switch (activity.tipo) {
-        'candidatura' => Icons.send_outlined,
-        'visualizacao' => Icons.visibility_outlined,
-        'match' => Icons.bolt_outlined,
-        'perfil' => Icons.person_outline,
-        _ => Icons.notifications_outlined,
+  IconData get _icon => switch (activity.type) {
+        ActivityType.application => Icons.send_outlined,
+        ActivityType.profileView => Icons.visibility_outlined,
+        ActivityType.match => Icons.bolt_outlined,
+        ActivityType.profile => Icons.person_outline,
+        ActivityType.job => Icons.notifications_outlined,
       };
 
-  Color get _color => switch (activity.tipo) {
-        'candidatura' => AppColors.accent,
-        'visualizacao' => AppColors.accentLight,
-        'match' => AppColors.warning,
-        'perfil' => AppColors.success,
-        _ => AppColors.textMuted,
-      };
+  Color _color(BuildContext context) {
+    final colors = context.colors;
+    return switch (activity.type) {
+      ActivityType.application => colors.accent,
+      ActivityType.profileView => colors.accent,
+      ActivityType.match => colors.warning,
+      ActivityType.profile => colors.success,
+      ActivityType.job => colors.textMuted,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
+    final color = _color(context);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
         children: [
           Container(
             width: 36,
             height: 36,
             decoration: BoxDecoration(
-              color: _color.withValues(alpha: 0.12),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(_icon, color: _color, size: 17),
+            child: Icon(_icon, color: color, size: 17),
           ),
-          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
               children: [
                 Text(
-                  activity.descricao,
+                  activity.description,
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
-                    color: context.palette.textPrimary,
+                    color: colors.textPrimary,
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
-                  activity.tempo,
-                  style: const TextStyle(
+                  activity.time,
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textMuted,
+                    color: colors.textMuted,
                   ),
                 ),
               ],

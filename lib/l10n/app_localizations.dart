@@ -68,8 +68,8 @@ abstract class AppLocalizations {
 
   final String localeName;
 
-  static AppLocalizations of(BuildContext context) {
-    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
@@ -98,739 +98,1364 @@ abstract class AppLocalizations {
     Locale('en'),
     Locale('es'),
     Locale('pt'),
+    Locale('pt', 'BR'),
   ];
 
-  /// No description provided for @errorLoadingProfile.
+  /// No description provided for @appName.
   ///
-  /// In pt, this message translates to:
-  /// **'Erro ao carregar perfil.'**
-  String get errorLoadingProfile;
+  /// In en, this message translates to:
+  /// **'Jobfy'**
+  String get appName;
 
-  /// No description provided for @searchJobsHint.
+  /// No description provided for @headerSettingsTooltip.
   ///
-  /// In pt, this message translates to:
-  /// **'Buscar vagas...'**
-  String get searchJobsHint;
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get headerSettingsTooltip;
 
-  /// No description provided for @comingSoon.
+  /// No description provided for @headerUserAreaTooltip.
   ///
-  /// In pt, this message translates to:
-  /// **'Em breve!'**
-  String get comingSoon;
-
-  /// No description provided for @cancel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Cancelar'**
-  String get cancel;
-
-  /// No description provided for @save.
-  ///
-  /// In pt, this message translates to:
-  /// **'Salvar'**
-  String get save;
-
-  /// No description provided for @userAreaTooltip.
-  ///
-  /// In pt, this message translates to:
-  /// **'Área do usuário'**
-  String get userAreaTooltip;
-
-  /// No description provided for @notificationsTooltip.
-  ///
-  /// In pt, this message translates to:
-  /// **'Notificações'**
-  String get notificationsTooltip;
+  /// In en, this message translates to:
+  /// **'User area'**
+  String get headerUserAreaTooltip;
 
   /// No description provided for @homeHeadline.
   ///
-  /// In pt, this message translates to:
-  /// **'Encontre o emprego\ndos seus sonhos.'**
+  /// In en, this message translates to:
+  /// **'Find the job\nof your dreams.'**
   String get homeHeadline;
 
-  /// No description provided for @homeSubtitle.
+  /// No description provided for @homeSubheadline.
   ///
-  /// In pt, this message translates to:
-  /// **'A Jobfy usa inteligência para conectar talentos\na oportunidades reais no mercado.'**
-  String get homeSubtitle;
+  /// In en, this message translates to:
+  /// **'Jobfy uses intelligence to connect talent\nto real opportunities in the market.'**
+  String get homeSubheadline;
 
-  /// No description provided for @homeGetStarted.
+  /// No description provided for @homeCtaPrimary.
   ///
-  /// In pt, this message translates to:
-  /// **'Começar agora'**
-  String get homeGetStarted;
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get homeCtaPrimary;
 
-  /// No description provided for @homeHaveAccount.
+  /// No description provided for @homeCtaSecondary.
   ///
-  /// In pt, this message translates to:
-  /// **'Já tenho conta'**
-  String get homeHaveAccount;
-
-  /// No description provided for @loginWelcomeBack.
-  ///
-  /// In pt, this message translates to:
-  /// **'Bem-vindo de volta'**
-  String get loginWelcomeBack;
-
-  /// No description provided for @loginSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Insira suas credenciais para acessar.'**
-  String get loginSubtitle;
-
-  /// No description provided for @emailLabel.
-  ///
-  /// In pt, this message translates to:
-  /// **'E-mail'**
-  String get emailLabel;
-
-  /// No description provided for @emailHint.
-  ///
-  /// In pt, this message translates to:
-  /// **'seu@email.com'**
-  String get emailHint;
-
-  /// No description provided for @passwordLabel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Senha'**
-  String get passwordLabel;
-
-  /// No description provided for @passwordHint.
-  ///
-  /// In pt, this message translates to:
-  /// **'Mínimo 6 caracteres'**
-  String get passwordHint;
-
-  /// No description provided for @loginRememberMe.
-  ///
-  /// In pt, this message translates to:
-  /// **'Lembre-me'**
-  String get loginRememberMe;
-
-  /// No description provided for @loginButton.
-  ///
-  /// In pt, this message translates to:
-  /// **'Entrar'**
-  String get loginButton;
-
-  /// No description provided for @loginForgotPassword.
-  ///
-  /// In pt, this message translates to:
-  /// **'Esqueceu a senha?'**
-  String get loginForgotPassword;
-
-  /// No description provided for @createAccount.
-  ///
-  /// In pt, this message translates to:
-  /// **'Criar conta'**
-  String get createAccount;
-
-  /// No description provided for @loginIamCompany.
-  ///
-  /// In pt, this message translates to:
-  /// **'Sou empresa'**
-  String get loginIamCompany;
+  /// In en, this message translates to:
+  /// **'I already have an account'**
+  String get homeCtaSecondary;
 
   /// No description provided for @loginHeroTitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Conecte-se ao\nseu próximo emprego.'**
+  /// In en, this message translates to:
+  /// **'Connect to\nyour next job.'**
   String get loginHeroTitle;
 
-  /// No description provided for @loginHeroDescription.
+  /// No description provided for @loginHeroSubtitle.
   ///
-  /// In pt, this message translates to:
-  /// **'A Jobfy conecta talentos a oportunidades reais.\nPublique suas habilidades, encontre vagas\npersonalizadas e acelere sua carreira\ncom inteligência.'**
-  String get loginHeroDescription;
+  /// In en, this message translates to:
+  /// **'Jobfy connects talent to real opportunities.\nShowcase your skills, find tailored jobs\nand accelerate your career\nwith intelligence.'**
+  String get loginHeroSubtitle;
 
-  /// No description provided for @chipPersonalizedJobs.
+  /// No description provided for @chipCustomJobs.
   ///
-  /// In pt, this message translates to:
-  /// **'Vagas personalizadas'**
-  String get chipPersonalizedJobs;
+  /// In en, this message translates to:
+  /// **'Tailored jobs'**
+  String get chipCustomJobs;
 
   /// No description provided for @chipSmartMatch.
   ///
-  /// In pt, this message translates to:
-  /// **'Match inteligente'**
+  /// In en, this message translates to:
+  /// **'Smart match'**
   String get chipSmartMatch;
 
   /// No description provided for @chipCareerGrowth.
   ///
-  /// In pt, this message translates to:
-  /// **'Crescimento de carreira'**
+  /// In en, this message translates to:
+  /// **'Career growth'**
   String get chipCareerGrowth;
+
+  /// No description provided for @loginWelcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get loginWelcomeBack;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your credentials to continue.'**
+  String get loginSubtitle;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'you@email.com'**
+  String get emailHint;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @passwordHintMin6.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 6 characters'**
+  String get passwordHintMin6;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get rememberMe;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in'**
+  String get loginButton;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get forgotPassword;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAccount;
+
+  /// No description provided for @iAmCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m a company'**
+  String get iAmCompany;
 
   /// No description provided for @authErrorInvalidCredentials.
   ///
-  /// In pt, this message translates to:
-  /// **'E-mail ou senha inválidos.'**
+  /// In en, this message translates to:
+  /// **'Invalid email or password.'**
   String get authErrorInvalidCredentials;
 
-  /// No description provided for @authErrorRegisterFailed.
+  /// No description provided for @authErrorRegistrationFailed.
   ///
-  /// In pt, this message translates to:
-  /// **'Erro ao criar conta. Tente novamente.'**
-  String get authErrorRegisterFailed;
+  /// In en, this message translates to:
+  /// **'Could not create your account. Please try again.'**
+  String get authErrorRegistrationFailed;
 
-  /// No description provided for @registerTermsRequired.
+  /// No description provided for @authErrorEmailInUse.
   ///
-  /// In pt, this message translates to:
-  /// **'Você precisa aceitar os termos.'**
-  String get registerTermsRequired;
+  /// In en, this message translates to:
+  /// **'This email is already registered.'**
+  String get authErrorEmailInUse;
+
+  /// No description provided for @authErrorNetwork.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reach the server. Please try again later.'**
+  String get authErrorNetwork;
 
   /// No description provided for @registerTitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Crie sua conta'**
+  /// In en, this message translates to:
+  /// **'Create your account'**
   String get registerTitle;
 
   /// No description provided for @registerSubtitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Para o crescimento da sua carreira'**
+  /// In en, this message translates to:
+  /// **'For the growth of your career'**
   String get registerSubtitle;
 
   /// No description provided for @fullNameLabel.
   ///
-  /// In pt, this message translates to:
-  /// **'Nome completo'**
+  /// In en, this message translates to:
+  /// **'Full name'**
   String get fullNameLabel;
 
   /// No description provided for @fullNameHint.
   ///
-  /// In pt, this message translates to:
-  /// **'Seu nome...'**
+  /// In en, this message translates to:
+  /// **'Your name...'**
   String get fullNameHint;
 
   /// No description provided for @cpfLabel.
   ///
-  /// In pt, this message translates to:
+  /// In en, this message translates to:
   /// **'CPF'**
   String get cpfLabel;
 
+  /// No description provided for @cpfHint.
+  ///
+  /// In en, this message translates to:
+  /// **'000.000.000-00'**
+  String get cpfHint;
+
   /// No description provided for @genderLabel.
   ///
-  /// In pt, this message translates to:
-  /// **'Gênero'**
+  /// In en, this message translates to:
+  /// **'Gender'**
   String get genderLabel;
 
   /// No description provided for @genderMale.
   ///
-  /// In pt, this message translates to:
-  /// **'Masculino'**
+  /// In en, this message translates to:
+  /// **'Male'**
   String get genderMale;
 
   /// No description provided for @genderFemale.
   ///
-  /// In pt, this message translates to:
-  /// **'Feminino'**
+  /// In en, this message translates to:
+  /// **'Female'**
   String get genderFemale;
 
   /// No description provided for @genderOther.
   ///
-  /// In pt, this message translates to:
-  /// **'Outro'**
+  /// In en, this message translates to:
+  /// **'Other'**
   String get genderOther;
 
-  /// No description provided for @registerAcceptTermsPrefix.
+  /// No description provided for @acceptTermsPrefix.
   ///
-  /// In pt, this message translates to:
-  /// **'Aceito os '**
-  String get registerAcceptTermsPrefix;
+  /// In en, this message translates to:
+  /// **'I accept the '**
+  String get acceptTermsPrefix;
 
-  /// No description provided for @registerTermsLink.
+  /// No description provided for @termsOfService.
   ///
-  /// In pt, this message translates to:
-  /// **'termos de serviço'**
-  String get registerTermsLink;
+  /// In en, this message translates to:
+  /// **'terms of service'**
+  String get termsOfService;
 
-  /// No description provided for @registerGoToLogin.
+  /// No description provided for @termsRequiredError.
   ///
-  /// In pt, this message translates to:
-  /// **'Já tenho conta → Fazer login'**
-  String get registerGoToLogin;
+  /// In en, this message translates to:
+  /// **'You need to accept the terms.'**
+  String get termsRequiredError;
 
-  /// No description provided for @termsTitle.
+  /// No description provided for @registerButton.
   ///
-  /// In pt, this message translates to:
-  /// **'Termos de Serviço'**
-  String get termsTitle;
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get registerButton;
 
-  /// No description provided for @termsBody.
+  /// No description provided for @alreadyHaveAccount.
   ///
-  /// In pt, this message translates to:
-  /// **'Ao criar uma conta na Jobfy, você concorda com nossa política de privacidade e termos de uso. Seus dados serão utilizados exclusivamente para conectar você a oportunidades de emprego relevantes.'**
-  String get termsBody;
+  /// In en, this message translates to:
+  /// **'Already have an account? Sign in'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @termsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsDialogTitle;
+
+  /// No description provided for @termsDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'By creating a Jobfy account, you agree to our privacy policy and terms of use. Your data will be used exclusively to connect you to relevant job opportunities.'**
+  String get termsDialogBody;
+
+  /// No description provided for @userAreaLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your profile.'**
+  String get userAreaLoadError;
+
+  /// No description provided for @searchJobsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search jobs...'**
+  String get searchJobsPlaceholder;
+
+  /// No description provided for @welcomeGreeting.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, {name}! 👋'**
+  String welcomeGreeting(String name);
+
+  /// No description provided for @welcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You have new jobs matching your profile.'**
+  String get welcomeSubtitle;
+
+  /// No description provided for @viewRecommendedJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'View recommended jobs'**
+  String get viewRecommendedJobs;
+
+  /// No description provided for @avgMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Average match'**
+  String get avgMatch;
+
+  /// No description provided for @statApplications.
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get statApplications;
+
+  /// No description provided for @statApplicationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'in total'**
+  String get statApplicationsSub;
+
+  /// No description provided for @statMatchScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Match score'**
+  String get statMatchScore;
+
+  /// No description provided for @statMatchScoreSub.
+  ///
+  /// In en, this message translates to:
+  /// **'overall average'**
+  String get statMatchScoreSub;
+
+  /// No description provided for @statProfileViews.
+  ///
+  /// In en, this message translates to:
+  /// **'Views'**
+  String get statProfileViews;
+
+  /// No description provided for @statProfileViewsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'of your profile'**
+  String get statProfileViewsSub;
+
+  /// No description provided for @skillsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get skillsTitle;
+
+  /// No description provided for @addSkill.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addSkill;
+
+  /// No description provided for @recommendedJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended jobs'**
+  String get recommendedJobsTitle;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @applyButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyButton;
+
+  /// No description provided for @recentActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get recentActivityTitle;
+
+  /// No description provided for @profileCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile completion'**
+  String get profileCompletion;
 
   /// No description provided for @navDashboard.
   ///
-  /// In pt, this message translates to:
+  /// In en, this message translates to:
   /// **'Dashboard'**
   String get navDashboard;
 
   /// No description provided for @navJobs.
   ///
-  /// In pt, this message translates to:
-  /// **'Vagas'**
+  /// In en, this message translates to:
+  /// **'Jobs'**
   String get navJobs;
 
   /// No description provided for @navResume.
   ///
-  /// In pt, this message translates to:
-  /// **'Currículo'**
+  /// In en, this message translates to:
+  /// **'Resume'**
   String get navResume;
 
   /// No description provided for @navMessages.
   ///
-  /// In pt, this message translates to:
-  /// **'Mensagens'**
+  /// In en, this message translates to:
+  /// **'Messages'**
   String get navMessages;
 
   /// No description provided for @navSettings.
   ///
-  /// In pt, this message translates to:
-  /// **'Configurações'**
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get navSettings;
 
   /// No description provided for @navLogout.
   ///
-  /// In pt, this message translates to:
-  /// **'Sair'**
+  /// In en, this message translates to:
+  /// **'Log out'**
   String get navLogout;
-
-  /// No description provided for @profileComplete.
-  ///
-  /// In pt, this message translates to:
-  /// **'Perfil completo'**
-  String get profileComplete;
-
-  /// No description provided for @dashboardGreeting.
-  ///
-  /// In pt, this message translates to:
-  /// **'Olá, {name}! 👋'**
-  String dashboardGreeting(String name);
-
-  /// No description provided for @dashboardNewMatches.
-  ///
-  /// In pt, this message translates to:
-  /// **'Você tem novas vagas compatíveis com seu perfil.'**
-  String get dashboardNewMatches;
-
-  /// No description provided for @dashboardSeeRecommended.
-  ///
-  /// In pt, this message translates to:
-  /// **'Ver vagas recomendadas'**
-  String get dashboardSeeRecommended;
-
-  /// No description provided for @averageMatch.
-  ///
-  /// In pt, this message translates to:
-  /// **'Match médio'**
-  String get averageMatch;
-
-  /// No description provided for @statsApplications.
-  ///
-  /// In pt, this message translates to:
-  /// **'Candidaturas'**
-  String get statsApplications;
-
-  /// No description provided for @statsApplicationsSub.
-  ///
-  /// In pt, this message translates to:
-  /// **'este mês'**
-  String get statsApplicationsSub;
-
-  /// No description provided for @statsMatchScore.
-  ///
-  /// In pt, this message translates to:
-  /// **'Match Score'**
-  String get statsMatchScore;
-
-  /// No description provided for @statsMatchScoreSub.
-  ///
-  /// In pt, this message translates to:
-  /// **'média geral'**
-  String get statsMatchScoreSub;
-
-  /// No description provided for @statsViews.
-  ///
-  /// In pt, this message translates to:
-  /// **'Visualizações'**
-  String get statsViews;
-
-  /// No description provided for @statsViewsSub.
-  ///
-  /// In pt, this message translates to:
-  /// **'do seu perfil'**
-  String get statsViewsSub;
-
-  /// No description provided for @skillsTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Habilidades'**
-  String get skillsTitle;
-
-  /// No description provided for @skillsAdd.
-  ///
-  /// In pt, this message translates to:
-  /// **'Adicionar'**
-  String get skillsAdd;
-
-  /// No description provided for @recommendedJobs.
-  ///
-  /// In pt, this message translates to:
-  /// **'Vagas Recomendadas'**
-  String get recommendedJobs;
-
-  /// No description provided for @seeAll.
-  ///
-  /// In pt, this message translates to:
-  /// **'Ver todas'**
-  String get seeAll;
-
-  /// No description provided for @recentActivity.
-  ///
-  /// In pt, this message translates to:
-  /// **'Atividade Recente'**
-  String get recentActivity;
-
-  /// No description provided for @applyButton.
-  ///
-  /// In pt, this message translates to:
-  /// **'Candidatar'**
-  String get applyButton;
 
   /// No description provided for @settingsTitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Configurações'**
+  /// In en, this message translates to:
+  /// **'Settings'**
   String get settingsTitle;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsAppearanceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how Jobfy looks on this device.'**
+  String get settingsAppearanceDescription;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguage;
+
+  /// No description provided for @settingsLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the app language.'**
+  String get settingsLanguageDescription;
+
+  /// No description provided for @settingsLanguageSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get settingsLanguageSystem;
+
+  /// No description provided for @settingsBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get settingsBack;
 
   /// No description provided for @settingsSubtitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Gerencie sua conta, notificações e preferências.'**
+  /// In en, this message translates to:
+  /// **'Manage your account, notifications and preferences.'**
   String get settingsSubtitle;
+
+  /// No description provided for @settingsAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account information'**
+  String get settingsAccountTitle;
+
+  /// No description provided for @settingsAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your basic profile data.'**
+  String get settingsAccountDescription;
+
+  /// No description provided for @settingsSaveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get settingsSaveChanges;
+
+  /// No description provided for @settingsSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get settingsSaving;
 
   /// No description provided for @settingsSaved.
   ///
-  /// In pt, this message translates to:
-  /// **'Alterações salvas com sucesso.'**
+  /// In en, this message translates to:
+  /// **'Changes saved successfully.'**
   String get settingsSaved;
 
-  /// No description provided for @accountInfoTitle.
+  /// No description provided for @settingsSaveError.
   ///
-  /// In pt, this message translates to:
-  /// **'Informações da conta'**
-  String get accountInfoTitle;
+  /// In en, this message translates to:
+  /// **'Could not save your changes. Please try again.'**
+  String get settingsSaveError;
 
-  /// No description provided for @accountInfoSubtitle.
+  /// No description provided for @settingsNameRequired.
   ///
-  /// In pt, this message translates to:
-  /// **'Seus dados básicos de perfil.'**
-  String get accountInfoSubtitle;
+  /// In en, this message translates to:
+  /// **'Please enter your name.'**
+  String get settingsNameRequired;
 
-  /// No description provided for @locationLabel.
+  /// No description provided for @settingsEmailInvalid.
   ///
-  /// In pt, this message translates to:
-  /// **'Localização'**
-  String get locationLabel;
+  /// In en, this message translates to:
+  /// **'Please enter a valid email.'**
+  String get settingsEmailInvalid;
 
-  /// No description provided for @saving.
+  /// No description provided for @settingsNotifications.
   ///
-  /// In pt, this message translates to:
-  /// **'Salvando...'**
-  String get saving;
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
 
-  /// No description provided for @saveChanges.
+  /// No description provided for @settingsNotificationsDescription.
   ///
-  /// In pt, this message translates to:
-  /// **'Salvar alterações'**
-  String get saveChanges;
+  /// In en, this message translates to:
+  /// **'Choose what you want to be notified about.'**
+  String get settingsNotificationsDescription;
 
-  /// No description provided for @nameRequired.
+  /// No description provided for @settingsNotifNewJobs.
   ///
-  /// In pt, this message translates to:
-  /// **'Informe seu nome.'**
-  String get nameRequired;
+  /// In en, this message translates to:
+  /// **'New matching jobs'**
+  String get settingsNotifNewJobs;
+
+  /// No description provided for @settingsNotifNewJobsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me when high-match jobs appear.'**
+  String get settingsNotifNewJobsDescription;
+
+  /// No description provided for @settingsNotifMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages from companies'**
+  String get settingsNotifMessages;
+
+  /// No description provided for @settingsNotifMessagesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Notify me about new messages from recruiters.'**
+  String get settingsNotifMessagesDescription;
+
+  /// No description provided for @settingsNotifWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly email summary'**
+  String get settingsNotifWeekly;
+
+  /// No description provided for @settingsNotifWeeklyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Get a summary of your applications.'**
+  String get settingsNotifWeeklyDescription;
+
+  /// No description provided for @settingsNotifPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get settingsNotifPush;
+
+  /// No description provided for @settingsNotifPushDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time alerts on your device.'**
+  String get settingsNotifPushDescription;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy and security'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsPrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Control who sees your information.'**
+  String get settingsPrivacyDescription;
+
+  /// No description provided for @settingsProfileVisible.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile visible to companies'**
+  String get settingsProfileVisible;
+
+  /// No description provided for @settingsProfileVisibleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Companies can find your profile in searches.'**
+  String get settingsProfileVisibleDescription;
+
+  /// No description provided for @settingsShowEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Show email on profile'**
+  String get settingsShowEmail;
+
+  /// No description provided for @settingsShowEmailDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display your email to recruiters.'**
+  String get settingsShowEmailDescription;
+
+  /// No description provided for @settingsChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get settingsChangePassword;
+
+  /// No description provided for @settingsCurrentPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password'**
+  String get settingsCurrentPassword;
+
+  /// No description provided for @settingsNewPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get settingsNewPassword;
+
+  /// No description provided for @settingsConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get settingsConfirmPassword;
+
+  /// No description provided for @settingsPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your current password.'**
+  String get settingsPasswordRequired;
+
+  /// No description provided for @settingsPasswordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get settingsPasswordTooShort;
+
+  /// No description provided for @settingsPasswordsDontMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get settingsPasswordsDontMatch;
+
+  /// No description provided for @settingsWrongPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password is incorrect.'**
+  String get settingsWrongPassword;
+
+  /// No description provided for @settingsPasswordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully.'**
+  String get settingsPasswordChanged;
+
+  /// No description provided for @settingsPasswordError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change your password. Please try again.'**
+  String get settingsPasswordError;
+
+  /// No description provided for @settingsSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get settingsSave;
+
+  /// No description provided for @settingsJobPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Job preferences'**
+  String get settingsJobPreferences;
+
+  /// No description provided for @settingsJobPreferencesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Work arrangements you accept.'**
+  String get settingsJobPreferencesDescription;
+
+  /// No description provided for @settingsJobTypeRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get settingsJobTypeRemote;
+
+  /// No description provided for @settingsJobTypeHybrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Hybrid'**
+  String get settingsJobTypeHybrid;
+
+  /// No description provided for @settingsJobTypeOnsite.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site'**
+  String get settingsJobTypeOnsite;
+
+  /// No description provided for @settingsDangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger zone'**
+  String get settingsDangerZone;
+
+  /// No description provided for @settingsLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get settingsLogout;
+
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete your account? You will no longer be able to sign in.'**
+  String get settingsDeleteAccountConfirm;
+
+  /// No description provided for @settingsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get settingsDelete;
+
+  /// No description provided for @settingsAccountDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Account deleted.'**
+  String get settingsAccountDeleted;
+
+  /// No description provided for @settingsDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete your account. Please try again.'**
+  String get settingsDeleteError;
+
+  /// No description provided for @settingsThemeToggleToLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Use light theme'**
+  String get settingsThemeToggleToLight;
+
+  /// No description provided for @settingsThemeToggleToDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Use dark theme'**
+  String get settingsThemeToggleToDark;
+
+  /// No description provided for @companyRegisterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Register your company'**
+  String get companyRegisterTitle;
+
+  /// No description provided for @companyRegisterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start publishing jobs and finding talent on Jobfy.'**
+  String get companyRegisterSubtitle;
+
+  /// No description provided for @companyNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company name'**
+  String get companyNameLabel;
+
+  /// No description provided for @companyNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your company\'s name...'**
+  String get companyNameHint;
+
+  /// No description provided for @companyCnpjLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CNPJ'**
+  String get companyCnpjLabel;
+
+  /// No description provided for @companyCnpjHint.
+  ///
+  /// In en, this message translates to:
+  /// **'00.000.000/0000-00'**
+  String get companyCnpjHint;
+
+  /// No description provided for @companyPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get companyPhoneLabel;
+
+  /// No description provided for @companyPhoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'(00) 00000-0000'**
+  String get companyPhoneHint;
+
+  /// No description provided for @companyRegisterButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Register company'**
+  String get companyRegisterButton;
+
+  /// No description provided for @companyRegisterError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not register the company. Please try again.'**
+  String get companyRegisterError;
+
+  /// No description provided for @companyWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome, {companyName}'**
+  String companyWelcome(String companyName);
+
+  /// No description provided for @companyPublishJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish a job'**
+  String get companyPublishJobTitle;
+
+  /// No description provided for @jobTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get jobTitleLabel;
+
+  /// No description provided for @jobTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Flutter Developer'**
+  String get jobTitleHint;
+
+  /// No description provided for @jobDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get jobDescriptionLabel;
+
+  /// No description provided for @jobDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsibilities, requirements...'**
+  String get jobDescriptionHint;
+
+  /// No description provided for @jobLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get jobLocationLabel;
+
+  /// No description provided for @jobLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Remote, São Paulo'**
+  String get jobLocationHint;
+
+  /// No description provided for @jobContractTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contract type'**
+  String get jobContractTypeLabel;
+
+  /// No description provided for @jobContractTypeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Full-time, Contract'**
+  String get jobContractTypeHint;
+
+  /// No description provided for @jobSalaryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary range'**
+  String get jobSalaryLabel;
+
+  /// No description provided for @jobSalaryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. \$4,000 – \$6,000'**
+  String get jobSalaryHint;
+
+  /// No description provided for @companyPublishJobButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish job'**
+  String get companyPublishJobButton;
+
+  /// No description provided for @companyJobPublishError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not publish the job. Please try again.'**
+  String get companyJobPublishError;
+
+  /// No description provided for @companyJobsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Published jobs'**
+  String get companyJobsTitle;
+
+  /// No description provided for @companyNoJobsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs published yet. Publish your first one above.'**
+  String get companyNoJobsYet;
+
+  /// No description provided for @companyViewCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'View candidates'**
+  String get companyViewCandidates;
+
+  /// No description provided for @companyCandidatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidates for {jobTitle}'**
+  String companyCandidatesTitle(String jobTitle);
+
+  /// No description provided for @companyRoleFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by desired role'**
+  String get companyRoleFilterLabel;
+
+  /// No description provided for @companyMinMatchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum match: {percent}%'**
+  String companyMinMatchLabel(int percent);
+
+  /// No description provided for @companyNoCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'No candidates match this filter yet.'**
+  String get companyNoCandidates;
+
+  /// No description provided for @companyCandidateFilterError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load candidates. Please try again.'**
+  String get companyCandidateFilterError;
+
+  /// No description provided for @companyRateCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get companyRateCandidate;
+
+  /// No description provided for @companyMessageCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get companyMessageCandidate;
+
+  /// No description provided for @companyRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating (0-5)'**
+  String get companyRatingLabel;
+
+  /// No description provided for @companyMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get companyMessageLabel;
+
+  /// No description provided for @companyMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message to this candidate...'**
+  String get companyMessageHint;
+
+  /// No description provided for @companySend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get companySend;
+
+  /// No description provided for @companyCandidateRateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the rating. Please try again.'**
+  String get companyCandidateRateError;
+
+  /// No description provided for @companyMessageSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the message. Please try again.'**
+  String get companyMessageSendError;
+
+  /// No description provided for @companyRatingSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating saved.'**
+  String get companyRatingSaved;
+
+  /// No description provided for @companyMessageSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Message sent.'**
+  String get companyMessageSent;
+
+  /// No description provided for @jobsPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get jobsPageTitle;
+
+  /// No description provided for @jobsLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Location...'**
+  String get jobsLocationHint;
+
+  /// No description provided for @jobsNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs found for this search.'**
+  String get jobsNoResults;
+
+  /// No description provided for @jobSearchError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load jobs. Please try again.'**
+  String get jobSearchError;
+
+  /// No description provided for @jobApplyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit your application. Please try again.'**
+  String get jobApplyError;
+
+  /// No description provided for @jobApplySuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Application submitted!'**
+  String get jobApplySuccess;
+
+  /// No description provided for @jobAlreadyApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get jobAlreadyApplied;
+
+  /// No description provided for @jobViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get jobViewDetails;
+
+  /// No description provided for @authErrorCpfInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This CPF is already registered.'**
+  String get authErrorCpfInUse;
+
+  /// No description provided for @registerSectionPersonal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal data'**
+  String get registerSectionPersonal;
+
+  /// No description provided for @registerSectionSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get registerSectionSkills;
+
+  /// No description provided for @registerSectionExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get registerSectionExperience;
+
+  /// No description provided for @registerSkillsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the skills you have and choose your level.'**
+  String get registerSkillsHint;
+
+  /// No description provided for @registerSkillsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the skills list.'**
+  String get registerSkillsLoadError;
+
+  /// No description provided for @otherSkillHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Other skill...'**
+  String get otherSkillHint;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'(00) 00000-0000'**
+  String get phoneHint;
+
+  /// No description provided for @birthDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of birth'**
+  String get birthDateLabel;
+
+  /// No description provided for @educationLevelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get educationLevelLabel;
+
+  /// No description provided for @optionalSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'(optional)'**
+  String get optionalSuffix;
+
+  /// No description provided for @educationElementaryIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Elementary school (incomplete)'**
+  String get educationElementaryIncomplete;
+
+  /// No description provided for @educationElementaryComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Elementary school (complete)'**
+  String get educationElementaryComplete;
+
+  /// No description provided for @educationHighSchoolIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'High school (incomplete)'**
+  String get educationHighSchoolIncomplete;
+
+  /// No description provided for @educationHighSchoolComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'High school (complete)'**
+  String get educationHighSchoolComplete;
+
+  /// No description provided for @educationTechnical.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical course'**
+  String get educationTechnical;
+
+  /// No description provided for @educationBachelorIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor\'s degree (incomplete)'**
+  String get educationBachelorIncomplete;
+
+  /// No description provided for @educationBachelorComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Bachelor\'s degree (complete)'**
+  String get educationBachelorComplete;
+
+  /// No description provided for @educationPostgraduate.
+  ///
+  /// In en, this message translates to:
+  /// **'Postgraduate'**
+  String get educationPostgraduate;
+
+  /// No description provided for @skillLevelBeginner.
+  ///
+  /// In en, this message translates to:
+  /// **'Beginner'**
+  String get skillLevelBeginner;
+
+  /// No description provided for @skillLevelIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'Intermediate'**
+  String get skillLevelIntermediate;
+
+  /// No description provided for @skillLevelAdvanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get skillLevelAdvanced;
+
+  /// No description provided for @addExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Add experience'**
+  String get addExperience;
+
+  /// No description provided for @noExperiencesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No experience added. Volunteer work counts too!'**
+  String get noExperiencesYet;
+
+  /// No description provided for @experienceJobTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Job title'**
+  String get experienceJobTitleLabel;
+
+  /// No description provided for @experienceCompanyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Company'**
+  String get experienceCompanyLabel;
+
+  /// No description provided for @experienceDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What did you do?'**
+  String get experienceDescriptionLabel;
+
+  /// No description provided for @experienceStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get experienceStartLabel;
+
+  /// No description provided for @experienceEndLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get experienceEndLabel;
+
+  /// No description provided for @experienceCurrentJob.
+  ///
+  /// In en, this message translates to:
+  /// **'I currently work here'**
+  String get experienceCurrentJob;
+
+  /// No description provided for @experiencePresent.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get experiencePresent;
+
+  /// No description provided for @dialogCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get dialogCancel;
+
+  /// No description provided for @dialogAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get dialogAdd;
+
+  /// No description provided for @fieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required field'**
+  String get fieldRequired;
 
   /// No description provided for @emailInvalid.
   ///
-  /// In pt, this message translates to:
-  /// **'Informe um e-mail válido.'**
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
   String get emailInvalid;
-
-  /// No description provided for @notificationsTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Notificações'**
-  String get notificationsTitle;
-
-  /// No description provided for @notificationsSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Escolha o que você quer ser avisado.'**
-  String get notificationsSubtitle;
-
-  /// No description provided for @notifNewJobsTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Novas vagas compatíveis'**
-  String get notifNewJobsTitle;
-
-  /// No description provided for @notifNewJobsSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Avise quando surgirem vagas com alto match.'**
-  String get notifNewJobsSubtitle;
-
-  /// No description provided for @notifMessagesTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Mensagens de empresas'**
-  String get notifMessagesTitle;
-
-  /// No description provided for @notifMessagesSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Notificar sobre novas mensagens de recrutadores.'**
-  String get notifMessagesSubtitle;
-
-  /// No description provided for @notifWeeklyTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Resumo semanal por e-mail'**
-  String get notifWeeklyTitle;
-
-  /// No description provided for @notifWeeklySubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Receba um resumo das suas candidaturas.'**
-  String get notifWeeklySubtitle;
-
-  /// No description provided for @notifPushTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Notificações push'**
-  String get notifPushTitle;
-
-  /// No description provided for @notifPushSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Alertas em tempo real no dispositivo.'**
-  String get notifPushSubtitle;
-
-  /// No description provided for @privacyTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Privacidade e segurança'**
-  String get privacyTitle;
-
-  /// No description provided for @privacySubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Controle quem vê suas informações.'**
-  String get privacySubtitle;
-
-  /// No description provided for @privacyVisibleTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Perfil visível para empresas'**
-  String get privacyVisibleTitle;
-
-  /// No description provided for @privacyVisibleSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Empresas podem encontrar seu perfil nas buscas.'**
-  String get privacyVisibleSubtitle;
-
-  /// No description provided for @privacyShowEmailTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Mostrar e-mail no perfil'**
-  String get privacyShowEmailTitle;
-
-  /// No description provided for @privacyShowEmailSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Exibir seu e-mail para recrutadores.'**
-  String get privacyShowEmailSubtitle;
-
-  /// No description provided for @changePassword.
-  ///
-  /// In pt, this message translates to:
-  /// **'Alterar senha'**
-  String get changePassword;
-
-  /// No description provided for @currentPasswordLabel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Senha atual'**
-  String get currentPasswordLabel;
-
-  /// No description provided for @newPasswordLabel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Nova senha'**
-  String get newPasswordLabel;
-
-  /// No description provided for @confirmPasswordLabel.
-  ///
-  /// In pt, this message translates to:
-  /// **'Confirmar nova senha'**
-  String get confirmPasswordLabel;
-
-  /// No description provided for @passwordRequired.
-  ///
-  /// In pt, this message translates to:
-  /// **'Informe a senha atual.'**
-  String get passwordRequired;
 
   /// No description provided for @passwordTooShort.
   ///
-  /// In pt, this message translates to:
-  /// **'A senha deve ter pelo menos 6 caracteres.'**
+  /// In en, this message translates to:
+  /// **'Use at least 6 characters'**
   String get passwordTooShort;
 
-  /// No description provided for @passwordsDontMatch.
+  /// No description provided for @cpfInvalid.
   ///
-  /// In pt, this message translates to:
-  /// **'As senhas não coincidem.'**
-  String get passwordsDontMatch;
+  /// In en, this message translates to:
+  /// **'The CPF must have 11 digits'**
+  String get cpfInvalid;
 
-  /// No description provided for @passwordChanged.
+  /// No description provided for @experienceDatesInvalid.
   ///
-  /// In pt, this message translates to:
-  /// **'Senha alterada com sucesso.'**
-  String get passwordChanged;
+  /// In en, this message translates to:
+  /// **'The end date can\'t be before the start date'**
+  String get experienceDatesInvalid;
 
-  /// No description provided for @jobPrefsTitle.
+  /// No description provided for @statSkills.
   ///
-  /// In pt, this message translates to:
-  /// **'Preferências de vaga'**
-  String get jobPrefsTitle;
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get statSkills;
 
-  /// No description provided for @jobPrefsSubtitle.
+  /// No description provided for @statSkillsSub.
   ///
-  /// In pt, this message translates to:
-  /// **'Tipos de trabalho que você aceita.'**
-  String get jobPrefsSubtitle;
+  /// In en, this message translates to:
+  /// **'registered'**
+  String get statSkillsSub;
 
-  /// No description provided for @jobTypeRemote.
+  /// No description provided for @statExperiences.
   ///
-  /// In pt, this message translates to:
-  /// **'Remoto'**
-  String get jobTypeRemote;
+  /// In en, this message translates to:
+  /// **'Experiences'**
+  String get statExperiences;
 
-  /// No description provided for @jobTypeHybrid.
+  /// No description provided for @statExperiencesSub.
   ///
-  /// In pt, this message translates to:
-  /// **'Híbrido'**
-  String get jobTypeHybrid;
+  /// In en, this message translates to:
+  /// **'on your resume'**
+  String get statExperiencesSub;
 
-  /// No description provided for @jobTypeOnsite.
+  /// No description provided for @personalInfoTitle.
   ///
-  /// In pt, this message translates to:
-  /// **'Presencial'**
-  String get jobTypeOnsite;
+  /// In en, this message translates to:
+  /// **'Personal data'**
+  String get personalInfoTitle;
 
-  /// No description provided for @appearanceTitle.
+  /// No description provided for @notInformed.
   ///
-  /// In pt, this message translates to:
-  /// **'Aparência'**
-  String get appearanceTitle;
+  /// In en, this message translates to:
+  /// **'Not informed'**
+  String get notInformed;
 
-  /// No description provided for @appearanceSubtitle.
+  /// No description provided for @noSkillsYet.
   ///
-  /// In pt, this message translates to:
-  /// **'Personalize a interface.'**
-  String get appearanceSubtitle;
+  /// In en, this message translates to:
+  /// **'No skills registered yet.'**
+  String get noSkillsYet;
 
-  /// No description provided for @themeLabel.
+  /// No description provided for @noRecentActivity.
   ///
-  /// In pt, this message translates to:
-  /// **'Tema'**
-  String get themeLabel;
-
-  /// No description provided for @themeLight.
-  ///
-  /// In pt, this message translates to:
-  /// **'Claro'**
-  String get themeLight;
-
-  /// No description provided for @themeDark.
-  ///
-  /// In pt, this message translates to:
-  /// **'Escuro'**
-  String get themeDark;
-
-  /// No description provided for @themeSystem.
-  ///
-  /// In pt, this message translates to:
-  /// **'Sistema'**
-  String get themeSystem;
-
-  /// No description provided for @themeToggleToLight.
-  ///
-  /// In pt, this message translates to:
-  /// **'Usar tema claro'**
-  String get themeToggleToLight;
-
-  /// No description provided for @themeToggleToDark.
-  ///
-  /// In pt, this message translates to:
-  /// **'Usar tema escuro'**
-  String get themeToggleToDark;
-
-  /// No description provided for @languageTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Idioma'**
-  String get languageTitle;
-
-  /// No description provided for @languageSubtitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Escolha o idioma do aplicativo.'**
-  String get languageSubtitle;
-
-  /// No description provided for @dangerZoneTitle.
-  ///
-  /// In pt, this message translates to:
-  /// **'Zona de risco'**
-  String get dangerZoneTitle;
-
-  /// No description provided for @logoutAccount.
-  ///
-  /// In pt, this message translates to:
-  /// **'Sair da conta'**
-  String get logoutAccount;
-
-  /// No description provided for @deleteAccount.
-  ///
-  /// In pt, this message translates to:
-  /// **'Excluir conta'**
-  String get deleteAccount;
-
-  /// No description provided for @deleteAccountConfirm.
-  ///
-  /// In pt, this message translates to:
-  /// **'Tem certeza que deseja excluir sua conta? Essa ação não pode ser desfeita.'**
-  String get deleteAccountConfirm;
-
-  /// No description provided for @delete.
-  ///
-  /// In pt, this message translates to:
-  /// **'Excluir'**
-  String get delete;
-
-  /// No description provided for @accountDeleted.
-  ///
-  /// In pt, this message translates to:
-  /// **'Conta excluída.'**
-  String get accountDeleted;
+  /// In en, this message translates to:
+  /// **'No recent activity. Apply to a job to see it here.'**
+  String get noRecentActivity;
 }
 
 class _AppLocalizationsDelegate
@@ -851,6 +1476,18 @@ class _AppLocalizationsDelegate
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'pt':
+      {
+        switch (locale.countryCode) {
+          case 'BR':
+            return AppLocalizationsPtBr();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
     case 'en':
