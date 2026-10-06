@@ -7,6 +7,7 @@ class AppTheme {
     brightness: Brightness.light,
     scaffoldBackgroundColor: AppColors.backgroundLight,
     cardColor: AppColors.white,
+    dialogTheme: const DialogThemeData(backgroundColor: AppColors.white),
     dividerColor: AppColors.cardBorder,
     extensions: const [AppSemanticColors.light],
     appBarTheme: const AppBarTheme(
@@ -34,6 +35,7 @@ class AppTheme {
     brightness: Brightness.dark,
     scaffoldBackgroundColor: AppColors.backgroundDark,
     cardColor: AppColors.surfaceDark,
+    dialogTheme: const DialogThemeData(backgroundColor: AppColors.surfaceDark),
     dividerColor: AppColors.cardBorderDark,
     extensions: const [AppSemanticColors.dark],
     appBarTheme: const AppBarTheme(

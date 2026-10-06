@@ -1,7 +1,6 @@
 import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
-import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
@@ -68,35 +67,29 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    // This screen's split dark-hero / light-form design is intentionally
-    // fixed regardless of the device's theme, so force the light theme here
-    // instead of letting text/icon colors drift with dark mode.
-    return Theme(
-      data: AppTheme.light,
-      child: Scaffold(
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final form = Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: SingleChildScrollView(child: _buildForm()),
-              ),
-            );
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final form = Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: SingleChildScrollView(child: _buildForm()),
+            ),
+          );
 
-            if (constraints.maxWidth < AppBreakpoints.laptop) {
-              // Narrow screens (phones, small windows): the side-by-side
-              // hero doesn't fit, so show the form alone.
-              return form;
-            }
+          if (constraints.maxWidth < AppBreakpoints.laptop) {
+            // Narrow screens (phones, small windows): the side-by-side
+            // hero doesn't fit, so show the form alone.
+            return form;
+          }
 
-            return Row(
-              children: [
-                const Expanded(child: _LeftPanel()),
-                Expanded(child: form),
-              ],
-            );
-          },
-        ),
+          return Row(
+            children: [
+              const Expanded(child: _LeftPanel()),
+              Expanded(child: form),
+            ],
+          );
+        },
       ),
     );
   }
@@ -218,19 +211,19 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: _authController.isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.textPrimary,
+                    foregroundColor: colors.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
                   child: _authController.isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: colors.surface,
                             strokeWidth: 2,
                           ),
                         )

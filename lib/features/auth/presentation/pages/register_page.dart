@@ -1,6 +1,5 @@
 import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
-import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/entities/registration_entity.dart';
@@ -146,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _addExperience() async {
     final experience = await showDialog<ExperienceEntity>(
       context: context,
-      builder: (_) => Theme(data: AppTheme.light, child: const _ExperienceDialog()),
+      builder: (_) => const _ExperienceDialog(),
     );
     if (experience != null) setState(() => _experiences.add(experience));
   }
@@ -154,12 +153,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // This screen's card-on-light-background design (and the terms dialog
-    // it opens) is intentionally fixed regardless of the device's theme.
-    return Theme(
-      data: AppTheme.light,
-      child: _buildScaffold(context, l10n),
-    );
+    return _buildScaffold(context, l10n);
   }
 
   Widget _buildScaffold(BuildContext context, AppLocalizations l10n) {
@@ -361,10 +355,10 @@ class _RegisterPageState extends State<RegisterPage> {
         children: [
           Text(
             l10n.genderLabel,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              color: context.colors.textPrimary,
             ),
           ),
           RadioGroup<Gender>(
@@ -583,19 +577,19 @@ class _RegisterPageState extends State<RegisterPage> {
       child: ElevatedButton(
         onPressed: _authController.isLoading ? null : _handleRegister,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: context.colors.textPrimary,
+          foregroundColor: context.colors.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 0,
         ),
         child: _authController.isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: context.colors.surface,
                   strokeWidth: 2,
                 ),
               )
@@ -612,7 +606,7 @@ class _RegisterPageState extends State<RegisterPage> {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: Colors.white,
+        backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         child: Container(
           constraints: const BoxConstraints(maxWidth: 560, maxHeight: 480),
@@ -635,7 +629,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.close),
                     style: IconButton.styleFrom(
-                      backgroundColor: Colors.grey.shade100,
+                      backgroundColor: context.colors.background,
                     ),
                   ),
                 ],
@@ -645,10 +639,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: SingleChildScrollView(
                   child: Text(
                     l10n.termsDialogBody,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       height: 1.7,
-                      color: Colors.black87,
+                      color: context.colors.textPrimary,
                     ),
                   ),
                 ),

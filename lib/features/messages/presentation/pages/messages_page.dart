@@ -1,5 +1,6 @@
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
+import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/messages/data/repositories/messages_repository_impl.dart';
 import 'package:jobfy/features/messages/domain/entities/conversation_entity.dart';
 import 'package:jobfy/features/messages/domain/usecases/get_conversations_usecase.dart';
@@ -83,8 +84,8 @@ class _MessagesPageState extends State<MessagesPage> {
     final profile = _profile;
 
     if (profile == null) {
-      return const Scaffold(
-        backgroundColor: AppColors.backgroundLight,
+      return Scaffold(
+        backgroundColor: context.colors.background,
         body: Center(
           child: CircularProgressIndicator(color: AppColors.accent),
         ),
@@ -100,7 +101,7 @@ class _MessagesPageState extends State<MessagesPage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: context.colors.background,
       drawer: isMobile ? Drawer(child: sidebar) : null,
       body: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,9 +179,9 @@ class _MessagesContent extends StatelessWidget {
                             isMobile: isMobile,
                           ),
                         ),
-                        const VerticalDivider(
+                        VerticalDivider(
                           width: 1,
-                          color: AppColors.cardBorder,
+                          color: context.colors.surfaceBorder,
                         ),
                         Expanded(
                           child: selecionada == null
@@ -215,9 +216,9 @@ class _MessagesTopBar extends StatelessWidget {
         horizontal: isMobile ? 16 : 28,
         vertical: 14,
       ),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        border: Border(bottom: BorderSide(color: context.colors.surfaceBorder)),
       ),
       child: Row(
         children: [
@@ -272,7 +273,7 @@ class _ConversationListPane extends StatelessWidget {
     final conversas = controller.conversas;
 
     return Container(
-      color: Colors.white,
+      color: context.colors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -290,45 +291,45 @@ class _ConversationListPane extends StatelessWidget {
                   onChanged: controller.setBusca,
                   decoration: InputDecoration(
                     hintText: 'Buscar conversas...',
-                    hintStyle: const TextStyle(
+                    hintStyle: TextStyle(
                       fontSize: 13,
-                      color: AppColors.textMuted,
+                      color: context.colors.textMuted,
                     ),
                     prefixIcon: const Icon(Icons.search, size: 18),
                     isDense: true,
                     filled: true,
-                    fillColor: AppColors.backgroundLight,
+                    fillColor: context.colors.background,
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.cardBorder),
+                      borderSide: BorderSide(color: context.colors.surfaceBorder),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColors.cardBorder),
+                      borderSide: BorderSide(color: context.colors.surfaceBorder),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.cardBorder),
+          Divider(height: 1, color: context.colors.surfaceBorder),
           Expanded(
             child: conversas.isEmpty
-                ? const Center(
+                ? Center(
                     child: Padding(
                       padding: EdgeInsets.all(24),
                       child: Text(
                         'Nenhuma conversa encontrada.',
-                        style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+                        style: TextStyle(color: context.colors.textMuted, fontSize: 13),
                       ),
                     ),
                   )
                 : ListView.separated(
                     itemCount: conversas.length,
                     separatorBuilder: (_, __) =>
-                        const Divider(height: 1, color: AppColors.cardBorder),
+                        Divider(height: 1, color: context.colors.surfaceBorder),
                     itemBuilder: (context, i) {
                       final conversa = conversas[i];
                       final isSelected = controller.selectedId == conversa.id;
@@ -395,7 +396,7 @@ class _ConversationTile extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: AppColors.success,
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 2),
+                        border: Border.all(color: context.colors.surface, width: 2),
                       ),
                     ),
                   ),
@@ -422,9 +423,9 @@ class _ConversationTile extends StatelessWidget {
                       if (ultima != null)
                         Text(
                           ultima.hora,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.textMuted,
+                            color: context.colors.textMuted,
                           ),
                         ),
                     ],
@@ -434,7 +435,7 @@ class _ConversationTile extends StatelessWidget {
                     conversa.subtitulo,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                    style: TextStyle(fontSize: 11, color: context.colors.textMuted),
                   ),
                   const SizedBox(height: 3),
                   Row(
@@ -447,8 +448,8 @@ class _ConversationTile extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 12.5,
                             color: conversa.naoLidas > 0
-                                ? Colors.black87
-                                : AppColors.textMuted,
+                                ? context.colors.textPrimary
+                                : context.colors.textMuted,
                             fontWeight: conversa.naoLidas > 0
                                 ? FontWeight.w600
                                 : FontWeight.normal,
@@ -493,15 +494,15 @@ class _EmptyThreadState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.chat_bubble_outline, size: 48, color: AppColors.textMuted),
+          Icon(Icons.chat_bubble_outline, size: 48, color: context.colors.textMuted),
           SizedBox(height: 12),
           Text(
             'Selecione uma conversa',
-            style: TextStyle(color: AppColors.textMuted, fontSize: 13),
+            style: TextStyle(color: context.colors.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -536,9 +537,9 @@ class _ThreadPane extends StatelessWidget {
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(bottom: BorderSide(color: AppColors.cardBorder)),
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            border: Border(bottom: BorderSide(color: context.colors.surfaceBorder)),
           ),
           child: Row(
             children: [
@@ -579,7 +580,7 @@ class _ThreadPane extends StatelessWidget {
                         fontSize: 11.5,
                         color: conversa.online
                             ? AppColors.success
-                            : AppColors.textMuted,
+                            : context.colors.textMuted,
                       ),
                     ),
                   ],
@@ -590,7 +591,7 @@ class _ThreadPane extends StatelessWidget {
         ),
         Expanded(
           child: Container(
-            color: AppColors.backgroundLight,
+            color: context.colors.background,
             child: ListView.builder(
               reverse: true,
               padding: const EdgeInsets.all(16),
@@ -610,9 +611,9 @@ class _ThreadPane extends StatelessWidget {
             isMobile ? 12 : 16,
             10,
           ),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(top: BorderSide(color: AppColors.cardBorder)),
+          decoration: BoxDecoration(
+            color: context.colors.surface,
+            border: Border(top: BorderSide(color: context.colors.surfaceBorder)),
           ),
           child: Row(
             children: [
@@ -625,19 +626,19 @@ class _ThreadPane extends StatelessWidget {
                   onSubmitted: (_) => onEnviar(),
                   decoration: InputDecoration(
                     hintText: 'Escreva uma mensagem...',
-                    hintStyle: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+                    hintStyle: TextStyle(fontSize: 13, color: context.colors.textMuted),
                     isDense: true,
                     filled: true,
-                    fillColor: AppColors.backgroundLight,
+                    fillColor: context.colors.background,
                     contentPadding:
                         const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppColors.cardBorder),
+                      borderSide: BorderSide(color: context.colors.surfaceBorder),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppColors.cardBorder),
+                      borderSide: BorderSide(color: context.colors.surfaceBorder),
                     ),
                   ),
                 ),
@@ -689,14 +690,14 @@ class _MessageBubble extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         constraints: const BoxConstraints(maxWidth: 360),
         decoration: BoxDecoration(
-          color: isUsuario ? AppColors.accent : Colors.white,
+          color: isUsuario ? AppColors.accent : context.colors.surface,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(14),
             topRight: const Radius.circular(14),
             bottomLeft: Radius.circular(isUsuario ? 14 : 2),
             bottomRight: Radius.circular(isUsuario ? 2 : 14),
           ),
-          border: isUsuario ? null : Border.all(color: AppColors.cardBorder),
+          border: isUsuario ? null : Border.all(color: context.colors.surfaceBorder),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.03),
@@ -712,7 +713,7 @@ class _MessageBubble extends StatelessWidget {
             Text(
               mensagem.texto,
               style: TextStyle(
-                color: isUsuario ? Colors.white : Colors.black87,
+                color: isUsuario ? Colors.white : context.colors.textPrimary,
                 fontSize: 13.5,
                 height: 1.4,
               ),
@@ -723,7 +724,7 @@ class _MessageBubble extends StatelessWidget {
               style: TextStyle(
                 color: isUsuario
                     ? Colors.white.withValues(alpha: 0.7)
-                    : AppColors.textMuted,
+                    : context.colors.textMuted,
                 fontSize: 10.5,
               ),
             ),
