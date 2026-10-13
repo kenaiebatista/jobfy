@@ -1,3 +1,4 @@
+import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
@@ -116,7 +117,7 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(32),
+        padding: EdgeInsets.all(context.responsive(mobile: 20.0, laptop: 32.0)),
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 440),
           child: Column(
@@ -125,7 +126,10 @@ class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
             children: [
               Text(
                 l10n.companyRegisterTitle,
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: context.responsive(mobile: 22.0, laptop: 26.0),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 l10n.companyRegisterSubtitle,
@@ -246,17 +250,22 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
     final colors = context.colors;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(context.pagePadding),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
+          constraints: BoxConstraints(
+            maxWidth: context.responsive(mobile: 720.0, desktop: 880.0),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 24,
+            spacing: context.responsive(mobile: 16.0, laptop: 24.0),
             children: [
               Text(
                 l10n.companyWelcome(widget.company.companyName),
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: context.responsive(mobile: 22.0, laptop: 26.0),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               _Card(
                 child: Column(
@@ -282,27 +291,29 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                         hintText: l10n.jobDescriptionHint,
                       ),
                     ),
-                    Row(
+                    // Side by side from tablet up; stacked on phones.
+                    Flex(
+                      direction:
+                          context.isMobile ? Axis.vertical : Axis.horizontal,
                       spacing: 12,
                       children: [
-                        Expanded(
-                          child: TextField(
+                        for (final field in [
+                          TextField(
                             controller: _locationController,
                             decoration: InputDecoration(
                               labelText: l10n.jobLocationLabel,
                               hintText: l10n.jobLocationHint,
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: TextField(
+                          TextField(
                             controller: _contractTypeController,
                             decoration: InputDecoration(
                               labelText: l10n.jobContractTypeLabel,
                               hintText: l10n.jobContractTypeHint,
                             ),
                           ),
-                        ),
+                        ])
+                          context.isMobile ? field : Expanded(child: field),
                       ],
                     ),
                     TextField(

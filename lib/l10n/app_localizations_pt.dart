@@ -1,0 +1,1543 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Portuguese (`pt`).
+class AppLocalizationsPt extends AppLocalizations {
+  AppLocalizationsPt([String locale = 'pt']) : super(locale);
+
+  @override
+  String get appName => 'Jobfy';
+
+  @override
+  String get headerSettingsTooltip => 'Configurações';
+
+  @override
+  String get headerUserAreaTooltip => 'Área do usuário';
+
+  @override
+  String get homeHeadline => 'Encontre o emprego\ndos seus sonhos.';
+
+  @override
+  String get homeSubheadline =>
+      'A Jobfy usa inteligência para conectar talentos\na oportunidades reais no mercado.';
+
+  @override
+  String get homeCtaPrimary => 'Começar agora';
+
+  @override
+  String get homeCtaSecondary => 'Já tenho conta';
+
+  @override
+  String get loginHeroTitle => 'Conecte-se ao\nseu próximo emprego.';
+
+  @override
+  String get loginHeroSubtitle =>
+      'A Jobfy conecta talentos a oportunidades reais.\nPublique suas habilidades, encontre vagas\npersonalizadas e acelere sua carreira\ncom inteligência.';
+
+  @override
+  String get chipCustomJobs => 'Vagas personalizadas';
+
+  @override
+  String get chipSmartMatch => 'Match inteligente';
+
+  @override
+  String get chipCareerGrowth => 'Crescimento de carreira';
+
+  @override
+  String get loginWelcomeBack => 'Bem-vindo de volta';
+
+  @override
+  String get loginSubtitle => 'Insira suas credenciais para acessar.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get emailHint => 'seu@email.com';
+
+  @override
+  String get passwordLabel => 'Senha';
+
+  @override
+  String get passwordHintMin6 => 'Mínimo 6 caracteres';
+
+  @override
+  String get rememberMe => 'Lembre-me';
+
+  @override
+  String get loginButton => 'Entrar';
+
+  @override
+  String get forgotPassword => 'Esqueceu a senha?';
+
+  @override
+  String get createAccount => 'Criar conta';
+
+  @override
+  String get iAmCompany => 'Sou empresa';
+
+  @override
+  String get authErrorInvalidCredentials => 'Email ou senha inválidos.';
+
+  @override
+  String get authErrorRegistrationFailed =>
+      'Erro ao criar conta. Tente novamente.';
+
+  @override
+  String get authErrorEmailInUse => 'Este email já está cadastrado.';
+
+  @override
+  String get authErrorNetwork =>
+      'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+
+  @override
+  String get registerTitle => 'Crie sua conta';
+
+  @override
+  String get registerSubtitle => 'Para o crescimento da sua carreira';
+
+  @override
+  String get fullNameLabel => 'Nome completo';
+
+  @override
+  String get fullNameHint => 'Seu nome...';
+
+  @override
+  String get cpfLabel => 'CPF';
+
+  @override
+  String get cpfHint => '000.000.000-00';
+
+  @override
+  String get genderLabel => 'Gênero';
+
+  @override
+  String get genderMale => 'Masculino';
+
+  @override
+  String get genderFemale => 'Feminino';
+
+  @override
+  String get genderOther => 'Outro';
+
+  @override
+  String get acceptTermsPrefix => 'Aceito os ';
+
+  @override
+  String get termsOfService => 'termos de serviço';
+
+  @override
+  String get termsRequiredError => 'Você precisa aceitar os termos.';
+
+  @override
+  String get registerButton => 'Criar conta';
+
+  @override
+  String get alreadyHaveAccount => 'Já tenho conta → Fazer login';
+
+  @override
+  String get termsDialogTitle => 'Termos de Serviço';
+
+  @override
+  String get termsDialogBody =>
+      'Ao criar uma conta na Jobfy, você concorda com nossa política de privacidade e termos de uso. Seus dados serão utilizados exclusivamente para conectar você a oportunidades de emprego relevantes.';
+
+  @override
+  String get userAreaLoadError => 'Erro ao carregar perfil.';
+
+  @override
+  String get searchJobsPlaceholder => 'Buscar vagas...';
+
+  @override
+  String welcomeGreeting(String name) {
+    return 'Olá, $name! 👋';
+  }
+
+  @override
+  String get welcomeSubtitle =>
+      'Você tem novas vagas compatíveis com seu perfil.';
+
+  @override
+  String get viewRecommendedJobs => 'Ver vagas recomendadas';
+
+  @override
+  String get avgMatch => 'Match médio';
+
+  @override
+  String get statApplications => 'Candidaturas';
+
+  @override
+  String get statApplicationsSub => 'no total';
+
+  @override
+  String get statMatchScore => 'Match Score';
+
+  @override
+  String get statMatchScoreSub => 'média geral';
+
+  @override
+  String get statProfileViews => 'Visualizações';
+
+  @override
+  String get statProfileViewsSub => 'do seu perfil';
+
+  @override
+  String get skillsTitle => 'Habilidades';
+
+  @override
+  String get addSkill => 'Adicionar';
+
+  @override
+  String get recommendedJobsTitle => 'Vagas Recomendadas';
+
+  @override
+  String get viewAll => 'Ver todas';
+
+  @override
+  String get applyButton => 'Candidatar';
+
+  @override
+  String get recentActivityTitle => 'Atividade Recente';
+
+  @override
+  String get profileCompletion => 'Perfil completo';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navJobs => 'Vagas';
+
+  @override
+  String get navResume => 'Currículo';
+
+  @override
+  String get navMessages => 'Mensagens';
+
+  @override
+  String get navSettings => 'Configurações';
+
+  @override
+  String get navLogout => 'Sair';
+
+  @override
+  String get settingsTitle => 'Configurações';
+
+  @override
+  String get settingsAppearance => 'Aparência';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Escolha a aparência da Jobfy neste dispositivo.';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Escuro';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageDescription => 'Escolha o idioma do aplicativo.';
+
+  @override
+  String get settingsLanguageSystem => 'Padrão do sistema';
+
+  @override
+  String get settingsBack => 'Voltar';
+
+  @override
+  String get settingsSubtitle =>
+      'Gerencie sua conta, notificações e preferências.';
+
+  @override
+  String get settingsAccountTitle => 'Informações da conta';
+
+  @override
+  String get settingsAccountDescription => 'Seus dados básicos de perfil.';
+
+  @override
+  String get settingsSaveChanges => 'Salvar alterações';
+
+  @override
+  String get settingsSaving => 'Salvando...';
+
+  @override
+  String get settingsSaved => 'Alterações salvas com sucesso.';
+
+  @override
+  String get settingsSaveError =>
+      'Não foi possível salvar as alterações. Tente novamente.';
+
+  @override
+  String get settingsNameRequired => 'Informe seu nome.';
+
+  @override
+  String get settingsEmailInvalid => 'Informe um e-mail válido.';
+
+  @override
+  String get settingsNotifications => 'Notificações';
+
+  @override
+  String get settingsNotificationsDescription =>
+      'Escolha o que você quer ser avisado.';
+
+  @override
+  String get settingsNotifNewJobs => 'Novas vagas compatíveis';
+
+  @override
+  String get settingsNotifNewJobsDescription =>
+      'Avise quando surgirem vagas com alto match.';
+
+  @override
+  String get settingsNotifMessages => 'Mensagens de empresas';
+
+  @override
+  String get settingsNotifMessagesDescription =>
+      'Notificar sobre novas mensagens de recrutadores.';
+
+  @override
+  String get settingsNotifWeekly => 'Resumo semanal por e-mail';
+
+  @override
+  String get settingsNotifWeeklyDescription =>
+      'Receba um resumo das suas candidaturas.';
+
+  @override
+  String get settingsNotifPush => 'Notificações push';
+
+  @override
+  String get settingsNotifPushDescription =>
+      'Alertas em tempo real no dispositivo.';
+
+  @override
+  String get settingsPrivacy => 'Privacidade e segurança';
+
+  @override
+  String get settingsPrivacyDescription => 'Controle quem vê suas informações.';
+
+  @override
+  String get settingsProfileVisible => 'Perfil visível para empresas';
+
+  @override
+  String get settingsProfileVisibleDescription =>
+      'Empresas podem encontrar seu perfil nas buscas.';
+
+  @override
+  String get settingsShowEmail => 'Mostrar e-mail no perfil';
+
+  @override
+  String get settingsShowEmailDescription =>
+      'Exibir seu e-mail para recrutadores.';
+
+  @override
+  String get settingsChangePassword => 'Alterar senha';
+
+  @override
+  String get settingsCurrentPassword => 'Senha atual';
+
+  @override
+  String get settingsNewPassword => 'Nova senha';
+
+  @override
+  String get settingsConfirmPassword => 'Confirmar nova senha';
+
+  @override
+  String get settingsPasswordRequired => 'Informe a senha atual.';
+
+  @override
+  String get settingsPasswordTooShort =>
+      'A senha deve ter pelo menos 6 caracteres.';
+
+  @override
+  String get settingsPasswordsDontMatch => 'As senhas não coincidem.';
+
+  @override
+  String get settingsWrongPassword => 'A senha atual está incorreta.';
+
+  @override
+  String get settingsPasswordChanged => 'Senha alterada com sucesso.';
+
+  @override
+  String get settingsPasswordError =>
+      'Não foi possível alterar a senha. Tente novamente.';
+
+  @override
+  String get settingsSave => 'Salvar';
+
+  @override
+  String get settingsJobPreferences => 'Preferências de vaga';
+
+  @override
+  String get settingsJobPreferencesDescription =>
+      'Tipos de trabalho que você aceita.';
+
+  @override
+  String get settingsJobTypeRemote => 'Remoto';
+
+  @override
+  String get settingsJobTypeHybrid => 'Híbrido';
+
+  @override
+  String get settingsJobTypeOnsite => 'Presencial';
+
+  @override
+  String get settingsDangerZone => 'Zona de risco';
+
+  @override
+  String get settingsLogout => 'Sair da conta';
+
+  @override
+  String get settingsDeleteAccount => 'Excluir conta';
+
+  @override
+  String get settingsDeleteAccountConfirm =>
+      'Tem certeza que deseja excluir sua conta? Você não poderá mais entrar com ela.';
+
+  @override
+  String get settingsDelete => 'Excluir';
+
+  @override
+  String get settingsAccountDeleted => 'Conta excluída.';
+
+  @override
+  String get settingsDeleteError =>
+      'Não foi possível excluir a conta. Tente novamente.';
+
+  @override
+  String get settingsThemeToggleToLight => 'Usar tema claro';
+
+  @override
+  String get settingsThemeToggleToDark => 'Usar tema escuro';
+
+  @override
+  String get companyRegisterTitle => 'Cadastre sua empresa';
+
+  @override
+  String get companyRegisterSubtitle =>
+      'Comece a publicar vagas e encontrar talentos na Jobfy.';
+
+  @override
+  String get companyNameLabel => 'Nome da empresa';
+
+  @override
+  String get companyNameHint => 'O nome da sua empresa...';
+
+  @override
+  String get companyCnpjLabel => 'CNPJ';
+
+  @override
+  String get companyCnpjHint => '00.000.000/0000-00';
+
+  @override
+  String get companyPhoneLabel => 'Telefone';
+
+  @override
+  String get companyPhoneHint => '(00) 00000-0000';
+
+  @override
+  String get companyRegisterButton => 'Cadastrar empresa';
+
+  @override
+  String get companyRegisterError =>
+      'Não foi possível cadastrar a empresa. Tente novamente.';
+
+  @override
+  String companyWelcome(String companyName) {
+    return 'Bem-vindo, $companyName';
+  }
+
+  @override
+  String get companyPublishJobTitle => 'Publicar uma vaga';
+
+  @override
+  String get jobTitleLabel => 'Título da vaga';
+
+  @override
+  String get jobTitleHint => 'ex.: Desenvolvedor Flutter';
+
+  @override
+  String get jobDescriptionLabel => 'Descrição';
+
+  @override
+  String get jobDescriptionHint => 'Responsabilidades, requisitos...';
+
+  @override
+  String get jobLocationLabel => 'Localização';
+
+  @override
+  String get jobLocationHint => 'ex.: Remoto, São Paulo';
+
+  @override
+  String get jobContractTypeLabel => 'Tipo de contrato';
+
+  @override
+  String get jobContractTypeHint => 'ex.: CLT, PJ';
+
+  @override
+  String get jobSalaryLabel => 'Faixa salarial';
+
+  @override
+  String get jobSalaryHint => 'ex.: R\$ 4.000 – 6.000';
+
+  @override
+  String get companyPublishJobButton => 'Publicar vaga';
+
+  @override
+  String get companyJobPublishError =>
+      'Não foi possível publicar a vaga. Tente novamente.';
+
+  @override
+  String get companyJobsTitle => 'Vagas publicadas';
+
+  @override
+  String get companyNoJobsYet =>
+      'Nenhuma vaga publicada ainda. Publique a primeira acima.';
+
+  @override
+  String get companyViewCandidates => 'Ver candidatos';
+
+  @override
+  String companyCandidatesTitle(String jobTitle) {
+    return 'Candidatos para $jobTitle';
+  }
+
+  @override
+  String get companyRoleFilterLabel => 'Filtrar por cargo desejado';
+
+  @override
+  String companyMinMatchLabel(int percent) {
+    return 'Match mínimo: $percent%';
+  }
+
+  @override
+  String get companyNoCandidates =>
+      'Nenhum candidato corresponde a esse filtro ainda.';
+
+  @override
+  String get companyCandidateFilterError =>
+      'Não foi possível carregar os candidatos. Tente novamente.';
+
+  @override
+  String get companyRateCandidate => 'Avaliar';
+
+  @override
+  String get companyMessageCandidate => 'Mensagem';
+
+  @override
+  String get companyRatingLabel => 'Avaliação (0-5)';
+
+  @override
+  String get companyMessageLabel => 'Mensagem';
+
+  @override
+  String get companyMessageHint =>
+      'Escreva uma mensagem para este candidato...';
+
+  @override
+  String get companySend => 'Enviar';
+
+  @override
+  String get companyCandidateRateError =>
+      'Não foi possível salvar a avaliação. Tente novamente.';
+
+  @override
+  String get companyMessageSendError =>
+      'Não foi possível enviar a mensagem. Tente novamente.';
+
+  @override
+  String get companyRatingSaved => 'Avaliação salva.';
+
+  @override
+  String get companyMessageSent => 'Mensagem enviada.';
+
+  @override
+  String get jobsPageTitle => 'Vagas';
+
+  @override
+  String get jobsLocationHint => 'Localização...';
+
+  @override
+  String get jobsNoResults => 'Nenhuma vaga encontrada para essa busca.';
+
+  @override
+  String get jobSearchError =>
+      'Não foi possível carregar as vagas. Tente novamente.';
+
+  @override
+  String get jobApplyError =>
+      'Não foi possível enviar sua candidatura. Tente novamente.';
+
+  @override
+  String get jobApplySuccess => 'Candidatura enviada!';
+
+  @override
+  String get jobAlreadyApplied => 'Candidatado';
+
+  @override
+  String get jobViewDetails => 'Ver detalhes';
+
+  @override
+  String get authErrorCpfInUse => 'Este CPF já está cadastrado.';
+
+  @override
+  String get registerSectionPersonal => 'Dados pessoais';
+
+  @override
+  String get registerSectionSkills => 'Habilidades';
+
+  @override
+  String get registerSectionExperience => 'Experiência';
+
+  @override
+  String get registerSkillsHint =>
+      'Toque nas habilidades que você tem e escolha o seu nível.';
+
+  @override
+  String get registerSkillsLoadError =>
+      'Não foi possível carregar a lista de habilidades.';
+
+  @override
+  String get otherSkillHint => 'Outra habilidade...';
+
+  @override
+  String get phoneLabel => 'Telefone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Data de nascimento';
+
+  @override
+  String get educationLevelLabel => 'Escolaridade';
+
+  @override
+  String get optionalSuffix => '(opcional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Ensino fundamental (incompleto)';
+
+  @override
+  String get educationElementaryComplete => 'Ensino fundamental (completo)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'Ensino médio (incompleto)';
+
+  @override
+  String get educationHighSchoolComplete => 'Ensino médio (completo)';
+
+  @override
+  String get educationTechnical => 'Curso técnico';
+
+  @override
+  String get educationBachelorIncomplete => 'Ensino superior (incompleto)';
+
+  @override
+  String get educationBachelorComplete => 'Ensino superior (completo)';
+
+  @override
+  String get educationPostgraduate => 'Pós-graduação';
+
+  @override
+  String get skillLevelBeginner => 'Iniciante';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediário';
+
+  @override
+  String get skillLevelAdvanced => 'Avançado';
+
+  @override
+  String get addExperience => 'Adicionar experiência';
+
+  @override
+  String get noExperiencesYet =>
+      'Nenhuma experiência adicionada. Trabalho voluntário também conta!';
+
+  @override
+  String get experienceJobTitleLabel => 'Cargo';
+
+  @override
+  String get experienceCompanyLabel => 'Empresa';
+
+  @override
+  String get experienceDescriptionLabel => 'O que você fazia?';
+
+  @override
+  String get experienceStartLabel => 'Início';
+
+  @override
+  String get experienceEndLabel => 'Fim';
+
+  @override
+  String get experienceCurrentJob => 'Trabalho aqui atualmente';
+
+  @override
+  String get experiencePresent => 'Atual';
+
+  @override
+  String get dialogCancel => 'Cancelar';
+
+  @override
+  String get dialogAdd => 'Adicionar';
+
+  @override
+  String get fieldRequired => 'Campo obrigatório';
+
+  @override
+  String get emailInvalid => 'Digite um email válido';
+
+  @override
+  String get passwordTooShort => 'Use pelo menos 6 caracteres';
+
+  @override
+  String get cpfInvalid => 'O CPF deve ter 11 dígitos';
+
+  @override
+  String get experienceDatesInvalid =>
+      'A data de fim não pode ser antes da data de início';
+
+  @override
+  String get statSkills => 'Habilidades';
+
+  @override
+  String get statSkillsSub => 'cadastradas';
+
+  @override
+  String get statExperiences => 'Experiências';
+
+  @override
+  String get statExperiencesSub => 'no seu currículo';
+
+  @override
+  String get personalInfoTitle => 'Dados pessoais';
+
+  @override
+  String get notInformed => 'Não informado';
+
+  @override
+  String get noSkillsYet => 'Nenhuma habilidade cadastrada ainda.';
+
+  @override
+  String get noRecentActivity =>
+      'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
+
+  @override
+  String get resumePageTitle => 'Meu currículo';
+
+  @override
+  String get resumeObjective => 'Objetivo';
+
+  @override
+  String get resumeEducation => 'Formação';
+
+  @override
+  String get resumeExperience => 'Experiências';
+
+  @override
+  String get resumeSkills => 'Habilidades';
+
+  @override
+  String get resumeCurrent => 'Atual';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'Busco uma oportunidade para aplicar e desenvolver meus conhecimentos em $skills, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'Busco uma oportunidade para iniciar ou desenvolver minha carreira, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+
+  @override
+  String get resumeMissingTitle => 'Quase lá!';
+
+  @override
+  String get resumeMissingBody =>
+      'Para gerar o seu currículo, preencha no seu perfil:';
+
+  @override
+  String get resumeCompleteProfile => 'Completar perfil';
+
+  @override
+  String get resumeError =>
+      'Não foi possível gerar o seu currículo. Tente novamente.';
+}
+
+/// The translations for Portuguese, as used in Brazil (`pt_BR`).
+class AppLocalizationsPtBr extends AppLocalizationsPt {
+  AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get appName => 'Jobfy';
+
+  @override
+  String get headerSettingsTooltip => 'Configurações';
+
+  @override
+  String get headerUserAreaTooltip => 'Área do usuário';
+
+  @override
+  String get homeHeadline => 'Encontre o emprego\ndos seus sonhos.';
+
+  @override
+  String get homeSubheadline =>
+      'A Jobfy usa inteligência para conectar talentos\na oportunidades reais no mercado.';
+
+  @override
+  String get homeCtaPrimary => 'Começar agora';
+
+  @override
+  String get homeCtaSecondary => 'Já tenho conta';
+
+  @override
+  String get loginHeroTitle => 'Conecte-se ao\nseu próximo emprego.';
+
+  @override
+  String get loginHeroSubtitle =>
+      'A Jobfy conecta talentos a oportunidades reais.\nPublique suas habilidades, encontre vagas\npersonalizadas e acelere sua carreira\ncom inteligência.';
+
+  @override
+  String get chipCustomJobs => 'Vagas personalizadas';
+
+  @override
+  String get chipSmartMatch => 'Match inteligente';
+
+  @override
+  String get chipCareerGrowth => 'Crescimento de carreira';
+
+  @override
+  String get loginWelcomeBack => 'Bem-vindo de volta';
+
+  @override
+  String get loginSubtitle => 'Insira suas credenciais para acessar.';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get emailHint => 'seu@email.com';
+
+  @override
+  String get passwordLabel => 'Senha';
+
+  @override
+  String get passwordHintMin6 => 'Mínimo 6 caracteres';
+
+  @override
+  String get rememberMe => 'Lembre-me';
+
+  @override
+  String get loginButton => 'Entrar';
+
+  @override
+  String get forgotPassword => 'Esqueceu a senha?';
+
+  @override
+  String get createAccount => 'Criar conta';
+
+  @override
+  String get iAmCompany => 'Sou empresa';
+
+  @override
+  String get authErrorInvalidCredentials => 'Email ou senha inválidos.';
+
+  @override
+  String get authErrorRegistrationFailed =>
+      'Erro ao criar conta. Tente novamente.';
+
+  @override
+  String get authErrorEmailInUse => 'Este email já está cadastrado.';
+
+  @override
+  String get authErrorNetwork =>
+      'Não foi possível conectar ao servidor. Tente novamente mais tarde.';
+
+  @override
+  String get registerTitle => 'Crie sua conta';
+
+  @override
+  String get registerSubtitle => 'Para o crescimento da sua carreira';
+
+  @override
+  String get fullNameLabel => 'Nome completo';
+
+  @override
+  String get fullNameHint => 'Seu nome...';
+
+  @override
+  String get cpfLabel => 'CPF';
+
+  @override
+  String get cpfHint => '000.000.000-00';
+
+  @override
+  String get genderLabel => 'Gênero';
+
+  @override
+  String get genderMale => 'Masculino';
+
+  @override
+  String get genderFemale => 'Feminino';
+
+  @override
+  String get genderOther => 'Outro';
+
+  @override
+  String get acceptTermsPrefix => 'Aceito os ';
+
+  @override
+  String get termsOfService => 'termos de serviço';
+
+  @override
+  String get termsRequiredError => 'Você precisa aceitar os termos.';
+
+  @override
+  String get registerButton => 'Criar conta';
+
+  @override
+  String get alreadyHaveAccount => 'Já tenho conta → Fazer login';
+
+  @override
+  String get termsDialogTitle => 'Termos de Serviço';
+
+  @override
+  String get termsDialogBody =>
+      'Ao criar uma conta na Jobfy, você concorda com nossa política de privacidade e termos de uso. Seus dados serão utilizados exclusivamente para conectar você a oportunidades de emprego relevantes.';
+
+  @override
+  String get userAreaLoadError => 'Erro ao carregar perfil.';
+
+  @override
+  String get searchJobsPlaceholder => 'Buscar vagas...';
+
+  @override
+  String welcomeGreeting(String name) {
+    return 'Olá, $name! 👋';
+  }
+
+  @override
+  String get welcomeSubtitle =>
+      'Você tem novas vagas compatíveis com seu perfil.';
+
+  @override
+  String get viewRecommendedJobs => 'Ver vagas recomendadas';
+
+  @override
+  String get avgMatch => 'Match médio';
+
+  @override
+  String get statApplications => 'Candidaturas';
+
+  @override
+  String get statApplicationsSub => 'no total';
+
+  @override
+  String get statMatchScore => 'Match Score';
+
+  @override
+  String get statMatchScoreSub => 'média geral';
+
+  @override
+  String get statProfileViews => 'Visualizações';
+
+  @override
+  String get statProfileViewsSub => 'do seu perfil';
+
+  @override
+  String get skillsTitle => 'Habilidades';
+
+  @override
+  String get addSkill => 'Adicionar';
+
+  @override
+  String get recommendedJobsTitle => 'Vagas Recomendadas';
+
+  @override
+  String get viewAll => 'Ver todas';
+
+  @override
+  String get applyButton => 'Candidatar';
+
+  @override
+  String get recentActivityTitle => 'Atividade Recente';
+
+  @override
+  String get profileCompletion => 'Perfil completo';
+
+  @override
+  String get navDashboard => 'Dashboard';
+
+  @override
+  String get navJobs => 'Vagas';
+
+  @override
+  String get navResume => 'Currículo';
+
+  @override
+  String get navMessages => 'Mensagens';
+
+  @override
+  String get navSettings => 'Configurações';
+
+  @override
+  String get navLogout => 'Sair';
+
+  @override
+  String get settingsTitle => 'Configurações';
+
+  @override
+  String get settingsAppearance => 'Aparência';
+
+  @override
+  String get settingsAppearanceDescription =>
+      'Escolha a aparência da Jobfy neste dispositivo.';
+
+  @override
+  String get settingsThemeLight => 'Claro';
+
+  @override
+  String get settingsThemeDark => 'Escuro';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsLanguage => 'Idioma';
+
+  @override
+  String get settingsLanguageDescription => 'Escolha o idioma do aplicativo.';
+
+  @override
+  String get settingsLanguageSystem => 'Padrão do sistema';
+
+  @override
+  String get settingsBack => 'Voltar';
+
+  @override
+  String get settingsSubtitle =>
+      'Gerencie sua conta, notificações e preferências.';
+
+  @override
+  String get settingsAccountTitle => 'Informações da conta';
+
+  @override
+  String get settingsAccountDescription => 'Seus dados básicos de perfil.';
+
+  @override
+  String get settingsSaveChanges => 'Salvar alterações';
+
+  @override
+  String get settingsSaving => 'Salvando...';
+
+  @override
+  String get settingsSaved => 'Alterações salvas com sucesso.';
+
+  @override
+  String get settingsSaveError =>
+      'Não foi possível salvar as alterações. Tente novamente.';
+
+  @override
+  String get settingsNameRequired => 'Informe seu nome.';
+
+  @override
+  String get settingsEmailInvalid => 'Informe um e-mail válido.';
+
+  @override
+  String get settingsNotifications => 'Notificações';
+
+  @override
+  String get settingsNotificationsDescription =>
+      'Escolha o que você quer ser avisado.';
+
+  @override
+  String get settingsNotifNewJobs => 'Novas vagas compatíveis';
+
+  @override
+  String get settingsNotifNewJobsDescription =>
+      'Avise quando surgirem vagas com alto match.';
+
+  @override
+  String get settingsNotifMessages => 'Mensagens de empresas';
+
+  @override
+  String get settingsNotifMessagesDescription =>
+      'Notificar sobre novas mensagens de recrutadores.';
+
+  @override
+  String get settingsNotifWeekly => 'Resumo semanal por e-mail';
+
+  @override
+  String get settingsNotifWeeklyDescription =>
+      'Receba um resumo das suas candidaturas.';
+
+  @override
+  String get settingsNotifPush => 'Notificações push';
+
+  @override
+  String get settingsNotifPushDescription =>
+      'Alertas em tempo real no dispositivo.';
+
+  @override
+  String get settingsPrivacy => 'Privacidade e segurança';
+
+  @override
+  String get settingsPrivacyDescription => 'Controle quem vê suas informações.';
+
+  @override
+  String get settingsProfileVisible => 'Perfil visível para empresas';
+
+  @override
+  String get settingsProfileVisibleDescription =>
+      'Empresas podem encontrar seu perfil nas buscas.';
+
+  @override
+  String get settingsShowEmail => 'Mostrar e-mail no perfil';
+
+  @override
+  String get settingsShowEmailDescription =>
+      'Exibir seu e-mail para recrutadores.';
+
+  @override
+  String get settingsChangePassword => 'Alterar senha';
+
+  @override
+  String get settingsCurrentPassword => 'Senha atual';
+
+  @override
+  String get settingsNewPassword => 'Nova senha';
+
+  @override
+  String get settingsConfirmPassword => 'Confirmar nova senha';
+
+  @override
+  String get settingsPasswordRequired => 'Informe a senha atual.';
+
+  @override
+  String get settingsPasswordTooShort =>
+      'A senha deve ter pelo menos 6 caracteres.';
+
+  @override
+  String get settingsPasswordsDontMatch => 'As senhas não coincidem.';
+
+  @override
+  String get settingsWrongPassword => 'A senha atual está incorreta.';
+
+  @override
+  String get settingsPasswordChanged => 'Senha alterada com sucesso.';
+
+  @override
+  String get settingsPasswordError =>
+      'Não foi possível alterar a senha. Tente novamente.';
+
+  @override
+  String get settingsSave => 'Salvar';
+
+  @override
+  String get settingsJobPreferences => 'Preferências de vaga';
+
+  @override
+  String get settingsJobPreferencesDescription =>
+      'Tipos de trabalho que você aceita.';
+
+  @override
+  String get settingsJobTypeRemote => 'Remoto';
+
+  @override
+  String get settingsJobTypeHybrid => 'Híbrido';
+
+  @override
+  String get settingsJobTypeOnsite => 'Presencial';
+
+  @override
+  String get settingsDangerZone => 'Zona de risco';
+
+  @override
+  String get settingsLogout => 'Sair da conta';
+
+  @override
+  String get settingsDeleteAccount => 'Excluir conta';
+
+  @override
+  String get settingsDeleteAccountConfirm =>
+      'Tem certeza que deseja excluir sua conta? Você não poderá mais entrar com ela.';
+
+  @override
+  String get settingsDelete => 'Excluir';
+
+  @override
+  String get settingsAccountDeleted => 'Conta excluída.';
+
+  @override
+  String get settingsDeleteError =>
+      'Não foi possível excluir a conta. Tente novamente.';
+
+  @override
+  String get settingsThemeToggleToLight => 'Usar tema claro';
+
+  @override
+  String get settingsThemeToggleToDark => 'Usar tema escuro';
+
+  @override
+  String get companyRegisterTitle => 'Cadastre sua empresa';
+
+  @override
+  String get companyRegisterSubtitle =>
+      'Comece a publicar vagas e encontrar talentos na Jobfy.';
+
+  @override
+  String get companyNameLabel => 'Nome da empresa';
+
+  @override
+  String get companyNameHint => 'O nome da sua empresa...';
+
+  @override
+  String get companyCnpjLabel => 'CNPJ';
+
+  @override
+  String get companyCnpjHint => '00.000.000/0000-00';
+
+  @override
+  String get companyPhoneLabel => 'Telefone';
+
+  @override
+  String get companyPhoneHint => '(00) 00000-0000';
+
+  @override
+  String get companyRegisterButton => 'Cadastrar empresa';
+
+  @override
+  String get companyRegisterError =>
+      'Não foi possível cadastrar a empresa. Tente novamente.';
+
+  @override
+  String companyWelcome(String companyName) {
+    return 'Bem-vindo, $companyName';
+  }
+
+  @override
+  String get companyPublishJobTitle => 'Publicar uma vaga';
+
+  @override
+  String get jobTitleLabel => 'Título da vaga';
+
+  @override
+  String get jobTitleHint => 'ex.: Desenvolvedor Flutter';
+
+  @override
+  String get jobDescriptionLabel => 'Descrição';
+
+  @override
+  String get jobDescriptionHint => 'Responsabilidades, requisitos...';
+
+  @override
+  String get jobLocationLabel => 'Localização';
+
+  @override
+  String get jobLocationHint => 'ex.: Remoto, São Paulo';
+
+  @override
+  String get jobContractTypeLabel => 'Tipo de contrato';
+
+  @override
+  String get jobContractTypeHint => 'ex.: CLT, PJ';
+
+  @override
+  String get jobSalaryLabel => 'Faixa salarial';
+
+  @override
+  String get jobSalaryHint => 'ex.: R\$ 4.000 – 6.000';
+
+  @override
+  String get companyPublishJobButton => 'Publicar vaga';
+
+  @override
+  String get companyJobPublishError =>
+      'Não foi possível publicar a vaga. Tente novamente.';
+
+  @override
+  String get companyJobsTitle => 'Vagas publicadas';
+
+  @override
+  String get companyNoJobsYet =>
+      'Nenhuma vaga publicada ainda. Publique a primeira acima.';
+
+  @override
+  String get companyViewCandidates => 'Ver candidatos';
+
+  @override
+  String companyCandidatesTitle(String jobTitle) {
+    return 'Candidatos para $jobTitle';
+  }
+
+  @override
+  String get companyRoleFilterLabel => 'Filtrar por cargo desejado';
+
+  @override
+  String companyMinMatchLabel(int percent) {
+    return 'Match mínimo: $percent%';
+  }
+
+  @override
+  String get companyNoCandidates =>
+      'Nenhum candidato corresponde a esse filtro ainda.';
+
+  @override
+  String get companyCandidateFilterError =>
+      'Não foi possível carregar os candidatos. Tente novamente.';
+
+  @override
+  String get companyRateCandidate => 'Avaliar';
+
+  @override
+  String get companyMessageCandidate => 'Mensagem';
+
+  @override
+  String get companyRatingLabel => 'Avaliação (0-5)';
+
+  @override
+  String get companyMessageLabel => 'Mensagem';
+
+  @override
+  String get companyMessageHint =>
+      'Escreva uma mensagem para este candidato...';
+
+  @override
+  String get companySend => 'Enviar';
+
+  @override
+  String get companyCandidateRateError =>
+      'Não foi possível salvar a avaliação. Tente novamente.';
+
+  @override
+  String get companyMessageSendError =>
+      'Não foi possível enviar a mensagem. Tente novamente.';
+
+  @override
+  String get companyRatingSaved => 'Avaliação salva.';
+
+  @override
+  String get companyMessageSent => 'Mensagem enviada.';
+
+  @override
+  String get jobsPageTitle => 'Vagas';
+
+  @override
+  String get jobsLocationHint => 'Localização...';
+
+  @override
+  String get jobsNoResults => 'Nenhuma vaga encontrada para essa busca.';
+
+  @override
+  String get jobSearchError =>
+      'Não foi possível carregar as vagas. Tente novamente.';
+
+  @override
+  String get jobApplyError =>
+      'Não foi possível enviar sua candidatura. Tente novamente.';
+
+  @override
+  String get jobApplySuccess => 'Candidatura enviada!';
+
+  @override
+  String get jobAlreadyApplied => 'Candidatado';
+
+  @override
+  String get jobViewDetails => 'Ver detalhes';
+
+  @override
+  String get authErrorCpfInUse => 'Este CPF já está cadastrado.';
+
+  @override
+  String get registerSectionPersonal => 'Dados pessoais';
+
+  @override
+  String get registerSectionSkills => 'Habilidades';
+
+  @override
+  String get registerSectionExperience => 'Experiência';
+
+  @override
+  String get registerSkillsHint =>
+      'Toque nas habilidades que você tem e escolha o seu nível.';
+
+  @override
+  String get registerSkillsLoadError =>
+      'Não foi possível carregar a lista de habilidades.';
+
+  @override
+  String get otherSkillHint => 'Outra habilidade...';
+
+  @override
+  String get phoneLabel => 'Telefone';
+
+  @override
+  String get phoneHint => '(00) 00000-0000';
+
+  @override
+  String get birthDateLabel => 'Data de nascimento';
+
+  @override
+  String get educationLevelLabel => 'Escolaridade';
+
+  @override
+  String get optionalSuffix => '(opcional)';
+
+  @override
+  String get educationElementaryIncomplete => 'Ensino fundamental (incompleto)';
+
+  @override
+  String get educationElementaryComplete => 'Ensino fundamental (completo)';
+
+  @override
+  String get educationHighSchoolIncomplete => 'Ensino médio (incompleto)';
+
+  @override
+  String get educationHighSchoolComplete => 'Ensino médio (completo)';
+
+  @override
+  String get educationTechnical => 'Curso técnico';
+
+  @override
+  String get educationBachelorIncomplete => 'Ensino superior (incompleto)';
+
+  @override
+  String get educationBachelorComplete => 'Ensino superior (completo)';
+
+  @override
+  String get educationPostgraduate => 'Pós-graduação';
+
+  @override
+  String get skillLevelBeginner => 'Iniciante';
+
+  @override
+  String get skillLevelIntermediate => 'Intermediário';
+
+  @override
+  String get skillLevelAdvanced => 'Avançado';
+
+  @override
+  String get addExperience => 'Adicionar experiência';
+
+  @override
+  String get noExperiencesYet =>
+      'Nenhuma experiência adicionada. Trabalho voluntário também conta!';
+
+  @override
+  String get experienceJobTitleLabel => 'Cargo';
+
+  @override
+  String get experienceCompanyLabel => 'Empresa';
+
+  @override
+  String get experienceDescriptionLabel => 'O que você fazia?';
+
+  @override
+  String get experienceStartLabel => 'Início';
+
+  @override
+  String get experienceEndLabel => 'Fim';
+
+  @override
+  String get experienceCurrentJob => 'Trabalho aqui atualmente';
+
+  @override
+  String get experiencePresent => 'Atual';
+
+  @override
+  String get dialogCancel => 'Cancelar';
+
+  @override
+  String get dialogAdd => 'Adicionar';
+
+  @override
+  String get fieldRequired => 'Campo obrigatório';
+
+  @override
+  String get emailInvalid => 'Digite um email válido';
+
+  @override
+  String get passwordTooShort => 'Use pelo menos 6 caracteres';
+
+  @override
+  String get cpfInvalid => 'O CPF deve ter 11 dígitos';
+
+  @override
+  String get experienceDatesInvalid =>
+      'A data de fim não pode ser antes da data de início';
+
+  @override
+  String get statSkills => 'Habilidades';
+
+  @override
+  String get statSkillsSub => 'cadastradas';
+
+  @override
+  String get statExperiences => 'Experiências';
+
+  @override
+  String get statExperiencesSub => 'no seu currículo';
+
+  @override
+  String get personalInfoTitle => 'Dados pessoais';
+
+  @override
+  String get notInformed => 'Não informado';
+
+  @override
+  String get noSkillsYet => 'Nenhuma habilidade cadastrada ainda.';
+
+  @override
+  String get noRecentActivity =>
+      'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
+
+  @override
+  String get resumePageTitle => 'Meu currículo';
+
+  @override
+  String get resumeObjective => 'Objetivo';
+
+  @override
+  String get resumeEducation => 'Formação';
+
+  @override
+  String get resumeExperience => 'Experiências';
+
+  @override
+  String get resumeSkills => 'Habilidades';
+
+  @override
+  String get resumeCurrent => 'Atual';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'Busco uma oportunidade para aplicar e desenvolver meus conhecimentos em $skills, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'Busco uma oportunidade para iniciar ou desenvolver minha carreira, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+
+  @override
+  String get resumeMissingTitle => 'Quase lá!';
+
+  @override
+  String get resumeMissingBody =>
+      'Para gerar o seu currículo, preencha no seu perfil:';
+
+  @override
+  String get resumeCompleteProfile => 'Completar perfil';
+
+  @override
+  String get resumeError =>
+      'Não foi possível gerar o seu currículo. Tente novamente.';
+}

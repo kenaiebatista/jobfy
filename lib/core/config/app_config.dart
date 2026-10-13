@@ -10,4 +10,13 @@ class AppConfig {
     'USE_FAKE_BACKEND',
     defaultValue: true,
   );
+
+  /// Auth talks directly to the MySQL database (see [DatabaseService])
+  /// instead of the fake/remote data sources. Takes precedence over
+  /// [useFakeBackend] for auth. Build with `--dart-define=USE_MYSQL=false`
+  /// to go back to the fake data source.
+  static const bool useMysql = bool.fromEnvironment(
+    'USE_MYSQL',
+    defaultValue: true,
+  );
 }

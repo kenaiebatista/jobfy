@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(const JobfyApp());
+
 }
 
 class JobfyApp extends StatelessWidget {

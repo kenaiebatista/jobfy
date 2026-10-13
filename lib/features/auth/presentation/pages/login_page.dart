@@ -1,5 +1,6 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/app_colors.dart';
-import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
@@ -11,6 +12,7 @@ import 'package:jobfy/shared/widgets/glow_circle.dart';
 import 'package:jobfy/shared/widgets/hover_link.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -49,48 +51,45 @@ class _LoginPageState extends State<LoginPage> {
       _emailController.text.trim(),
       _passwordController.text,
     );
-    if (ok && mounted) context.go('/user');
+    if (ok && mounted) {
+      context.read<UserSessionController>().start(_authController.user!.id);
+      context.go('/user');
+    }
   }
 
   String _errorMessage(AppLocalizations l10n, AuthErrorCode code) => switch (code) {
         AuthErrorCode.invalidCredentials => l10n.authErrorInvalidCredentials,
         AuthErrorCode.registrationFailed => l10n.authErrorRegistrationFailed,
+        AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
+        AuthErrorCode.cpfInUse => l10n.authErrorCpfInUse,
         AuthErrorCode.network => l10n.authErrorNetwork,
       };
 
-  static const _wideLayoutBreakpoint = 900.0;
-
   @override
   Widget build(BuildContext context) {
-    // This screen's split dark-hero / light-form design is intentionally
-    // fixed regardless of the device's theme, so force the light theme here
-    // instead of letting text/icon colors drift with dark mode.
-    return Theme(
-      data: AppTheme.light,
-      child: Scaffold(
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final form = Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 480),
-                child: SingleChildScrollView(child: _buildForm()),
-              ),
-            );
+    return Scaffold(
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final form = Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: SingleChildScrollView(child: _buildForm()),
+            ),
+          );
 
-            if (constraints.maxWidth < _wideLayoutBreakpoint) {
-              // Narrow screens (phones, small windows): the side-by-side
-              // hero doesn't fit, so show the form alone.
-              return form;
-            }
+          if (constraints.maxWidth < AppBreakpoints.laptop) {
+            // Narrow screens (phones, small windows): the side-by-side
+            // hero doesn't fit, so show the form alone.
+            return form;
+          }
 
-            return Row(
-              children: [
-                const Expanded(child: _LeftPanel()),
-                Expanded(child: form),
-              ],
-            );
-          },
-        ),
+          return Row(
+            children: [
+              const Expanded(child: _LeftPanel()),
+              Expanded(child: form),
+            ],
+          );
+        },
       ),
     );
   }
@@ -103,8 +102,8 @@ class _LoginPageState extends State<LoginPage> {
         final colors = context.colors;
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          margin: const EdgeInsets.all(32),
-          padding: const EdgeInsets.all(32),
+          margin: EdgeInsets.all(context.responsive(mobile: 16.0, laptop: 32.0)),
+          padding: EdgeInsets.all(context.responsive(mobile: 20.0, laptop: 32.0)),
           decoration: BoxDecoration(
             color: colors.surface,
             borderRadius: BorderRadius.circular(20),
@@ -212,19 +211,19 @@ class _LoginPageState extends State<LoginPage> {
                 child: ElevatedButton(
                   onPressed: _authController.isLoading ? null : _handleLogin,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.textPrimary,
+                    foregroundColor: colors.surface,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     elevation: 0,
                   ),
                   child: _authController.isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
-                            color: Colors.white,
+                            color: colors.surface,
                             strokeWidth: 2,
                           ),
                         )
@@ -304,7 +303,7 @@ class _LeftPanel extends StatelessWidget {
           child: GlowCircle(size: 180, color: Color(0x260EA5E9)),
         ),
         Padding(
-          padding: const EdgeInsets.all(48),
+          padding: EdgeInsets.all(context.responsive(mobile: 32.0, desktop: 48.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -326,9 +325,9 @@ class _LeftPanel extends StatelessWidget {
               const SizedBox(height: 64),
               Text(
                 l10n.loginHeroTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 38,
+                  fontSize: context.responsive(mobile: 30.0, desktop: 38.0),
                   fontWeight: FontWeight.bold,
                   height: 1.25,
                 ),

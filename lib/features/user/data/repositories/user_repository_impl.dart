@@ -4,6 +4,7 @@ import '../../domain/entities/user_profile_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../datasources/user_data_source.dart';
 import '../datasources/user_fake_data_source.dart';
+import '../datasources/user_mysql_data_source.dart';
 import '../datasources/user_remote_data_source.dart';
 import '../models/user_profile_model.dart';
 
@@ -12,9 +13,11 @@ class UserRepositoryImpl implements UserRepository {
 
   UserRepositoryImpl([UserDataSource? dataSource])
       : _dataSource = dataSource ??
-            (AppConfig.useFakeBackend
-                ? UserFakeDataSource()
-                : UserRemoteDataSource(ApiClient()));
+            (AppConfig.useMysql
+                ? UserMysqlDataSource()
+                : AppConfig.useFakeBackend
+                    ? UserFakeDataSource()
+                    : UserRemoteDataSource(ApiClient()));
 
   @override
   Future<UserProfileEntity> getUserProfile(String userId) {
@@ -36,6 +39,30 @@ class UserRepositoryImpl implements UserRepository {
       skills: profile.skills,
       recommendedJobs: profile.recommendedJobs,
       activities: profile.activities,
+      cpf: profile.cpf,
+      gender: profile.gender,
+      phone: profile.phone,
+      birthDate: profile.birthDate,
+      educationLevel: profile.educationLevel,
+      experiences: profile.experiences,
     ));
+  }
+
+  @override
+  Future<bool> changePassword({
+    required String userId,
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return _dataSource.changePassword(
+      userId: userId,
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
+  @override
+  Future<void> deleteAccount(String userId) {
+    return _dataSource.deleteAccount(userId);
   }
 }

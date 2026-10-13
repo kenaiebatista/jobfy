@@ -6,11 +6,14 @@ import 'package:jobfy/core/settings/settings_controller.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/jobs/presentation/pages/jobs_page.dart';
 import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
+import 'package:jobfy/features/user/data/datasources/user_fake_data_source.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+
+import '../../helpers/empty_job_data_source.dart';
 
 /// Regression test: the sidebar used to only appear on the dashboard.
 /// Jobs and Settings now keep it too, at a narrower fixed width.
@@ -20,8 +23,8 @@ void main() {
       providers: [
         ChangeNotifierProvider(
           create: (_) => UserSessionController(
-            GetUserProfileUsecase(UserRepositoryImpl()),
-          ),
+            GetUserProfileUsecase(UserRepositoryImpl(UserFakeDataSource(EmptyJobDataSource()))),
+          )..start('usr_001'),
         ),
         ChangeNotifierProvider(create: (_) => SettingsController()),
       ],
@@ -45,6 +48,11 @@ void main() {
   });
 
   testWidgets('JobsPage shows the sidebar with Jobs highlighted', (tester) async {
+    // Desktop width: below AppBreakpoints.mobile the sidebar is a drawer.
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(wrap(const JobsPage()));
     await tester.pumpAndSettle();
 
@@ -54,6 +62,11 @@ void main() {
   });
 
   testWidgets('SettingsPage shows the sidebar with Settings highlighted', (tester) async {
+    // Desktop width: below AppBreakpoints.mobile the sidebar is a drawer.
+    tester.view.physicalSize = const Size(1400, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(wrap(const SettingsPage()));
     await tester.pumpAndSettle();
 

@@ -1,4 +1,5 @@
 import 'package:jobfy/core/session/user_session_controller.dart';
+import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:jobfy/features/jobs/domain/entities/job_listing_entity.dart';
@@ -33,7 +34,7 @@ class _JobsPageState extends State<JobsPage> {
       ApplyToJobUsecase(repo),
     );
     _controller.search();
-    context.read<UserSessionController>().ensureLoaded('usr_001');
+    context.read<UserSessionController>().ensureLoaded();
   }
 
   @override
@@ -57,7 +58,35 @@ class _JobsPageState extends State<JobsPage> {
     final colors = context.colors;
     final session = context.watch<UserSessionController>();
 
+    final gutter = context.pagePadding;
+
+    final queryField = TextField(
+      controller: _queryController,
+      decoration: InputDecoration(
+        hintText: l10n.searchJobsPlaceholder,
+        prefixIcon: const Icon(Icons.search, size: 18),
+      ),
+      onSubmitted: (_) => _runSearch(),
+    );
+    final locationField = TextField(
+      controller: _locationController,
+      decoration: InputDecoration(
+        hintText: l10n.jobsLocationHint,
+        prefixIcon: const Icon(Icons.location_on_outlined, size: 18),
+      ),
+      onSubmitted: (_) => _runSearch(),
+    );
+    final searchButton = IconButton.filled(
+      onPressed: _runSearch,
+      icon: const Icon(Icons.arrow_forward),
+    );
+
     return Scaffold(
+      drawer: UserShell.drawer(
+        context,
+        profile: session.profile,
+        current: SidebarSection.jobs,
+      ),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -65,6 +94,7 @@ class _JobsPageState extends State<JobsPage> {
               context.canPop() ? context.pop() : context.go('/user'),
         ),
         title: Text(l10n.jobsPageTitle),
+        actions: const [MenuButton(color: Colors.white)],
       ),
       body: UserShell(
         profile: session.profile,
@@ -72,44 +102,41 @@ class _JobsPageState extends State<JobsPage> {
         current: SidebarSection.jobs,
         builder: (context, profile) => Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
+            constraints: BoxConstraints(
+              maxWidth: context.responsive(
+                mobile: double.infinity,
+                laptop: 800.0,
+                desktop: 960.0,
+              ),
+            ),
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    spacing: 12,
-                    children: [
-                      Expanded(
-                        flex: 2,
-                        child: TextField(
-                          controller: _queryController,
-                          decoration: InputDecoration(
-                            hintText: l10n.searchJobsPlaceholder,
-                            prefixIcon: const Icon(Icons.search, size: 18),
-                          ),
-                          onSubmitted: (_) => _runSearch(),
-                        ),
-                      ),
-                      Expanded(
-                        child: TextField(
-                          controller: _locationController,
-                          decoration: InputDecoration(
-                            hintText: l10n.jobsLocationHint,
-                            prefixIcon: const Icon(
-                              Icons.location_on_outlined,
-                              size: 18,
+                  padding: EdgeInsets.all(gutter),
+                  // Phones: the two fields don't fit side by side, so the
+                  // location goes on its own line under the query.
+                  child: context.isMobile
+                      ? Column(
+                          spacing: 12,
+                          children: [
+                            Row(
+                              spacing: 12,
+                              children: [
+                                Expanded(child: queryField),
+                                searchButton,
+                              ],
                             ),
-                          ),
-                          onSubmitted: (_) => _runSearch(),
+                            locationField,
+                          ],
+                        )
+                      : Row(
+                          spacing: 12,
+                          children: [
+                            Expanded(flex: 2, child: queryField),
+                            Expanded(child: locationField),
+                            searchButton,
+                          ],
                         ),
-                      ),
-                      IconButton.filled(
-                        onPressed: _runSearch,
-                        icon: const Icon(Icons.arrow_forward),
-                      ),
-                    ],
-                  ),
                 ),
                 Expanded(
                   child: ListenableBuilder(
@@ -135,8 +162,8 @@ class _JobsPageState extends State<JobsPage> {
                         );
                       }
                       return ListView.separated(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: gutter,
                           vertical: 8,
                         ),
                         itemCount: _controller.jobs.length,
@@ -223,8 +250,9 @@ class _JobListingCard extends StatelessWidget {
                 ),
             ],
           ),
-          Row(
+          Wrap(
             spacing: 8,
+            runSpacing: 6,
             children: [
               _Tag(icon: Icons.location_on_outlined, label: job.location),
               _Tag(icon: Icons.work_outline, label: job.type),
