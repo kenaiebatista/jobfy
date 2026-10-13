@@ -89,12 +89,18 @@ class AccountSettingsController extends ChangeNotifier {
     required String name,
     required String email,
     required String phone,
+    EducationLevel? educationLevel,
   }) async {
     _isSavingProfile = true;
     notifyListeners();
     try {
       await _updateProfile(
-        current.copyWith(name: name, email: email, phone: phone),
+        current.copyWith(
+          name: name,
+          email: email,
+          phone: phone,
+          educationLevel: educationLevel,
+        ),
       );
       return SaveProfileResult.saved;
     } on EmailAlreadyInUseException {

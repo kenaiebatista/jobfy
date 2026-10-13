@@ -28,7 +28,7 @@ class ProfileSidebar extends StatelessWidget {
       [
         (icon: Icons.dashboard_outlined, label: l10n.navDashboard, section: SidebarSection.dashboard, route: '/user'),
         (icon: Icons.work_outline, label: l10n.navJobs, section: SidebarSection.jobs, route: '/jobs'),
-        (icon: Icons.description_outlined, label: l10n.navResume, section: SidebarSection.resume, route: null),
+        (icon: Icons.description_outlined, label: l10n.navResume, section: SidebarSection.resume, route: '/resume'),
         (icon: Icons.chat_bubble_outline, label: l10n.navMessages, section: SidebarSection.messages, route: null),
       ];
 

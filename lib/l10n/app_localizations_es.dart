@@ -729,4 +729,45 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get noRecentActivity =>
       'Sin actividad reciente. Postúlate a una vacante para verla aquí.';
+
+  @override
+  String get resumePageTitle => 'Mi currículum';
+
+  @override
+  String get resumeObjective => 'Objetivo';
+
+  @override
+  String get resumeEducation => 'Formación';
+
+  @override
+  String get resumeExperience => 'Experiencia';
+
+  @override
+  String get resumeSkills => 'Habilidades';
+
+  @override
+  String get resumeCurrent => 'Actual';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'Busco una oportunidad para aplicar y desarrollar mis conocimientos en $skills, contribuyendo con dedicación, responsabilidad y ganas de aprender.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'Busco una oportunidad para iniciar o desarrollar mi carrera, contribuyendo con dedicación, responsabilidad y ganas de aprender.';
+
+  @override
+  String get resumeMissingTitle => '¡Ya casi!';
+
+  @override
+  String get resumeMissingBody =>
+      'Para generar tu currículum, completa en tu perfil:';
+
+  @override
+  String get resumeCompleteProfile => 'Completar perfil';
+
+  @override
+  String get resumeError =>
+      'No se pudo generar tu currículum. Inténtalo de nuevo.';
 }

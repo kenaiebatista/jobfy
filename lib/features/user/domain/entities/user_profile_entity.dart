@@ -128,7 +128,12 @@ class UserProfileEntity {
   });
 
   /// Copy with the fields the settings screen can edit.
-  UserProfileEntity copyWith({String? name, String? email, String? phone}) {
+  UserProfileEntity copyWith({
+    String? name,
+    String? email,
+    String? phone,
+    EducationLevel? educationLevel,
+  }) {
     return UserProfileEntity(
       id: id,
       name: name ?? this.name,
@@ -146,7 +151,7 @@ class UserProfileEntity {
       gender: gender,
       phone: phone ?? this.phone,
       birthDate: birthDate,
-      educationLevel: educationLevel,
+      educationLevel: educationLevel ?? this.educationLevel,
       experiences: experiences,
     );
   }

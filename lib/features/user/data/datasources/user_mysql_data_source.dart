@@ -102,8 +102,8 @@ class UserMysqlDataSource implements UserDataSource {
     );
   }
 
-  /// Saves what the settings screen edits (name, email, phone). The rest
-  /// of the profile (skills, experiences) is only set at sign-up for now.
+  /// Saves what the settings screen edits (name, email, phone, education).
+  /// The rest of the profile (skills, experiences) is only set at sign-up.
   @override
   Future<void> updateProfile(UserProfileModel profile) {
     final phone = profile.phone?.trim();
@@ -112,6 +112,7 @@ class UserMysqlDataSource implements UserDataSource {
       name: profile.name,
       email: profile.email,
       phone: phone == null || phone.isEmpty ? null : phone,
+      educationLevel: profile.educationLevel?.dbValue,
     );
   }
 

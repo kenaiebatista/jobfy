@@ -234,14 +234,21 @@ class DatabaseService {
     required String name,
     required String email,
     String? phone,
+    String? educationLevel,
   }) async {
     final conn = await connect();
 
     try {
       await conn.transactional((conn) async {
         await conn.execute(
-          'UPDATE users SET name = :name, phone = :phone WHERE user_id = :id',
-          {'id': userId, 'name': name, 'phone': phone},
+          'UPDATE users SET name = :name, phone = :phone, '
+          'education_level = :education WHERE user_id = :id',
+          {
+            'id': userId,
+            'name': name,
+            'phone': phone,
+            'education': educationLevel,
+          },
         );
         await conn.execute(
           'UPDATE accounts a JOIN users u ON u.account_id = a.account_id '

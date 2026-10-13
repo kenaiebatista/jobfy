@@ -13,6 +13,7 @@ import 'package:jobfy/features/user/domain/repositories/user_repository.dart';
 import 'package:jobfy/features/user/domain/usecases/change_password_usecase.dart';
 import 'package:jobfy/features/user/domain/usecases/delete_account_usecase.dart';
 import 'package:jobfy/features/user/domain/usecases/update_user_profile_usecase.dart';
+import 'package:jobfy/features/user/presentation/user_labels.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/shared/widgets/theme_toggle_button.dart';
@@ -43,6 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
+  EducationLevel? _education;
 
   /// Id of the profile the form fields were filled from, so they are filled
   /// once per user and not overwritten while the user is typing.
@@ -79,6 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _nameCtrl.text = profile.name;
     _emailCtrl.text = profile.email;
     _phoneCtrl.text = profile.phone ?? '';
+    _education = profile.educationLevel;
   }
 
   void _showSnack(String message) {
@@ -97,6 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
       name: _nameCtrl.text.trim(),
       email: _emailCtrl.text.trim(),
       phone: _phoneCtrl.text.trim(),
+      educationLevel: _education,
     );
     if (!mounted) return;
 
@@ -221,6 +225,8 @@ class _SettingsPageState extends State<SettingsPage> {
                           nameCtrl: _nameCtrl,
                           emailCtrl: _emailCtrl,
                           phoneCtrl: _phoneCtrl,
+                          education: _education,
+                          onEducationChanged: (v) => setState(() => _education = v),
                           isSaving: _controller.isSavingProfile,
                           onSave: () => _saveProfile(profile),
                         ),
@@ -331,6 +337,8 @@ class _AccountForm extends StatelessWidget {
   final TextEditingController nameCtrl;
   final TextEditingController emailCtrl;
   final TextEditingController phoneCtrl;
+  final EducationLevel? education;
+  final ValueChanged<EducationLevel?> onEducationChanged;
   final bool isSaving;
   final VoidCallback onSave;
 
@@ -339,6 +347,8 @@ class _AccountForm extends StatelessWidget {
     required this.nameCtrl,
     required this.emailCtrl,
     required this.phoneCtrl,
+    required this.education,
+    required this.onEducationChanged,
     required this.isSaving,
     required this.onSave,
   });
@@ -388,6 +398,25 @@ class _AccountForm extends StatelessWidget {
               hintText: l10n.phoneHint,
               prefixIcon: const Icon(Icons.phone_outlined, size: 18),
             ),
+          ),
+          DropdownButtonFormField<EducationLevel>(
+            initialValue: education,
+            isExpanded: true,
+            onChanged: onEducationChanged,
+            decoration: InputDecoration(
+              labelText: l10n.educationLevelLabel,
+              prefixIcon: const Icon(Icons.school_outlined, size: 18),
+            ),
+            items: [
+              for (final level in EducationLevel.values)
+                DropdownMenuItem(
+                  value: level,
+                  child: Text(
+                    l10n.educationLevel(level),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+            ],
           ),
           Align(
             alignment: Alignment.centerRight,

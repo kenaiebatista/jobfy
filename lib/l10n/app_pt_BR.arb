@@ -241,5 +241,18 @@
   "personalInfoTitle": "Dados pessoais",
   "notInformed": "Não informado",
   "noSkillsYet": "Nenhuma habilidade cadastrada ainda.",
-  "noRecentActivity": "Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui."
+  "noRecentActivity": "Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.",
+
+  "resumePageTitle": "Meu currículo",
+  "resumeObjective": "Objetivo",
+  "resumeEducation": "Formação",
+  "resumeExperience": "Experiências",
+  "resumeSkills": "Habilidades",
+  "resumeCurrent": "Atual",
+  "resumeObjectiveWithSkills": "Busco uma oportunidade para aplicar e desenvolver meus conhecimentos em {skills}, contribuindo com dedicação, responsabilidade e vontade de aprender.",
+  "resumeObjectiveDefault": "Busco uma oportunidade para iniciar ou desenvolver minha carreira, contribuindo com dedicação, responsabilidade e vontade de aprender.",
+  "resumeMissingTitle": "Quase lá!",
+  "resumeMissingBody": "Para gerar o seu currículo, preencha no seu perfil:",
+  "resumeCompleteProfile": "Completar perfil",
+  "resumeError": "Não foi possível gerar o seu currículo. Tente novamente."
 }

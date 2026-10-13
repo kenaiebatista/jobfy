@@ -261,5 +261,23 @@
   "personalInfoTitle": "Personal data",
   "notInformed": "Not informed",
   "noSkillsYet": "No skills registered yet.",
-  "noRecentActivity": "No recent activity. Apply to a job to see it here."
+  "noRecentActivity": "No recent activity. Apply to a job to see it here.",
+
+  "resumePageTitle": "My resume",
+  "resumeObjective": "Objective",
+  "resumeEducation": "Education",
+  "resumeExperience": "Experience",
+  "resumeSkills": "Skills",
+  "resumeCurrent": "Present",
+  "resumeObjectiveWithSkills": "I am looking for an opportunity to apply and grow my knowledge of {skills}, contributing with dedication, responsibility and eagerness to learn.",
+  "@resumeObjectiveWithSkills": {
+    "placeholders": {
+      "skills": { "type": "String" }
+    }
+  },
+  "resumeObjectiveDefault": "I am looking for an opportunity to start or grow my career, contributing with dedication, responsibility and eagerness to learn.",
+  "resumeMissingTitle": "Almost there!",
+  "resumeMissingBody": "To generate your resume, fill in the following on your profile:",
+  "resumeCompleteProfile": "Complete profile",
+  "resumeError": "Could not generate your resume. Please try again."
 }

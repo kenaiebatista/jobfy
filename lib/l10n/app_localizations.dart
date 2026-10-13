@@ -1456,6 +1456,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No recent activity. Apply to a job to see it here.'**
   String get noRecentActivity;
+
+  /// No description provided for @resumePageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My resume'**
+  String get resumePageTitle;
+
+  /// No description provided for @resumeObjective.
+  ///
+  /// In en, this message translates to:
+  /// **'Objective'**
+  String get resumeObjective;
+
+  /// No description provided for @resumeEducation.
+  ///
+  /// In en, this message translates to:
+  /// **'Education'**
+  String get resumeEducation;
+
+  /// No description provided for @resumeExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Experience'**
+  String get resumeExperience;
+
+  /// No description provided for @resumeSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Skills'**
+  String get resumeSkills;
+
+  /// No description provided for @resumeCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get resumeCurrent;
+
+  /// No description provided for @resumeObjectiveWithSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'I am looking for an opportunity to apply and grow my knowledge of {skills}, contributing with dedication, responsibility and eagerness to learn.'**
+  String resumeObjectiveWithSkills(String skills);
+
+  /// No description provided for @resumeObjectiveDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'I am looking for an opportunity to start or grow my career, contributing with dedication, responsibility and eagerness to learn.'**
+  String get resumeObjectiveDefault;
+
+  /// No description provided for @resumeMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there!'**
+  String get resumeMissingTitle;
+
+  /// No description provided for @resumeMissingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To generate your resume, fill in the following on your profile:'**
+  String get resumeMissingBody;
+
+  /// No description provided for @resumeCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get resumeCompleteProfile;
+
+  /// No description provided for @resumeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not generate your resume. Please try again.'**
+  String get resumeError;
 }
 
 class _AppLocalizationsDelegate

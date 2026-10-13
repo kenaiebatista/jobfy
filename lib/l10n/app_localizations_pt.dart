@@ -730,6 +730,47 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get noRecentActivity =>
       'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
+
+  @override
+  String get resumePageTitle => 'Meu currículo';
+
+  @override
+  String get resumeObjective => 'Objetivo';
+
+  @override
+  String get resumeEducation => 'Formação';
+
+  @override
+  String get resumeExperience => 'Experiências';
+
+  @override
+  String get resumeSkills => 'Habilidades';
+
+  @override
+  String get resumeCurrent => 'Atual';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'Busco uma oportunidade para aplicar e desenvolver meus conhecimentos em $skills, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'Busco uma oportunidade para iniciar ou desenvolver minha carreira, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+
+  @override
+  String get resumeMissingTitle => 'Quase lá!';
+
+  @override
+  String get resumeMissingBody =>
+      'Para gerar o seu currículo, preencha no seu perfil:';
+
+  @override
+  String get resumeCompleteProfile => 'Completar perfil';
+
+  @override
+  String get resumeError =>
+      'Não foi possível gerar o seu currículo. Tente novamente.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1458,4 +1499,45 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get noRecentActivity =>
       'Nenhuma atividade recente. Candidate-se a uma vaga para vê-la aqui.';
+
+  @override
+  String get resumePageTitle => 'Meu currículo';
+
+  @override
+  String get resumeObjective => 'Objetivo';
+
+  @override
+  String get resumeEducation => 'Formação';
+
+  @override
+  String get resumeExperience => 'Experiências';
+
+  @override
+  String get resumeSkills => 'Habilidades';
+
+  @override
+  String get resumeCurrent => 'Atual';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'Busco uma oportunidade para aplicar e desenvolver meus conhecimentos em $skills, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'Busco uma oportunidade para iniciar ou desenvolver minha carreira, contribuindo com dedicação, responsabilidade e vontade de aprender.';
+
+  @override
+  String get resumeMissingTitle => 'Quase lá!';
+
+  @override
+  String get resumeMissingBody =>
+      'Para gerar o seu currículo, preencha no seu perfil:';
+
+  @override
+  String get resumeCompleteProfile => 'Completar perfil';
+
+  @override
+  String get resumeError =>
+      'Não foi possível gerar o seu currículo. Tente novamente.';
 }

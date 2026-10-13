@@ -724,4 +724,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noRecentActivity =>
       'No recent activity. Apply to a job to see it here.';
+
+  @override
+  String get resumePageTitle => 'My resume';
+
+  @override
+  String get resumeObjective => 'Objective';
+
+  @override
+  String get resumeEducation => 'Education';
+
+  @override
+  String get resumeExperience => 'Experience';
+
+  @override
+  String get resumeSkills => 'Skills';
+
+  @override
+  String get resumeCurrent => 'Present';
+
+  @override
+  String resumeObjectiveWithSkills(String skills) {
+    return 'I am looking for an opportunity to apply and grow my knowledge of $skills, contributing with dedication, responsibility and eagerness to learn.';
+  }
+
+  @override
+  String get resumeObjectiveDefault =>
+      'I am looking for an opportunity to start or grow my career, contributing with dedication, responsibility and eagerness to learn.';
+
+  @override
+  String get resumeMissingTitle => 'Almost there!';
+
+  @override
+  String get resumeMissingBody =>
+      'To generate your resume, fill in the following on your profile:';
+
+  @override
+  String get resumeCompleteProfile => 'Complete profile';
+
+  @override
+  String get resumeError => 'Could not generate your resume. Please try again.';
 }

@@ -3,6 +3,7 @@ import 'package:jobfy/features/auth/presentation/pages/login_page.dart';
 import 'package:jobfy/features/auth/presentation/pages/register_page.dart';
 import 'package:jobfy/features/home/presentation/pages/home_page.dart';
 import 'package:jobfy/features/jobs/presentation/pages/jobs_page.dart';
+import 'package:jobfy/features/resume/presentation/pages/resume_page.dart';
 import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
 import 'package:jobfy/features/user/presentation/pages/user_area_page.dart';
 import 'package:jobfy/features/company/presentation/pages/company_page.dart';
@@ -11,7 +12,7 @@ import 'package:provider/provider.dart';
 
 /// Screens that need a signed-in user. Without one (e.g. after a restart,
 /// since the session lives in memory) they send you to the login screen.
-const _signedInOnly = {'/user', '/jobs', '/settings'};
+const _signedInOnly = {'/user', '/jobs', '/settings', '/resume'};
 
 final appRouter = GoRouter(
   redirect: (context, state) {
@@ -49,6 +50,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/jobs',
       builder: (_, __) => const JobsPage(),
+    ),
+    GoRoute(
+      path: '/resume',
+      builder: (_, __) => const ResumePage(),
     ),
   ],
 );
