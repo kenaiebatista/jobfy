@@ -7,6 +7,7 @@ import 'package:jobfy/features/auth/domain/usecases/get_skill_names_usecase.dart
 import 'package:jobfy/features/auth/domain/usecases/login_usecase.dart';
 import 'package:jobfy/features/auth/domain/usecases/register_usecase.dart';
 import 'package:jobfy/features/auth/presentation/controllers/auth_controller.dart';
+import 'package:jobfy/features/company/presentation/widgets/company_register_form.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/user/presentation/user_labels.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
@@ -18,8 +19,13 @@ import 'package:provider/provider.dart';
 /// Sign-up for job seekers. Fills every column of the `users` table plus
 /// the user's skills (`user_skills`) and experiences (`experiences`).
 /// Only name, email, CPF, password and gender are required.
+///
+/// The "I'm a company" option switches the card to [CompanyRegisterForm].
 class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+  /// Opens in company mode (from the login page's "I'm a company" link).
+  final bool startAsCompany;
+
+  const RegisterPage({super.key, this.startAsCompany = false});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -37,6 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
   DateTime? _birthDate;
   EducationLevel? _education;
   bool _acceptedTerms = false;
+  late bool _isCompany = widget.startAsCompany;
 
   /// Skill names offered as chips (from the `skills` table, plus any the
   /// user typed), and the ones picked with their level.
@@ -212,42 +219,57 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
-                child: ListenableBuilder(
-                  listenable: _authController,
-                  builder: (context, _) {
-                    return Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 16,
-                        children: [
-                          _SectionTitle(l10n.registerSectionPersonal),
-                          ..._personalFields(l10n),
-                          const Divider(height: 8),
-                          _SectionTitle(l10n.registerSectionSkills),
-                          _skillsSection(l10n),
-                          const Divider(height: 8),
-                          _SectionTitle(l10n.registerSectionExperience),
-                          _experienceSection(l10n),
-                          const Divider(height: 8),
-                          _termsRow(l10n),
-                          if (_authController.errorCode != null) _errorBox(l10n),
-                          _submitButton(l10n),
-                          Center(
-                            child: HoverLink(
-                              label: l10n.alreadyHaveAccount,
-                              onTap: () => context.go('/login'),
-                              style: (hovered) => TextStyle(
-                                fontSize: 13,
-                                color: hovered ? colors.accent : colors.textMuted,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 20,
+                  children: [
+                    SegmentedButton<bool>(
+                      segments: [
+                        ButtonSegment(value: false, icon: const Icon(Icons.person_outline, size: 18), label: Text(l10n.registerAsCandidate)),
+                        ButtonSegment(value: true, icon: const Icon(Icons.business_outlined, size: 18), label: Text(l10n.registerAsCompany)),
+                      ],
+                      selected: {_isCompany},
+                      onSelectionChanged: (v) => setState(() => _isCompany = v.first),
+                    ),
+                    if (_isCompany)
+                      CompanyRegisterForm(
+                        termsRow: _termsRow(l10n),
+                        acceptedTerms: _acceptedTerms,
+                        footer: _loginLink(l10n),
+                        onRegistered: (company) {
+                          context.read<UserSessionController>().startCompany(company.companyId);
+                          context.go('/company');
+                        },
+                      )
+                    else
+                      ListenableBuilder(
+                      listenable: _authController,
+                      builder: (context, _) {
+                        return Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 16,
+                            children: [
+                              _SectionTitle(l10n.registerSectionPersonal),
+                              ..._personalFields(l10n),
+                              const Divider(height: 8),
+                              _SectionTitle(l10n.registerSectionSkills),
+                              _skillsSection(l10n),
+                              const Divider(height: 8),
+                              _SectionTitle(l10n.registerSectionExperience),
+                              _experienceSection(l10n),
+                              const Divider(height: 8),
+                              _termsRow(l10n),
+                              if (_authController.errorCode != null) _errorBox(l10n),
+                              _submitButton(l10n),
+                              _loginLink(l10n),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  },
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
@@ -512,6 +534,21 @@ class _RegisterPageState extends State<RegisterPage> {
           label: Text(l10n.addExperience),
         ),
       ],
+    );
+  }
+
+  Widget _loginLink(AppLocalizations l10n) {
+    final colors = context.colors;
+    return Center(
+      child: HoverLink(
+        label: l10n.alreadyHaveAccount,
+        onTap: () => context.go('/login'),
+        style: (hovered) => TextStyle(
+          fontSize: 13,
+          color: hovered ? colors.accent : colors.textMuted,
+          decoration: TextDecoration.underline,
+        ),
+      ),
     );
   }
 

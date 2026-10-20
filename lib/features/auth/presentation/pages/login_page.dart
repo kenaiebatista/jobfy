@@ -52,8 +52,15 @@ class _LoginPageState extends State<LoginPage> {
       _passwordController.text,
     );
     if (ok && mounted) {
-      context.read<UserSessionController>().start(_authController.user!.id);
-      context.go('/user');
+      final user = _authController.user!;
+      final session = context.read<UserSessionController>();
+      if (user.isCompany) {
+        session.startCompany(user.id);
+        context.go('/company');
+      } else {
+        session.start(user.id);
+        context.go('/user');
+      }
     }
   }
 
@@ -255,7 +262,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   HoverLink(
                     label: l10n.iAmCompany,
-                    onTap: () => context.go('/company'),
+                    onTap: () => context.go('/register?type=company'),
                     style: (hovered) => TextStyle(
                       fontSize: 12,
                       color: hovered ? colors.accent : colors.textMuted,

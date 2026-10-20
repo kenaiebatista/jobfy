@@ -771,6 +771,106 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get resumeError =>
       'Não foi possível gerar o seu currículo. Tente novamente.';
+
+  @override
+  String get registerAsCandidate => 'Sou candidato';
+
+  @override
+  String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get companySectionData => 'Dados da empresa';
+
+  @override
+  String get companySectionAccess => 'Acesso à conta';
+
+  @override
+  String get companyCnpjSearchTooltip => 'Buscar pelo CNPJ';
+
+  @override
+  String get companyCnpjSearchHint =>
+      'Digite o CNPJ e toque na lupa para preencher os dados pela Receita Federal.';
+
+  @override
+  String get companyCnpjFilled =>
+      'Dados preenchidos pela Receita Federal. Confira antes de continuar.';
+
+  @override
+  String companyCnpjStatusWarning(String status) {
+    return 'Atenção: situação cadastral na Receita Federal: $status.';
+  }
+
+  @override
+  String get companyCnpjNotFound => 'CNPJ não encontrado na Receita Federal.';
+
+  @override
+  String get companyCnpjLookupError =>
+      'Não foi possível buscar o CNPJ agora. Preencha os dados manualmente.';
+
+  @override
+  String get companyLegalNameLabel => 'Razão social';
+
+  @override
+  String get companyTradeNameLabel => 'Nome fantasia';
+
+  @override
+  String get companyBusinessAreaLabel => 'Atividade principal';
+
+  @override
+  String get companyZipCodeLabel => 'CEP';
+
+  @override
+  String get companyAddressLabel => 'Endereço';
+
+  @override
+  String get companyCityLabel => 'Cidade';
+
+  @override
+  String get companyStateLabel => 'UF';
+
+  @override
+  String get companyDescriptionLabel => 'Sobre a empresa';
+
+  @override
+  String get companyDescriptionHint =>
+      'Conte um pouco sobre a empresa para os candidatos...';
+
+  @override
+  String get cnpjInvalid => 'O CNPJ deve ter 14 dígitos';
+
+  @override
+  String get authErrorCnpjInUse => 'Este CNPJ já está cadastrado.';
+
+  @override
+  String get companyLoadError =>
+      'Não foi possível carregar os dados da empresa.';
+
+  @override
+  String get contractClt => 'CLT';
+
+  @override
+  String get contractPj => 'PJ';
+
+  @override
+  String get contractInternship => 'Estágio';
+
+  @override
+  String get contractApprentice => 'Jovem aprendiz';
+
+  @override
+  String get contractTemporary => 'Temporário';
+
+  @override
+  String get contractFreelance => 'Freelance';
+
+  @override
+  String get jobStatusOpen => 'Aberta';
+
+  @override
+  String get jobStatusPaused => 'Pausada';
+
+  @override
+  String get jobStatusClosed => 'Encerrada';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1540,4 +1640,104 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get resumeError =>
       'Não foi possível gerar o seu currículo. Tente novamente.';
+
+  @override
+  String get registerAsCandidate => 'Sou candidato';
+
+  @override
+  String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get companySectionData => 'Dados da empresa';
+
+  @override
+  String get companySectionAccess => 'Acesso à conta';
+
+  @override
+  String get companyCnpjSearchTooltip => 'Buscar pelo CNPJ';
+
+  @override
+  String get companyCnpjSearchHint =>
+      'Digite o CNPJ e toque na lupa para preencher os dados pela Receita Federal.';
+
+  @override
+  String get companyCnpjFilled =>
+      'Dados preenchidos pela Receita Federal. Confira antes de continuar.';
+
+  @override
+  String companyCnpjStatusWarning(String status) {
+    return 'Atenção: situação cadastral na Receita Federal: $status.';
+  }
+
+  @override
+  String get companyCnpjNotFound => 'CNPJ não encontrado na Receita Federal.';
+
+  @override
+  String get companyCnpjLookupError =>
+      'Não foi possível buscar o CNPJ agora. Preencha os dados manualmente.';
+
+  @override
+  String get companyLegalNameLabel => 'Razão social';
+
+  @override
+  String get companyTradeNameLabel => 'Nome fantasia';
+
+  @override
+  String get companyBusinessAreaLabel => 'Atividade principal';
+
+  @override
+  String get companyZipCodeLabel => 'CEP';
+
+  @override
+  String get companyAddressLabel => 'Endereço';
+
+  @override
+  String get companyCityLabel => 'Cidade';
+
+  @override
+  String get companyStateLabel => 'UF';
+
+  @override
+  String get companyDescriptionLabel => 'Sobre a empresa';
+
+  @override
+  String get companyDescriptionHint =>
+      'Conte um pouco sobre a empresa para os candidatos...';
+
+  @override
+  String get cnpjInvalid => 'O CNPJ deve ter 14 dígitos';
+
+  @override
+  String get authErrorCnpjInUse => 'Este CNPJ já está cadastrado.';
+
+  @override
+  String get companyLoadError =>
+      'Não foi possível carregar os dados da empresa.';
+
+  @override
+  String get contractClt => 'CLT';
+
+  @override
+  String get contractPj => 'PJ';
+
+  @override
+  String get contractInternship => 'Estágio';
+
+  @override
+  String get contractApprentice => 'Jovem aprendiz';
+
+  @override
+  String get contractTemporary => 'Temporário';
+
+  @override
+  String get contractFreelance => 'Freelance';
+
+  @override
+  String get jobStatusOpen => 'Aberta';
+
+  @override
+  String get jobStatusPaused => 'Pausada';
+
+  @override
+  String get jobStatusClosed => 'Encerrada';
 }

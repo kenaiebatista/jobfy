@@ -8,7 +8,9 @@ import '../models/job_model.dart';
 /// Talks to the Jobfy backend's company endpoints.
 ///
 /// Expected contract (Go backend, JSON, snake_case fields):
-///   POST /companies                                    -> CompanyModel
+///   POST /companies   {..., password}                  -> CompanyModel
+///   GET  /companies/{companyId}                        -> CompanyModel
+///   GET  /companies/{companyId}/jobs                   -> `List<JobModel>`
 ///   POST /companies/{companyId}/jobs                   -> JobModel
 ///   GET  /companies/{companyId}/jobs/{jobId}/candidates -> `List<CandidateModel>`
 ///   POST /candidates/{id}/ratings   {rating, comment}
@@ -19,14 +21,37 @@ class CompanyRemoteDataSource implements CompanyDataSource {
   CompanyRemoteDataSource(this._client);
 
   @override
-  Future<CompanyEntity> registerCompany(CompanyEntity company) async {
-    final json = await _client.post('/companies', body: {
-      'company_name': company.companyName,
-      'cnpj': company.cnpj,
-      'email': company.email,
-      'phone': company.phone,
-    }) as Map<String, dynamic>;
+  Future<CompanyEntity> registerCompany(CompanyEntity company, String password) async {
+    final body = CompanyModel(
+      companyId: '',
+      companyName: company.companyName,
+      cnpj: company.cnpj,
+      email: company.email,
+      phone: company.phone,
+      tradeName: company.tradeName,
+      businessArea: company.businessArea,
+      zipCode: company.zipCode,
+      address: company.address,
+      city: company.city,
+      state: company.state,
+      description: company.description,
+    ).toJson()
+      ..remove('company_id')
+      ..['password'] = password;
+    final json = await _client.post('/companies', body: body) as Map<String, dynamic>;
     return CompanyModel.fromJson(json);
+  }
+
+  @override
+  Future<CompanyEntity> getCompany(String companyId) async {
+    final json = await _client.get('/companies/$companyId') as Map<String, dynamic>;
+    return CompanyModel.fromJson(json);
+  }
+
+  @override
+  Future<List<JobEntity>> getCompanyJobs(String companyId) async {
+    final json = await _client.get('/companies/$companyId/jobs') as List;
+    return json.map((j) => JobModel.fromJson(j as Map<String, dynamic>)).toList();
   }
 
   @override

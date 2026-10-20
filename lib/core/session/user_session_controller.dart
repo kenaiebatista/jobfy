@@ -13,12 +13,27 @@ class UserSessionController extends ChangeNotifier {
   UserSessionController(this._getUserProfileUsecase);
 
   String? _userId;
+  String? _companyId;
   UserSessionStatus _status = UserSessionStatus.idle;
   UserProfileEntity? _profile;
 
   /// The signed-in user's `users.user_id`, or null when nobody is signed in.
   String? get userId => _userId;
   bool get isSignedIn => _userId != null;
+
+  /// The signed-in company's `companies.company_id`, or null.
+  String? get companyId => _companyId;
+  bool get isCompanySignedIn => _companyId != null;
+
+  /// Called after a company signs in or registers. A company session has
+  /// no user profile; the company dashboard loads its own data.
+  void startCompany(String companyId) {
+    _userId = null;
+    _profile = null;
+    _status = UserSessionStatus.idle;
+    _companyId = companyId;
+    notifyListeners();
+  }
   UserSessionStatus get status => _status;
   UserProfileEntity? get profile => _profile;
   bool get isLoading => _status == UserSessionStatus.loading;
@@ -26,6 +41,7 @@ class UserSessionController extends ChangeNotifier {
   /// Called after a successful login or sign-up. Drops any profile left
   /// over from a previous user; screens load the new one on demand.
   void start(String userId) {
+    _companyId = null;
     _userId = userId;
     _profile = null;
     _status = UserSessionStatus.idle;
@@ -48,6 +64,7 @@ class UserSessionController extends ChangeNotifier {
   /// Logs out: forgets the user and their profile.
   void clear() {
     _userId = null;
+    _companyId = null;
     _profile = null;
     _status = UserSessionStatus.idle;
     notifyListeners();

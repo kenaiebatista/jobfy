@@ -3,13 +3,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jobfy/core/theme/app_semantic_colors.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
-import 'package:jobfy/features/company/presentation/pages/company_page.dart';
+import 'package:jobfy/features/company/presentation/widgets/company_register_form.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 
 /// Regression test: the company registration button used to be hardcoded
 /// black. On the dark theme, the page background is also near-black
 /// (AppColors.backgroundDark), so the button became effectively invisible.
-/// It must now track the theme's accent color instead.
+/// The company sign-up now lives on the register page (CompanyRegisterForm)
+/// and its button follows the theme like the candidate sign-up button.
 void main() {
   testWidgets('Company registration button is not black-on-black in dark mode', (tester) async {
     await tester.pumpWidget(
@@ -25,7 +26,16 @@ void main() {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: const CompanyPage(),
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: CompanyRegisterForm(
+              termsRow: const SizedBox.shrink(),
+              acceptedTerms: false,
+              footer: const SizedBox.shrink(),
+              onRegistered: (_) {},
+            ),
+          ),
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -35,6 +45,7 @@ void main() {
 
     expect(backgroundColor, isNotNull);
     expect(backgroundColor, isNot(Colors.black));
-    expect(backgroundColor, AppSemanticColors.dark.accent);
+    expect(backgroundColor, isNot(AppSemanticColors.dark.background));
+    expect(backgroundColor, AppSemanticColors.dark.textPrimary);
   });
 }

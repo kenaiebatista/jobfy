@@ -764,4 +764,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resumeError => 'Could not generate your resume. Please try again.';
+
+  @override
+  String get registerAsCandidate => 'I\'m a candidate';
+
+  @override
+  String get registerAsCompany => 'I\'m a company';
+
+  @override
+  String get companySectionData => 'Company data';
+
+  @override
+  String get companySectionAccess => 'Account access';
+
+  @override
+  String get companyCnpjSearchTooltip => 'Look up by CNPJ';
+
+  @override
+  String get companyCnpjSearchHint =>
+      'Type the CNPJ and tap the magnifier to fill in the data from Receita Federal.';
+
+  @override
+  String get companyCnpjFilled =>
+      'Data filled in from Receita Federal. Please check it before continuing.';
+
+  @override
+  String companyCnpjStatusWarning(String status) {
+    return 'Warning: registration status at Receita Federal is $status.';
+  }
+
+  @override
+  String get companyCnpjNotFound => 'CNPJ not found at Receita Federal.';
+
+  @override
+  String get companyCnpjLookupError =>
+      'Could not look up the CNPJ right now. Fill in the data manually.';
+
+  @override
+  String get companyLegalNameLabel => 'Legal name';
+
+  @override
+  String get companyTradeNameLabel => 'Trade name';
+
+  @override
+  String get companyBusinessAreaLabel => 'Main activity';
+
+  @override
+  String get companyZipCodeLabel => 'ZIP code';
+
+  @override
+  String get companyAddressLabel => 'Address';
+
+  @override
+  String get companyCityLabel => 'City';
+
+  @override
+  String get companyStateLabel => 'State';
+
+  @override
+  String get companyDescriptionLabel => 'About the company';
+
+  @override
+  String get companyDescriptionHint =>
+      'Tell candidates a little about the company...';
+
+  @override
+  String get cnpjInvalid => 'The CNPJ must have 14 digits';
+
+  @override
+  String get authErrorCnpjInUse => 'This CNPJ is already registered.';
+
+  @override
+  String get companyLoadError => 'Could not load the company data.';
+
+  @override
+  String get contractClt => 'CLT';
+
+  @override
+  String get contractPj => 'PJ';
+
+  @override
+  String get contractInternship => 'Internship';
+
+  @override
+  String get contractApprentice => 'Apprentice';
+
+  @override
+  String get contractTemporary => 'Temporary';
+
+  @override
+  String get contractFreelance => 'Freelance';
+
+  @override
+  String get jobStatusOpen => 'Open';
+
+  @override
+  String get jobStatusPaused => 'Paused';
+
+  @override
+  String get jobStatusClosed => 'Closed';
 }

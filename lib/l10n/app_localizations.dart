@@ -1528,6 +1528,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not generate your resume. Please try again.'**
   String get resumeError;
+
+  /// No description provided for @registerAsCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m a candidate'**
+  String get registerAsCandidate;
+
+  /// No description provided for @registerAsCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m a company'**
+  String get registerAsCompany;
+
+  /// No description provided for @companySectionData.
+  ///
+  /// In en, this message translates to:
+  /// **'Company data'**
+  String get companySectionData;
+
+  /// No description provided for @companySectionAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account access'**
+  String get companySectionAccess;
+
+  /// No description provided for @companyCnpjSearchTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Look up by CNPJ'**
+  String get companyCnpjSearchTooltip;
+
+  /// No description provided for @companyCnpjSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the CNPJ and tap the magnifier to fill in the data from Receita Federal.'**
+  String get companyCnpjSearchHint;
+
+  /// No description provided for @companyCnpjFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Data filled in from Receita Federal. Please check it before continuing.'**
+  String get companyCnpjFilled;
+
+  /// No description provided for @companyCnpjStatusWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning: registration status at Receita Federal is {status}.'**
+  String companyCnpjStatusWarning(String status);
+
+  /// No description provided for @companyCnpjNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'CNPJ not found at Receita Federal.'**
+  String get companyCnpjNotFound;
+
+  /// No description provided for @companyCnpjLookupError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not look up the CNPJ right now. Fill in the data manually.'**
+  String get companyCnpjLookupError;
+
+  /// No description provided for @companyLegalNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal name'**
+  String get companyLegalNameLabel;
+
+  /// No description provided for @companyTradeNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade name'**
+  String get companyTradeNameLabel;
+
+  /// No description provided for @companyBusinessAreaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Main activity'**
+  String get companyBusinessAreaLabel;
+
+  /// No description provided for @companyZipCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'ZIP code'**
+  String get companyZipCodeLabel;
+
+  /// No description provided for @companyAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get companyAddressLabel;
+
+  /// No description provided for @companyCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get companyCityLabel;
+
+  /// No description provided for @companyStateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get companyStateLabel;
+
+  /// No description provided for @companyDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'About the company'**
+  String get companyDescriptionLabel;
+
+  /// No description provided for @companyDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell candidates a little about the company...'**
+  String get companyDescriptionHint;
+
+  /// No description provided for @cnpjInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The CNPJ must have 14 digits'**
+  String get cnpjInvalid;
+
+  /// No description provided for @authErrorCnpjInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'This CNPJ is already registered.'**
+  String get authErrorCnpjInUse;
+
+  /// No description provided for @companyLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the company data.'**
+  String get companyLoadError;
+
+  /// No description provided for @contractClt.
+  ///
+  /// In en, this message translates to:
+  /// **'CLT'**
+  String get contractClt;
+
+  /// No description provided for @contractPj.
+  ///
+  /// In en, this message translates to:
+  /// **'PJ'**
+  String get contractPj;
+
+  /// No description provided for @contractInternship.
+  ///
+  /// In en, this message translates to:
+  /// **'Internship'**
+  String get contractInternship;
+
+  /// No description provided for @contractApprentice.
+  ///
+  /// In en, this message translates to:
+  /// **'Apprentice'**
+  String get contractApprentice;
+
+  /// No description provided for @contractTemporary.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary'**
+  String get contractTemporary;
+
+  /// No description provided for @contractFreelance.
+  ///
+  /// In en, this message translates to:
+  /// **'Freelance'**
+  String get contractFreelance;
+
+  /// No description provided for @jobStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get jobStatusOpen;
+
+  /// No description provided for @jobStatusPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get jobStatusPaused;
+
+  /// No description provided for @jobStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get jobStatusClosed;
 }
 
 class _AppLocalizationsDelegate

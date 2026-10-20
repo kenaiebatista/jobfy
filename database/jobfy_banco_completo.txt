@@ -8,6 +8,8 @@
 --
 --  Inclui todas as mudanças feitas no projeto:
 --    - users: colunas cpf e gender (cadastro do app)
+--    - companies: nome fantasia, atividade, CEP, endereço, cidade, UF e
+--      descrição (cadastro de empresa com busca por CNPJ)
 --    - jobs: colunas location, work_mode, salary_min e salary_max
 --      (tela de vagas)
 --    - dados de exemplo: habilidades, instituições, cursos, empresas e
@@ -63,14 +65,22 @@ CREATE TABLE users (
 );
 
 CREATE TABLE companies (
-  company_id    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  account_id    INT UNSIGNED NOT NULL,
-  company_name  VARCHAR(150) NOT NULL,
-  cnpj          CHAR(14)     NOT NULL,                  -- só números
-  phone         VARCHAR(20),
+  company_id     INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  account_id     INT UNSIGNED NOT NULL,
+  company_name   VARCHAR(150) NOT NULL,                 -- razão social
+  trade_name     VARCHAR(150),                          -- nome fantasia
+  cnpj           CHAR(14)     NOT NULL,                 -- só números
+  phone          VARCHAR(20),
+  business_area  VARCHAR(200),                          -- atividade principal (CNAE)
+  zip_code       CHAR(8),                               -- CEP, só números
+  address        VARCHAR(200),                          -- rua, número, bairro
+  city           VARCHAR(100),
+  state          CHAR(2),                               -- UF
+  description    TEXT,                                  -- sobre a empresa
   CONSTRAINT uq_companies_account UNIQUE (account_id),
   CONSTRAINT uq_companies_cnpj    UNIQUE (cnpj),
   CONSTRAINT ck_companies_cnpj    CHECK (cnpj REGEXP '^[0-9]{14}$'),
+  CONSTRAINT ck_companies_zip     CHECK (zip_code IS NULL OR zip_code REGEXP '^[0-9]{8}$'),
   CONSTRAINT fk_companies_account FOREIGN KEY (account_id)
     REFERENCES accounts (account_id) ON DELETE CASCADE
 );

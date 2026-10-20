@@ -279,5 +279,42 @@
   "resumeMissingTitle": "Almost there!",
   "resumeMissingBody": "To generate your resume, fill in the following on your profile:",
   "resumeCompleteProfile": "Complete profile",
-  "resumeError": "Could not generate your resume. Please try again."
+  "resumeError": "Could not generate your resume. Please try again.",
+
+  "registerAsCandidate": "I'm a candidate",
+  "registerAsCompany": "I'm a company",
+  "companySectionData": "Company data",
+  "companySectionAccess": "Account access",
+  "companyCnpjSearchTooltip": "Look up by CNPJ",
+  "companyCnpjSearchHint": "Type the CNPJ and tap the magnifier to fill in the data from Receita Federal.",
+  "companyCnpjFilled": "Data filled in from Receita Federal. Please check it before continuing.",
+  "companyCnpjStatusWarning": "Warning: registration status at Receita Federal is {status}.",
+  "@companyCnpjStatusWarning": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "companyCnpjNotFound": "CNPJ not found at Receita Federal.",
+  "companyCnpjLookupError": "Could not look up the CNPJ right now. Fill in the data manually.",
+  "companyLegalNameLabel": "Legal name",
+  "companyTradeNameLabel": "Trade name",
+  "companyBusinessAreaLabel": "Main activity",
+  "companyZipCodeLabel": "ZIP code",
+  "companyAddressLabel": "Address",
+  "companyCityLabel": "City",
+  "companyStateLabel": "State",
+  "companyDescriptionLabel": "About the company",
+  "companyDescriptionHint": "Tell candidates a little about the company...",
+  "cnpjInvalid": "The CNPJ must have 14 digits",
+  "authErrorCnpjInUse": "This CNPJ is already registered.",
+  "companyLoadError": "Could not load the company data.",
+  "contractClt": "CLT",
+  "contractPj": "PJ",
+  "contractInternship": "Internship",
+  "contractApprentice": "Apprentice",
+  "contractTemporary": "Temporary",
+  "contractFreelance": "Freelance",
+  "jobStatusOpen": "Open",
+  "jobStatusPaused": "Paused",
+  "jobStatusClosed": "Closed"
 }

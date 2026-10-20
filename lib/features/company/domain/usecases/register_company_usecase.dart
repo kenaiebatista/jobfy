@@ -6,7 +6,7 @@ class RegisterCompanyUsecase {
 
   RegisterCompanyUsecase(this._repository);
 
-  Future<CompanyEntity> call(CompanyEntity company) {
-    return _repository.registerCompany(company);
+  Future<CompanyEntity> call(CompanyEntity company, String password) {
+    return _repository.registerCompany(company, password);
   }
 }

@@ -16,8 +16,12 @@ const _signedInOnly = {'/user', '/jobs', '/settings', '/resume'};
 
 final appRouter = GoRouter(
   redirect: (context, state) {
-    final signedIn = context.read<UserSessionController>().isSignedIn;
-    if (!signedIn && _signedInOnly.contains(state.matchedLocation)) {
+    final session = context.read<UserSessionController>();
+    if (!session.isSignedIn && _signedInOnly.contains(state.matchedLocation)) {
+      return '/login';
+    }
+    // The company dashboard needs a signed-in company.
+    if (!session.isCompanySignedIn && state.matchedLocation == '/company') {
       return '/login';
     }
     return null;
@@ -33,7 +37,10 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/register',
-      builder: (_, __) => const RegisterPage(),
+      // '/register?type=company' opens the form in company mode.
+      builder: (_, state) => RegisterPage(
+        startAsCompany: state.uri.queryParameters['type'] == 'company',
+      ),
     ),
     GoRoute(
       path: '/user',

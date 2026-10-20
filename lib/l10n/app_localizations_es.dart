@@ -770,4 +770,104 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get resumeError =>
       'No se pudo generar tu currículum. Inténtalo de nuevo.';
+
+  @override
+  String get registerAsCandidate => 'Soy candidato';
+
+  @override
+  String get registerAsCompany => 'Soy empresa';
+
+  @override
+  String get companySectionData => 'Datos de la empresa';
+
+  @override
+  String get companySectionAccess => 'Acceso a la cuenta';
+
+  @override
+  String get companyCnpjSearchTooltip => 'Buscar por CNPJ';
+
+  @override
+  String get companyCnpjSearchHint =>
+      'Escribe el CNPJ y toca la lupa para completar los datos de la Receita Federal.';
+
+  @override
+  String get companyCnpjFilled =>
+      'Datos completados por la Receita Federal. Revísalos antes de continuar.';
+
+  @override
+  String companyCnpjStatusWarning(String status) {
+    return 'Atención: situación en la Receita Federal: $status.';
+  }
+
+  @override
+  String get companyCnpjNotFound => 'CNPJ no encontrado en la Receita Federal.';
+
+  @override
+  String get companyCnpjLookupError =>
+      'No se pudo buscar el CNPJ ahora. Completa los datos manualmente.';
+
+  @override
+  String get companyLegalNameLabel => 'Razón social';
+
+  @override
+  String get companyTradeNameLabel => 'Nombre comercial';
+
+  @override
+  String get companyBusinessAreaLabel => 'Actividad principal';
+
+  @override
+  String get companyZipCodeLabel => 'Código postal';
+
+  @override
+  String get companyAddressLabel => 'Dirección';
+
+  @override
+  String get companyCityLabel => 'Ciudad';
+
+  @override
+  String get companyStateLabel => 'Estado';
+
+  @override
+  String get companyDescriptionLabel => 'Sobre la empresa';
+
+  @override
+  String get companyDescriptionHint =>
+      'Cuenta a los candidatos un poco sobre la empresa...';
+
+  @override
+  String get cnpjInvalid => 'El CNPJ debe tener 14 dígitos';
+
+  @override
+  String get authErrorCnpjInUse => 'Este CNPJ ya está registrado.';
+
+  @override
+  String get companyLoadError =>
+      'No se pudieron cargar los datos de la empresa.';
+
+  @override
+  String get contractClt => 'CLT';
+
+  @override
+  String get contractPj => 'PJ';
+
+  @override
+  String get contractInternship => 'Pasantía';
+
+  @override
+  String get contractApprentice => 'Aprendiz';
+
+  @override
+  String get contractTemporary => 'Temporal';
+
+  @override
+  String get contractFreelance => 'Freelance';
+
+  @override
+  String get jobStatusOpen => 'Abierta';
+
+  @override
+  String get jobStatusPaused => 'Pausada';
+
+  @override
+  String get jobStatusClosed => 'Cerrada';
 }

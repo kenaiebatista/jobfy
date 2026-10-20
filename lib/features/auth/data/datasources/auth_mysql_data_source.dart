@@ -18,10 +18,24 @@ class AuthMysqlDataSource implements AuthDataSource {
       debugPrint('MySQL error (host ${DatabaseService.host}): $e');
       throw ApiUnreachableException(e.toString());
     }
-    // Only user accounts for now: company/institution accounts have no
-    // `users` row (user_id is null) and no screens of their own yet.
-    final userId = row?['user_id'];
-    if (row == null || userId == null) return null;
+    if (row == null) return null;
+
+    // Company accounts sign in to the company dashboard.
+    final companyId = row['company_id'];
+    if (row['account_type'] == 'company' && companyId != null) {
+      return UserModel(
+        id: companyId,
+        name: row['company_name'] ?? email,
+        email: row['email'] ?? email,
+        cpf: '',
+        gender: '',
+        accountType: 'company',
+      );
+    }
+
+    // Institution accounts have no screens yet; they can't sign in.
+    final userId = row['user_id'];
+    if (userId == null) return null;
 
     return UserModel(
       id: userId,

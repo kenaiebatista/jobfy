@@ -1,27 +1,33 @@
 import 'package:flutter/foundation.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
-import 'package:jobfy/features/company/domain/usecases/register_company_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
 
 enum CompanyStatus { idle, loading, loaded, error }
 
+/// State of the company dashboard: the signed-in company, its jobs and the
+/// candidate tools.
 class CompanyController extends ChangeNotifier {
-  final RegisterCompanyUsecase _registerCompanyUsecase;
+  final GetCompanyUsecase _getCompanyUsecase;
+  final GetCompanyJobsUsecase _getCompanyJobsUsecase;
   final PublishJobUsecase _publishJobUsecase;
   final FilterCandidatesUsecase _filterCandidatesUsecase;
   final RateCandidateUsecase _rateCandidateUsecase;
   final SendMessageUsecase _sendMessageUsecase;
 
   CompanyController({
-    required RegisterCompanyUsecase registerCompanyUsecase,
+    required GetCompanyUsecase getCompanyUsecase,
+    required GetCompanyJobsUsecase getCompanyJobsUsecase,
     required PublishJobUsecase publishJobUsecase,
     required FilterCandidatesUsecase filterCandidatesUsecase,
     required RateCandidateUsecase rateCandidateUsecase,
     required SendMessageUsecase sendMessageUsecase,
-  })  : _registerCompanyUsecase = registerCompanyUsecase,
+  })  : _getCompanyUsecase = getCompanyUsecase,
+        _getCompanyJobsUsecase = getCompanyJobsUsecase,
         _publishJobUsecase = publishJobUsecase,
         _filterCandidatesUsecase = filterCandidatesUsecase,
         _rateCandidateUsecase = rateCandidateUsecase,
@@ -40,14 +46,20 @@ class CompanyController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == CompanyStatus.loading;
 
-  Future<void> registerCompany(CompanyEntity data) async {
+  /// Loads the company profile and the jobs it already published.
+  Future<void> load(String companyId) async {
     _status = CompanyStatus.loading;
+    _error = null;
     notifyListeners();
     try {
-      _company = await _registerCompanyUsecase(data);
+      _company = await _getCompanyUsecase(companyId);
+      _jobs
+        ..clear()
+        ..addAll(await _getCompanyJobsUsecase(companyId));
       _status = CompanyStatus.loaded;
-    } catch (_) {
-      _error = 'companyRegisterError';
+    } catch (e) {
+      debugPrint('Could not load company $companyId: $e');
+      _error = 'companyLoadError';
       _status = CompanyStatus.error;
     }
     notifyListeners();
@@ -56,7 +68,7 @@ class CompanyController extends ChangeNotifier {
   Future<void> publishJob(JobEntity job) async {
     try {
       final created = await _publishJobUsecase(job);
-      _jobs.add(created);
+      _jobs.insert(0, created);
       _error = null;
     } catch (_) {
       _error = 'companyJobPublishError';

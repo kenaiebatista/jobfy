@@ -26,21 +26,51 @@ class CompanyFakeDataSource implements CompanyDataSource {
     ),
   ];
 
+  CompanyEntity? _company;
+  final List<JobEntity> _jobs = [];
+
   @override
-  Future<CompanyEntity> registerCompany(CompanyEntity company) async {
+  Future<CompanyEntity> registerCompany(CompanyEntity company, String password) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return CompanyModel(
-      companyId: company.companyId,
+    return _company = CompanyModel(
+      companyId: 'cmp_001',
       companyName: company.companyName,
       cnpj: company.cnpj,
       email: company.email,
       phone: company.phone,
+      tradeName: company.tradeName,
+      businessArea: company.businessArea,
+      zipCode: company.zipCode,
+      address: company.address,
+      city: company.city,
+      state: company.state,
+      description: company.description,
     );
   }
 
   @override
+  Future<CompanyEntity> getCompany(String companyId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _company ??
+        CompanyModel(
+          companyId: companyId,
+          companyName: 'Empresa Exemplo LTDA',
+          tradeName: 'Empresa Exemplo',
+          cnpj: '00000000000000',
+          email: 'contato@empresa.com',
+          phone: '(47) 3333-0000',
+          city: 'Gaspar',
+          state: 'SC',
+        );
+  }
+
+  @override
+  Future<List<JobEntity>> getCompanyJobs(String companyId) async => List.of(_jobs);
+
+  @override
   Future<JobEntity> publishJob(JobEntity job) async {
     await Future.delayed(const Duration(milliseconds: 500));
+    _jobs.add(job);
     return job;
   }
 

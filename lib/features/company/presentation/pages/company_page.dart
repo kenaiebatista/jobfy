@@ -1,19 +1,24 @@
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
-import 'package:jobfy/features/company/domain/usecases/register_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
+import 'package:jobfy/features/company/presentation/company_labels.dart';
 import 'package:jobfy/features/company/presentation/controllers/company_controller.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 String companyErrorMessage(AppLocalizations l10n, String code) => switch (code) {
       'companyRegisterError' => l10n.companyRegisterError,
+      'companyLoadError' => l10n.companyLoadError,
       'companyJobPublishError' => l10n.companyJobPublishError,
       'companyCandidateFilterError' => l10n.companyCandidateFilterError,
       'companyCandidateRateError' => l10n.companyCandidateRateError,
@@ -36,12 +41,16 @@ class _CompanyPageState extends State<CompanyPage> {
     super.initState();
     final repo = CompanyRepositoryImpl();
     _controller = CompanyController(
-      registerCompanyUsecase: RegisterCompanyUsecase(repo),
+      getCompanyUsecase: GetCompanyUsecase(repo),
+      getCompanyJobsUsecase: GetCompanyJobsUsecase(repo),
       publishJobUsecase: PublishJobUsecase(repo),
       filterCandidatesUsecase: FilterCandidatesUsecase(repo),
       rateCandidateUsecase: RateCandidateUsecase(repo),
       sendMessageUsecase: SendMessageUsecase(repo),
     );
+    // The router only opens this page with a signed-in company.
+    final companyId = context.read<UserSessionController>().companyId;
+    if (companyId != null) _controller.load(companyId);
   }
 
   @override
@@ -59,141 +68,35 @@ class _CompanyPageState extends State<CompanyPage> {
           onPressed: () => context.canPop() ? context.pop() : context.go('/'),
         ),
         title: const Text('Jobfy'),
+        actions: [
+          IconButton(
+            tooltip: AppLocalizations.of(context)!.navLogout,
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              final session = context.read<UserSessionController>();
+              context.go('/');
+              session.clear();
+            },
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {
           final company = _controller.company;
           if (company == null) {
-            return _CompanyRegistrationForm(controller: _controller);
+            if (_controller.status == CompanyStatus.error) {
+              return Center(
+                child: Text(
+                  companyErrorMessage(AppLocalizations.of(context)!, _controller.error ?? ''),
+                  style: TextStyle(color: context.colors.danger),
+                ),
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
           }
           return _CompanyDashboard(controller: _controller, company: company);
         },
-      ),
-    );
-  }
-}
-
-class _CompanyRegistrationForm extends StatefulWidget {
-  final CompanyController controller;
-
-  const _CompanyRegistrationForm({required this.controller});
-
-  @override
-  State<_CompanyRegistrationForm> createState() => _CompanyRegistrationFormState();
-}
-
-class _CompanyRegistrationFormState extends State<_CompanyRegistrationForm> {
-  final _nameController = TextEditingController();
-  final _cnpjController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _cnpjController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  void _submit() {
-    widget.controller.registerCompany(CompanyEntity(
-      companyId: '',
-      companyName: _nameController.text.trim(),
-      cnpj: _cnpjController.text.trim(),
-      email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
-    ));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final colors = context.colors;
-    final isLoading = widget.controller.isLoading;
-    final error = widget.controller.error;
-
-    return Center(
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(context.responsive(mobile: 20.0, laptop: 32.0)),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 440),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 16,
-            children: [
-              Text(
-                l10n.companyRegisterTitle,
-                style: TextStyle(
-                  fontSize: context.responsive(mobile: 22.0, laptop: 26.0),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                l10n.companyRegisterSubtitle,
-                style: TextStyle(fontSize: 14, color: colors.textMuted),
-              ),
-              TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  labelText: l10n.companyNameLabel,
-                  hintText: l10n.companyNameHint,
-                  prefixIcon: const Icon(Icons.business_outlined, size: 18),
-                ),
-              ),
-              TextField(
-                controller: _cnpjController,
-                decoration: InputDecoration(
-                  labelText: l10n.companyCnpjLabel,
-                  hintText: l10n.companyCnpjHint,
-                  prefixIcon: const Icon(Icons.badge_outlined, size: 18),
-                ),
-              ),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: l10n.emailLabel,
-                  hintText: l10n.emailHint,
-                  prefixIcon: const Icon(Icons.email_outlined, size: 18),
-                ),
-              ),
-              TextField(
-                controller: _phoneController,
-                decoration: InputDecoration(
-                  labelText: l10n.companyPhoneLabel,
-                  hintText: l10n.companyPhoneHint,
-                  prefixIcon: const Icon(Icons.call_outlined, size: 18),
-                ),
-              ),
-              if (error != null)
-                Text(
-                  companyErrorMessage(l10n, error),
-                  style: TextStyle(color: colors.danger, fontSize: 13),
-                ),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colors.accent,
-                    foregroundColor: colors.onAccent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  child: isLoading
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(color: colors.onAccent, strokeWidth: 2),
-                        )
-                      : Text(l10n.companyRegisterButton),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -261,12 +164,13 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
             spacing: context.responsive(mobile: 16.0, laptop: 24.0),
             children: [
               Text(
-                l10n.companyWelcome(widget.company.companyName),
+                l10n.companyWelcome(widget.company.displayName),
                 style: TextStyle(
                   fontSize: context.responsive(mobile: 22.0, laptop: 26.0),
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              _CompanyInfoCard(company: widget.company),
               _Card(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -378,6 +282,83 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
   }
 }
 
+/// The signed-in company's data (`companies` + account email).
+class _CompanyInfoCard extends StatelessWidget {
+  final CompanyEntity company;
+
+  const _CompanyInfoCard({required this.company});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
+    final place = [opt(company.city), opt(company.state)].whereType<String>().join(' - ');
+    final zip = opt(company.zipCode);
+    final rows = <(IconData, String, String?)>[
+      (Icons.business_outlined, l10n.companyLegalNameLabel, opt(company.companyName)),
+      (Icons.storefront_outlined, l10n.companyTradeNameLabel, opt(company.tradeName)),
+      (Icons.badge_outlined, l10n.companyCnpjLabel, formatCnpj(company.cnpj)),
+      (Icons.email_outlined, l10n.emailLabel, opt(company.email)),
+      (Icons.call_outlined, l10n.companyPhoneLabel, opt(company.phone)),
+      (Icons.work_outline, l10n.companyBusinessAreaLabel, opt(company.businessArea)),
+      (Icons.location_on_outlined, l10n.companyAddressLabel, opt(company.address)),
+      (Icons.location_city_outlined, '${l10n.companyCityLabel} / ${l10n.companyStateLabel}', place.isEmpty ? null : place),
+      (Icons.markunread_mailbox_outlined, l10n.companyZipCodeLabel, zip == null ? null : formatZipCode(zip)),
+    ];
+
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
+        children: [
+          Text(
+            l10n.companySectionData,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.textPrimary),
+          ),
+          Wrap(
+            spacing: 24,
+            runSpacing: 12,
+            children: [
+              for (final (icon, label, value) in rows)
+                SizedBox(
+                  width: 260,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 10,
+                    children: [
+                      Icon(icon, size: 16, color: colors.textMuted),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(label, style: TextStyle(fontSize: 11, color: colors.textMuted)),
+                            Text(
+                              value ?? l10n.notInformed,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: value == null ? colors.textMuted : colors.textPrimary,
+                                fontStyle: value == null ? FontStyle.italic : FontStyle.normal,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          if (opt(company.description) != null) ...[
+            Text(l10n.companyDescriptionLabel, style: TextStyle(fontSize: 11, color: colors.textMuted)),
+            Text(company.description!, style: TextStyle(fontSize: 13, color: colors.textPrimary, height: 1.4)),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _Card extends StatelessWidget {
   final Widget child;
 
@@ -428,7 +409,13 @@ class _JobCard extends StatelessWidget {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: colors.textPrimary),
                 ),
                 Text(
-                  '${job.location} · ${job.contractType} · ${job.salary}',
+                  [
+                    job.location,
+                    if (job.workMode != null) job.workMode!,
+                    l10n.contractTypeFromDb(job.contractType),
+                    job.salary,
+                    if (job.status != null) l10n.jobStatus(job.status),
+                  ].where((p) => p.isNotEmpty).join(' · '),
                   style: TextStyle(fontSize: 12, color: colors.textMuted),
                 ),
               ],

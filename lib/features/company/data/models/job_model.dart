@@ -9,6 +9,8 @@ class JobModel extends JobEntity {
     required super.location,
     required super.contractType,
     required super.salary,
+    super.workMode,
+    super.status,
   });
 
   factory JobModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,8 @@ class JobModel extends JobEntity {
       location: json['location'] as String,
       contractType: json['contract_type'] as String,
       salary: json['salary'] as String,
+      workMode: json['work_mode'] as String?,
+      status: json['status'] as String?,
     );
   }
 
@@ -31,5 +35,7 @@ class JobModel extends JobEntity {
         'location': location,
         'contract_type': contractType,
         'salary': salary,
+        'work_mode': workMode,
+        'status': status,
       };
 }

@@ -1,7 +1,15 @@
 import '../entities/company_entity.dart';
 
 abstract class CompanyRepository {
-  Future<CompanyEntity> registerCompany(CompanyEntity company);
+  /// Creates the company account and profile; returns it with its id.
+  Future<CompanyEntity> registerCompany(CompanyEntity company, String password);
+
+  /// Company data (Receita Federal) for the sign-up form.
+  Future<CnpjDataEntity> lookupCnpj(String cnpj);
+
+  Future<CompanyEntity> getCompany(String companyId);
+
+  Future<List<JobEntity>> getCompanyJobs(String companyId);
 
   Future<JobEntity> publishJob(JobEntity job);
 

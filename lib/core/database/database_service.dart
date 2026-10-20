@@ -17,6 +17,12 @@ class CpfAlreadyInUseException implements Exception {
   const CpfAlreadyInUseException();
 }
 
+/// Thrown by [DatabaseService.registerCompany] when the CNPJ is already
+/// taken (`uq_companies_cnpj`).
+class CnpjAlreadyInUseException implements Exception {
+  const CnpjAlreadyInUseException();
+}
+
 class DatabaseService {
   /// MySQL error code for a duplicate key on a UNIQUE constraint.
   static const _duplicateEntry = 1062;
@@ -24,7 +30,7 @@ class DatabaseService {
   /// The PC's IP on the Wi-Fi network (run `ipconfig` and look at the
   /// "Wi-Fi" adapter). Used by Android phones on the same Wi-Fi; the
   /// emulator reaches it too. Update it whenever you change networks.
-  static const lanHost = '10.61.60.7';
+  static const lanHost = '10.61.4.51';
 
   /// Optional override without editing code: `--dart-define=DB_HOST=x.x.x.x`.
   static const _hostOverride = String.fromEnvironment('DB_HOST');
@@ -329,8 +335,9 @@ class DatabaseService {
     try {
       final result = await conn.execute(
         'SELECT a.account_id, a.email, a.password_hash, a.account_type, '
-        'u.user_id, u.name '
+        'u.user_id, u.name, c.company_id, c.company_name '
         'FROM accounts a LEFT JOIN users u ON u.account_id = a.account_id '
+        'LEFT JOIN companies c ON c.account_id = a.account_id '
         'WHERE a.email = :email AND a.is_active = TRUE '
         'LIMIT 1',
         {'email': email},
@@ -372,6 +379,104 @@ class DatabaseService {
       );
 
       return result.rows.map((row) => row.assoc()).toList();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Creates a company sign-up in one transaction: the `accounts` row
+  /// (password hashed with bcrypt) and its `companies` profile. Optional
+  /// fields may be null. Returns the new company_id.
+  static Future<int> registerCompany({
+    required String email,
+    required String password,
+    required String cnpj,
+    required String companyName,
+    String? tradeName,
+    String? phone,
+    String? businessArea,
+    String? zipCode,
+    String? address,
+    String? city,
+    String? state,
+    String? description,
+  }) async {
+    final conn = await connect();
+
+    try {
+      return await conn.transactional((conn) async {
+        final account = await conn.execute(
+          "INSERT INTO accounts (email, password_hash, account_type) "
+          "VALUES (:email, :hash, 'company')",
+          {'email': email, 'hash': BCrypt.hashpw(password, BCrypt.gensalt())},
+        );
+        final company = await conn.execute(
+          'INSERT INTO companies (account_id, company_name, trade_name, cnpj, '
+          'phone, business_area, zip_code, address, city, state, description) '
+          'VALUES (:account, :name, :trade, :cnpj, :phone, :area, :zip, '
+          ':address, :city, :state, :description)',
+          {
+            'account': account.lastInsertID.toInt(),
+            'name': companyName,
+            'trade': tradeName,
+            'cnpj': cnpj,
+            'phone': phone,
+            'area': businessArea,
+            'zip': zipCode,
+            'address': address,
+            'city': city,
+            'state': state,
+            'description': description,
+          },
+        );
+        return company.lastInsertID.toInt();
+      });
+    } on MySQLServerException catch (e) {
+      if (e.errorCode == _duplicateEntry) {
+        if (e.message.contains('uq_companies_cnpj')) {
+          throw const CnpjAlreadyInUseException();
+        }
+        throw const EmailAlreadyInUseException();
+      }
+      rethrow;
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// The company profile (all `companies` columns plus the account email),
+  /// or null if [companyId] doesn't exist.
+  static Future<Map<String, String?>?> getCompany(int companyId) async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        'SELECT c.*, a.email FROM companies c '
+        'JOIN accounts a ON a.account_id = c.account_id '
+        'WHERE c.company_id = :id',
+        {'id': companyId},
+      );
+      return result.rows.isEmpty ? null : result.rows.first.assoc();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Every job the company published (any status), newest first. Used by
+  /// the company dashboard; job insertion comes in a later step.
+  static Future<List<Map<String, String?>>> getCompanyJobs(int companyId) async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        "SELECT CAST(job_id AS CHAR) AS id, title, description, location, "
+        "work_mode, contract_type, status, "
+        "CONCAT('R\$ ', FORMAT(salary_min, 0, 'de_DE'), ' – ', "
+        "FORMAT(salary_max, 0, 'de_DE')) AS salary "
+        "FROM jobs WHERE company_id = :id ORDER BY published_at DESC",
+        {'id': companyId},
+      );
+      return [for (final row in result.rows) row.assoc()];
     } finally {
       await conn.close();
     }
