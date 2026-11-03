@@ -6,7 +6,5 @@ class PublishJobUsecase {
 
   PublishJobUsecase(this._repository);
 
-  Future<JobEntity> call(JobEntity job) {
-    return _repository.publishJob(job);
-  }
+  Future<void> call(NewJobEntity job) => _repository.publishJob(job);
 }

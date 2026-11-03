@@ -11,7 +11,7 @@ abstract class CompanyDataSource {
 
   Future<List<JobEntity>> getCompanyJobs(String companyId);
 
-  Future<JobEntity> publishJob(JobEntity job);
+  Future<void> publishJob(NewJobEntity job);
 
   Future<List<CandidateEntity>> filterCandidates(
     String jobId, {

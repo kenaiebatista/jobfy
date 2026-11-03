@@ -170,7 +170,6 @@ class _JobsPageState extends State<JobsPage> {
                         separatorBuilder: (_, __) => const SizedBox(height: 12),
                         itemBuilder: (context, i) => _JobListingCard(
                           job: _controller.jobs[i],
-                          controller: _controller,
                         ),
                       );
                     },
@@ -187,15 +186,13 @@ class _JobsPageState extends State<JobsPage> {
 
 class _JobListingCard extends StatelessWidget {
   final JobListingEntity job;
-  final JobController controller;
 
-  const _JobListingCard({required this.job, required this.controller});
+  const _JobListingCard({required this.job});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
-    final applied = controller.hasApplied(job.id);
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -272,38 +269,14 @@ class _JobListingCard extends StatelessWidget {
                   color: colors.textPrimary,
                 ),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                spacing: 8,
-                children: [
-                  TextButton(
-                    onPressed: () => _showDetails(context, l10n),
-                    child: Text(l10n.jobViewDetails),
-                  ),
-                  ElevatedButton(
-                    onPressed: applied ? null : () => _apply(context, l10n),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.accent,
-                      foregroundColor: colors.onAccent,
-                    ),
-                    child: Text(
-                      applied ? l10n.jobAlreadyApplied : l10n.applyButton,
-                    ),
-                  ),
-                ],
+              TextButton(
+                onPressed: () => _showDetails(context, l10n),
+                child: Text(l10n.jobViewDetails),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  Future<void> _apply(BuildContext context, AppLocalizations l10n) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final ok = await controller.apply(job.id);
-    messenger.showSnackBar(
-      SnackBar(content: Text(ok ? l10n.jobApplySuccess : l10n.jobApplyError)),
     );
   }
 

@@ -1,6 +1,7 @@
 import '../../domain/entities/company_entity.dart';
 import 'company_data_source.dart';
 import '../models/company_model.dart';
+import '../models/job_model.dart';
 
 /// In-memory stand-in for [CompanyRemoteDataSource], used until the Go
 /// backend is deployed.
@@ -68,10 +69,22 @@ class CompanyFakeDataSource implements CompanyDataSource {
   Future<List<JobEntity>> getCompanyJobs(String companyId) async => List.of(_jobs);
 
   @override
-  Future<JobEntity> publishJob(JobEntity job) async {
+  Future<void> publishJob(NewJobEntity job) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    _jobs.add(job);
-    return job;
+    _jobs.insert(
+      0,
+      JobModel(
+        id: 'job_${_jobs.length + 1}',
+        companyId: job.companyId,
+        title: job.title,
+        description: job.description,
+        location: job.location,
+        contractType: job.contractType.name,
+        salary: 'R\$ ${job.salaryMin} – ${job.salaryMax}',
+        workMode: job.workMode.dbValue,
+        status: 'open',
+      ),
+    );
   }
 
   @override

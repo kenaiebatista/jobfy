@@ -233,12 +233,6 @@ abstract class AppLocalizations {
   /// **'Create account'**
   String get createAccount;
 
-  /// No description provided for @iAmCompany.
-  ///
-  /// In en, this message translates to:
-  /// **'I\'m a company'**
-  String get iAmCompany;
-
   /// No description provided for @authErrorInvalidCredentials.
   ///
   /// In en, this message translates to:
@@ -989,24 +983,6 @@ abstract class AppLocalizations {
   /// **'Contract type'**
   String get jobContractTypeLabel;
 
-  /// No description provided for @jobContractTypeHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Full-time, Contract'**
-  String get jobContractTypeHint;
-
-  /// No description provided for @jobSalaryLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Salary range'**
-  String get jobSalaryLabel;
-
-  /// No description provided for @jobSalaryHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. \$4,000 – \$6,000'**
-  String get jobSalaryHint;
-
   /// No description provided for @companyPublishJobButton.
   ///
   /// In en, this message translates to:
@@ -1043,22 +1019,10 @@ abstract class AppLocalizations {
   /// **'Candidates for {jobTitle}'**
   String companyCandidatesTitle(String jobTitle);
 
-  /// No description provided for @companyRoleFilterLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Filter by desired role'**
-  String get companyRoleFilterLabel;
-
-  /// No description provided for @companyMinMatchLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Minimum match: {percent}%'**
-  String companyMinMatchLabel(int percent);
-
   /// No description provided for @companyNoCandidates.
   ///
   /// In en, this message translates to:
-  /// **'No candidates match this filter yet.'**
+  /// **'No one has applied to this job yet.'**
   String get companyNoCandidates;
 
   /// No description provided for @companyCandidateFilterError.
@@ -1540,6 +1504,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I\'m a company'**
   String get registerAsCompany;
+
+  /// No description provided for @jobAreaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Area'**
+  String get jobAreaLabel;
+
+  /// No description provided for @jobAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Technology'**
+  String get jobAreaHint;
+
+  /// No description provided for @jobWorkModeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Work mode'**
+  String get jobWorkModeLabel;
+
+  /// No description provided for @workModeOnSite.
+  ///
+  /// In en, this message translates to:
+  /// **'On-site'**
+  String get workModeOnSite;
+
+  /// No description provided for @workModeHybrid.
+  ///
+  /// In en, this message translates to:
+  /// **'Hybrid'**
+  String get workModeHybrid;
+
+  /// No description provided for @workModeRemote.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote'**
+  String get workModeRemote;
+
+  /// No description provided for @jobSalaryMinLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum salary (R\$)'**
+  String get jobSalaryMinLabel;
+
+  /// No description provided for @jobSalaryMaxLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum salary (R\$)'**
+  String get jobSalaryMaxLabel;
+
+  /// No description provided for @jobSalaryRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot be lower than the minimum salary.'**
+  String get jobSalaryRangeError;
+
+  /// No description provided for @companyJobPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Job published!'**
+  String get companyJobPublished;
+
+  /// No description provided for @authErrorNotCompanyAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a candidate account. Select \"I\'m a candidate\".'**
+  String get authErrorNotCompanyAccount;
+
+  /// No description provided for @authErrorNotCandidateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a company account. Select \"I\'m a company\".'**
+  String get authErrorNotCandidateAccount;
 
   /// No description provided for @companySectionData.
   ///

@@ -77,9 +77,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get createAccount => 'Crear cuenta';
 
   @override
-  String get iAmCompany => 'Soy una empresa';
-
-  @override
   String get authErrorInvalidCredentials => 'Correo o contraseña inválidos.';
 
   @override
@@ -480,15 +477,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get jobContractTypeLabel => 'Tipo de contrato';
 
   @override
-  String get jobContractTypeHint => 'ej.: Tiempo completo, Freelance';
-
-  @override
-  String get jobSalaryLabel => 'Rango salarial';
-
-  @override
-  String get jobSalaryHint => 'ej.: 2.000 – 3.000 €';
-
-  @override
   String get companyPublishJobButton => 'Publicar empleo';
 
   @override
@@ -511,16 +499,8 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get companyRoleFilterLabel => 'Filtrar por puesto deseado';
-
-  @override
-  String companyMinMatchLabel(int percent) {
-    return 'Match mínimo: $percent%';
-  }
-
-  @override
   String get companyNoCandidates =>
-      'Ningún candidato coincide con este filtro todavía.';
+      'Nadie se ha postulado a este empleo todavía.';
 
   @override
   String get companyCandidateFilterError =>
@@ -776,6 +756,44 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get registerAsCompany => 'Soy empresa';
+
+  @override
+  String get jobAreaLabel => 'Área';
+
+  @override
+  String get jobAreaHint => 'ej.: Tecnología';
+
+  @override
+  String get jobWorkModeLabel => 'Modalidad';
+
+  @override
+  String get workModeOnSite => 'Presencial';
+
+  @override
+  String get workModeHybrid => 'Híbrido';
+
+  @override
+  String get workModeRemote => 'Remoto';
+
+  @override
+  String get jobSalaryMinLabel => 'Salario mínimo (R\$)';
+
+  @override
+  String get jobSalaryMaxLabel => 'Salario máximo (R\$)';
+
+  @override
+  String get jobSalaryRangeError => 'No puede ser menor que el salario mínimo.';
+
+  @override
+  String get companyJobPublished => '¡Empleo publicado!';
+
+  @override
+  String get authErrorNotCompanyAccount =>
+      'Esta cuenta es de candidato. Selecciona \"Soy candidato\".';
+
+  @override
+  String get authErrorNotCandidateAccount =>
+      'Esta cuenta es de empresa. Selecciona \"Soy empresa\".';
 
   @override
   String get companySectionData => 'Datos de la empresa';

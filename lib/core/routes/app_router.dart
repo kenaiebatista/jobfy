@@ -17,11 +17,17 @@ const _signedInOnly = {'/user', '/jobs', '/settings', '/resume'};
 final appRouter = GoRouter(
   redirect: (context, state) {
     final session = context.read<UserSessionController>();
-    if (!session.isSignedIn && _signedInOnly.contains(state.matchedLocation)) {
+    final location = state.matchedLocation;
+    // A company has its own dashboard; of the user's screens it only shares
+    // the settings.
+    if (session.isCompanySignedIn) {
+      return _signedInOnly.contains(location) && location != '/settings' ? '/company' : null;
+    }
+    if (!session.isSignedIn && _signedInOnly.contains(location)) {
       return '/login';
     }
     // The company dashboard needs a signed-in company.
-    if (!session.isCompanySignedIn && state.matchedLocation == '/company') {
+    if (location == '/company') {
       return '/login';
     }
     return null;

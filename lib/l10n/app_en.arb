@@ -27,7 +27,6 @@
   "loginButton": "Sign in",
   "forgotPassword": "Forgot your password?",
   "createAccount": "Create account",
-  "iAmCompany": "I'm a company",
 
   "authErrorInvalidCredentials": "Invalid email or password.",
   "authErrorRegistrationFailed": "Could not create your account. Please try again.",
@@ -170,9 +169,6 @@
   "jobLocationLabel": "Location",
   "jobLocationHint": "e.g. Remote, São Paulo",
   "jobContractTypeLabel": "Contract type",
-  "jobContractTypeHint": "e.g. Full-time, Contract",
-  "jobSalaryLabel": "Salary range",
-  "jobSalaryHint": "e.g. $4,000 – $6,000",
   "companyPublishJobButton": "Publish job",
   "companyJobPublishError": "Could not publish the job. Please try again.",
 
@@ -186,14 +182,7 @@
       "jobTitle": { "type": "String" }
     }
   },
-  "companyRoleFilterLabel": "Filter by desired role",
-  "companyMinMatchLabel": "Minimum match: {percent}%",
-  "@companyMinMatchLabel": {
-    "placeholders": {
-      "percent": { "type": "int" }
-    }
-  },
-  "companyNoCandidates": "No candidates match this filter yet.",
+  "companyNoCandidates": "No one has applied to this job yet.",
   "companyCandidateFilterError": "Could not load candidates. Please try again.",
   "companyRateCandidate": "Rate",
   "companyMessageCandidate": "Message",
@@ -283,6 +272,18 @@
 
   "registerAsCandidate": "I'm a candidate",
   "registerAsCompany": "I'm a company",
+  "jobAreaLabel": "Area",
+  "jobAreaHint": "e.g. Technology",
+  "jobWorkModeLabel": "Work mode",
+  "workModeOnSite": "On-site",
+  "workModeHybrid": "Hybrid",
+  "workModeRemote": "Remote",
+  "jobSalaryMinLabel": "Minimum salary (R$)",
+  "jobSalaryMaxLabel": "Maximum salary (R$)",
+  "jobSalaryRangeError": "Cannot be lower than the minimum salary.",
+  "companyJobPublished": "Job published!",
+  "authErrorNotCompanyAccount": "This is a candidate account. Select \"I'm a candidate\".",
+  "authErrorNotCandidateAccount": "This is a company account. Select \"I'm a company\".",
   "companySectionData": "Company data",
   "companySectionAccess": "Account access",
   "companyCnpjSearchTooltip": "Look up by CNPJ",

@@ -34,6 +34,7 @@ class CompanyController extends ChangeNotifier {
         _sendMessageUsecase = sendMessageUsecase;
 
   CompanyStatus _status = CompanyStatus.idle;
+  bool _isPublishing = false;
   CompanyEntity? _company;
   final List<JobEntity> _jobs = [];
   List<CandidateEntity> _candidates = [];
@@ -45,6 +46,7 @@ class CompanyController extends ChangeNotifier {
   List<CandidateEntity> get candidates => List.unmodifiable(_candidates);
   String? get error => _error;
   bool get isLoading => _status == CompanyStatus.loading;
+  bool get isPublishing => _isPublishing;
 
   /// Loads the company profile and the jobs it already published.
   Future<void> load(String companyId) async {
@@ -65,15 +67,25 @@ class CompanyController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> publishJob(JobEntity job) async {
-    try {
-      final created = await _publishJobUsecase(job);
-      _jobs.insert(0, created);
-      _error = null;
-    } catch (_) {
-      _error = 'companyJobPublishError';
-    }
+  /// Publishes the job and reloads the company's list. Returns false on error.
+  Future<bool> publishJob(NewJobEntity job) async {
+    _isPublishing = true;
+    _error = null;
     notifyListeners();
+    var ok = true;
+    try {
+      await _publishJobUsecase(job);
+      _jobs
+        ..clear()
+        ..addAll(await _getCompanyJobsUsecase(job.companyId));
+    } catch (e) {
+      debugPrint('Could not publish job: $e');
+      _error = 'companyJobPublishError';
+      ok = false;
+    }
+    _isPublishing = false;
+    notifyListeners();
+    return ok;
   }
 
   Future<void> filterCandidates(

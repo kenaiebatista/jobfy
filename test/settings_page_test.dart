@@ -17,14 +17,15 @@ import 'helpers/empty_job_data_source.dart';
 
 final _fakeUsers = UserRepositoryImpl(UserFakeDataSource(EmptyJobDataSource()));
 
-Widget _wrap(SettingsController settings, Widget home) {
+Widget _wrap(SettingsController settings, Widget home, {String? companyId}) {
   return MultiProvider(
     providers: [
       ChangeNotifierProvider.value(value: settings),
       ChangeNotifierProvider(
-        create: (_) => UserSessionController(
-          GetUserProfileUsecase(_fakeUsers),
-        )..start('usr_001'),
+        create: (_) {
+          final session = UserSessionController(GetUserProfileUsecase(_fakeUsers));
+          return companyId == null ? (session..start('usr_001')) : (session..startCompany(companyId));
+        },
       ),
     ],
     child: MaterialApp(
@@ -45,6 +46,22 @@ Widget _wrap(SettingsController settings, Widget home) {
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
+
+  testWidgets('a company only gets the app preferences and logout', (tester) async {
+    final settings = SettingsController();
+
+    await tester.pumpWidget(_wrap(settings, SettingsPage(userRepository: _fakeUsers), companyId: '1'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Dark'));
+    await tester.pumpAndSettle();
+    expect(settings.themeMode, ThemeMode.dark);
+
+    await tester.scrollUntilVisible(find.text('Log out'), 200);
+    expect(find.text('Log out'), findsOneWidget);
+    expect(find.text('Delete account'), findsNothing);
+    expect(find.byType(TextFormField), findsNothing);
+  });
 
   testWidgets('tapping Dark updates the SettingsController theme mode', (tester) async {
     final settings = SettingsController();

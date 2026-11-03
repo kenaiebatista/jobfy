@@ -1,6 +1,5 @@
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class JobMatchCard extends StatefulWidget {
@@ -117,37 +116,13 @@ class _JobMatchCardState extends State<JobMatchCard> {
                 _Tag(icon: Icons.work_outline, label: widget.job.type),
               ],
             ),
-            Row(
-              children: [
-                Text(
-                  widget.job.salary,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: colors.textPrimary,
-                  ),
-                ),
-                const Spacer(),
-                SizedBox(
-                  height: 32,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colors.accent,
-                      foregroundColor: colors.onAccent,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      AppLocalizations.of(context)!.applyButton,
-                      style: const TextStyle(fontSize: 12),
-                    ),
-                  ),
-                ),
-              ],
+            Text(
+              widget.job.salary,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: colors.textPrimary,
+              ),
             ),
           ],
         ),

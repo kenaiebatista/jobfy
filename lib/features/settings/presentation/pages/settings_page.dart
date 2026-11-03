@@ -25,7 +25,8 @@ import 'package:provider/provider.dart';
 /// Settings screen. Theme and language go to the app-wide
 /// [SettingsController]; the account card, password and account deletion
 /// go to the database through the user repository; notification, privacy
-/// and job preference toggles are kept on the device.
+/// and job preference toggles are kept on the device. A signed-in company
+/// has no user profile, so it only gets the app preferences and logout.
 class SettingsPage extends StatefulWidget {
   /// Where account changes are saved. Defaults to [UserRepositoryImpl]
   /// (MySQL/fake/remote per AppConfig); tests pass their own.
@@ -63,7 +64,8 @@ class _SettingsPageState extends State<SettingsPage> {
       DeleteAccountUsecase(userRepository),
     );
     _controller.loadPreferences();
-    context.read<UserSessionController>().ensureLoaded();
+    final session = context.read<UserSessionController>();
+    if (!session.isCompanySignedIn) session.ensureLoaded();
   }
 
   @override
@@ -171,11 +173,73 @@ class _SettingsPageState extends State<SettingsPage> {
     session.clear();
   }
 
+  /// Sections about the app itself, shared by users and companies.
+  List<Widget> _appSections(AppLocalizations l10n, SettingsController settings) => [
+        _SettingsSection(
+          title: l10n.settingsAppearance,
+          description: l10n.settingsAppearanceDescription,
+          child: _ThemeModeSelector(
+            l10n: l10n,
+            value: settings.themeMode,
+            onChanged: settings.setThemeMode,
+          ),
+        ),
+        _SettingsSection(
+          title: l10n.settingsLanguage,
+          description: l10n.settingsLanguageDescription,
+          child: _LanguageSelector(
+            l10n: l10n,
+            value: settings.locale,
+            onChanged: settings.setLocale,
+          ),
+        ),
+        _SettingsSection(
+          title: l10n.settingsNotifications,
+          description: l10n.settingsNotificationsDescription,
+          child: _NotificationsToggles(controller: _controller),
+        ),
+      ];
+
+  Widget _buildCompanySettings(AppLocalizations l10n, SettingsController settings) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.settingsTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: l10n.settingsBack,
+          onPressed: () => context.go('/company'),
+        ),
+        actions: const [ThemeToggleButton(color: Colors.white)],
+      ),
+      body: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) => Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(context.pagePadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 24,
+                children: [
+                  ..._appSections(l10n, settings),
+                  _DangerZone(isDeleting: false, onLogout: _logout),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<SettingsController>();
     final session = context.watch<UserSessionController>();
+
+    if (session.isCompanySignedIn) return _buildCompanySettings(l10n, settings);
 
     return Scaffold(
       drawer: UserShell.drawer(
@@ -231,29 +295,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           onSave: () => _saveProfile(profile),
                         ),
                       ),
-                      _SettingsSection(
-                        title: l10n.settingsAppearance,
-                        description: l10n.settingsAppearanceDescription,
-                        child: _ThemeModeSelector(
-                          l10n: l10n,
-                          value: settings.themeMode,
-                          onChanged: settings.setThemeMode,
-                        ),
-                      ),
-                      _SettingsSection(
-                        title: l10n.settingsLanguage,
-                        description: l10n.settingsLanguageDescription,
-                        child: _LanguageSelector(
-                          l10n: l10n,
-                          value: settings.locale,
-                          onChanged: settings.setLocale,
-                        ),
-                      ),
-                      _SettingsSection(
-                        title: l10n.settingsNotifications,
-                        description: l10n.settingsNotificationsDescription,
-                        child: _NotificationsToggles(controller: _controller),
-                      ),
+                      ..._appSections(l10n, settings),
                       _SettingsSection(
                         title: l10n.settingsPrivacy,
                         description: l10n.settingsPrivacyDescription,
@@ -816,12 +858,12 @@ class _JobTypeChips extends StatelessWidget {
 class _DangerZone extends StatelessWidget {
   final bool isDeleting;
   final VoidCallback onLogout;
-  final VoidCallback onDelete;
+  final VoidCallback? onDelete;
 
   const _DangerZone({
     required this.isDeleting,
     required this.onLogout,
-    required this.onDelete,
+    this.onDelete,
   });
 
   @override
@@ -868,7 +910,8 @@ class _DangerZone extends StatelessWidget {
                   side: BorderSide(color: colors.surfaceBorder),
                 ),
               ),
-              OutlinedButton.icon(
+              if (onDelete != null)
+                OutlinedButton.icon(
                 onPressed: isDeleting ? null : onDelete,
                 icon: isDeleting
                     ? SizedBox(

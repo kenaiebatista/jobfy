@@ -77,9 +77,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get createAccount => 'Criar conta';
 
   @override
-  String get iAmCompany => 'Sou empresa';
-
-  @override
   String get authErrorInvalidCredentials => 'Email ou senha inválidos.';
 
   @override
@@ -480,15 +477,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get jobContractTypeLabel => 'Tipo de contrato';
 
   @override
-  String get jobContractTypeHint => 'ex.: CLT, PJ';
-
-  @override
-  String get jobSalaryLabel => 'Faixa salarial';
-
-  @override
-  String get jobSalaryHint => 'ex.: R\$ 4.000 – 6.000';
-
-  @override
   String get companyPublishJobButton => 'Publicar vaga';
 
   @override
@@ -511,16 +499,7 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
-  String get companyRoleFilterLabel => 'Filtrar por cargo desejado';
-
-  @override
-  String companyMinMatchLabel(int percent) {
-    return 'Match mínimo: $percent%';
-  }
-
-  @override
-  String get companyNoCandidates =>
-      'Nenhum candidato corresponde a esse filtro ainda.';
+  String get companyNoCandidates => 'Ninguém se candidatou a esta vaga ainda.';
 
   @override
   String get companyCandidateFilterError =>
@@ -777,6 +756,44 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get jobAreaLabel => 'Área';
+
+  @override
+  String get jobAreaHint => 'ex.: Tecnologia';
+
+  @override
+  String get jobWorkModeLabel => 'Modalidade';
+
+  @override
+  String get workModeOnSite => 'Presencial';
+
+  @override
+  String get workModeHybrid => 'Híbrido';
+
+  @override
+  String get workModeRemote => 'Remoto';
+
+  @override
+  String get jobSalaryMinLabel => 'Salário mínimo (R\$)';
+
+  @override
+  String get jobSalaryMaxLabel => 'Salário máximo (R\$)';
+
+  @override
+  String get jobSalaryRangeError => 'Não pode ser menor que o salário mínimo.';
+
+  @override
+  String get companyJobPublished => 'Vaga publicada!';
+
+  @override
+  String get authErrorNotCompanyAccount =>
+      'Esta conta é de candidato. Selecione \"Sou candidato\".';
+
+  @override
+  String get authErrorNotCandidateAccount =>
+      'Esta conta é de empresa. Selecione \"Sou empresa\".';
 
   @override
   String get companySectionData => 'Dados da empresa';
@@ -946,9 +963,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get createAccount => 'Criar conta';
 
   @override
-  String get iAmCompany => 'Sou empresa';
-
-  @override
   String get authErrorInvalidCredentials => 'Email ou senha inválidos.';
 
   @override
@@ -1349,15 +1363,6 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get jobContractTypeLabel => 'Tipo de contrato';
 
   @override
-  String get jobContractTypeHint => 'ex.: CLT, PJ';
-
-  @override
-  String get jobSalaryLabel => 'Faixa salarial';
-
-  @override
-  String get jobSalaryHint => 'ex.: R\$ 4.000 – 6.000';
-
-  @override
   String get companyPublishJobButton => 'Publicar vaga';
 
   @override
@@ -1380,16 +1385,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
-  String get companyRoleFilterLabel => 'Filtrar por cargo desejado';
-
-  @override
-  String companyMinMatchLabel(int percent) {
-    return 'Match mínimo: $percent%';
-  }
-
-  @override
-  String get companyNoCandidates =>
-      'Nenhum candidato corresponde a esse filtro ainda.';
+  String get companyNoCandidates => 'Ninguém se candidatou a esta vaga ainda.';
 
   @override
   String get companyCandidateFilterError =>
@@ -1646,6 +1642,44 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get jobAreaLabel => 'Área';
+
+  @override
+  String get jobAreaHint => 'ex.: Tecnologia';
+
+  @override
+  String get jobWorkModeLabel => 'Modalidade';
+
+  @override
+  String get workModeOnSite => 'Presencial';
+
+  @override
+  String get workModeHybrid => 'Híbrido';
+
+  @override
+  String get workModeRemote => 'Remoto';
+
+  @override
+  String get jobSalaryMinLabel => 'Salário mínimo (R\$)';
+
+  @override
+  String get jobSalaryMaxLabel => 'Salário máximo (R\$)';
+
+  @override
+  String get jobSalaryRangeError => 'Não pode ser menor que o salário mínimo.';
+
+  @override
+  String get companyJobPublished => 'Vaga publicada!';
+
+  @override
+  String get authErrorNotCompanyAccount =>
+      'Esta conta é de candidato. Selecione \"Sou candidato\".';
+
+  @override
+  String get authErrorNotCandidateAccount =>
+      'Esta conta é de empresa. Selecione \"Sou empresa\".';
 
   @override
   String get companySectionData => 'Dados da empresa';

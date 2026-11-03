@@ -35,6 +35,9 @@ class DatabaseService {
   /// Optional override without editing code: `--dart-define=DB_HOST=x.x.x.x`.
   static const _hostOverride = String.fromEnvironment('DB_HOST');
 
+  /// Same for the port: `--dart-define=DB_PORT=3307`.
+  static const _port = int.fromEnvironment('DB_PORT', defaultValue: 3306);
+
   // Windows/desktop talks to the local MySQL through the loopback address.
   static String get host {
     if (_hostOverride.isNotEmpty) return _hostOverride;
@@ -45,7 +48,7 @@ class DatabaseService {
   static Future<MySQLConnection> connect() async {
     final conn = await MySQLConnection.createConnection(
       host: host,
-      port: 3306,
+      port: _port,
       userName: 'Jobfy',
       password: 'Jobfy2026',
       databaseName: 'jobfy',
@@ -374,7 +377,7 @@ class DatabaseService {
         "WHERE j.status = 'open' "
         "AND (j.title LIKE :query OR c.company_name LIKE :query) "
         "AND j.location LIKE :location "
-        "ORDER BY j.published_at DESC",
+        "ORDER BY j.published_at DESC, j.job_id DESC",
         {'query': '%${query ?? ''}%', 'location': '%${location ?? ''}%'},
       );
 
@@ -462,8 +465,45 @@ class DatabaseService {
     }
   }
 
-  /// Every job the company published (any status), newest first. Used by
-  /// the company dashboard; job insertion comes in a later step.
+  /// Publishes a job for the company. `published_at` and `status` use the
+  /// table defaults (today, 'open'), so it shows up for users right away.
+  static Future<void> insertJob({
+    required int companyId,
+    required String title,
+    String? area,
+    required String location,
+    required String workMode,
+    required String description,
+    required String contractType,
+    required int salaryMin,
+    required int salaryMax,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'INSERT INTO jobs (company_id, title, area, location, work_mode, '
+        'description, contract_type, salary_min, salary_max) '
+        'VALUES (:company, :title, :area, :location, :mode, :description, '
+        ':contract, :min, :max)',
+        {
+          'company': companyId,
+          'title': title,
+          'area': area,
+          'location': location,
+          'mode': workMode,
+          'description': description,
+          'contract': contractType,
+          'min': salaryMin,
+          'max': salaryMax,
+        },
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Every job the company published (any status), newest first.
   static Future<List<Map<String, String?>>> getCompanyJobs(int companyId) async {
     final conn = await connect();
 
@@ -473,7 +513,7 @@ class DatabaseService {
         "work_mode, contract_type, status, "
         "CONCAT('R\$ ', FORMAT(salary_min, 0, 'de_DE'), ' – ', "
         "FORMAT(salary_max, 0, 'de_DE')) AS salary "
-        "FROM jobs WHERE company_id = :id ORDER BY published_at DESC",
+        "FROM jobs WHERE company_id = :id ORDER BY published_at DESC, job_id DESC",
         {'id': companyId},
       );
       return [for (final row in result.rows) row.assoc()];

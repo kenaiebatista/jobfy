@@ -55,18 +55,20 @@ class CompanyRemoteDataSource implements CompanyDataSource {
   }
 
   @override
-  Future<JobEntity> publishJob(JobEntity job) async {
-    final json = await _client.post(
+  Future<void> publishJob(NewJobEntity job) {
+    return _client.post(
       '/companies/${job.companyId}/jobs',
       body: {
         'title': job.title,
+        'area': job.area,
         'description': job.description,
         'location': job.location,
-        'contract_type': job.contractType,
-        'salary': job.salary,
+        'work_mode': job.workMode.dbValue,
+        'contract_type': job.contractType.name,
+        'salary_min': job.salaryMin,
+        'salary_max': job.salaryMax,
       },
-    ) as Map<String, dynamic>;
-    return JobModel.fromJson(json);
+    );
   }
 
   @override

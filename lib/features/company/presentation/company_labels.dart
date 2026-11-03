@@ -2,7 +2,7 @@ import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 
 /// Localized text for the job values stored in the database, shared by the
-/// company dashboard and (later) the job insertion form.
+/// company dashboard and its job form.
 extension CompanyLabels on AppLocalizations {
   String contractType(ContractType type) => switch (type) {
         ContractType.clt => contractClt,
@@ -11,6 +11,12 @@ extension CompanyLabels on AppLocalizations {
         ContractType.apprentice => contractApprentice,
         ContractType.temporary => contractTemporary,
         ContractType.freelance => contractFreelance,
+      };
+
+  String workMode(WorkMode mode) => switch (mode) {
+        WorkMode.onSite => workModeOnSite,
+        WorkMode.hybrid => workModeHybrid,
+        WorkMode.remote => workModeRemote,
       };
 
   /// [value] is the raw `jobs.contract_type`; unknown values pass through.

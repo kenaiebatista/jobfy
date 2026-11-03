@@ -3,6 +3,7 @@ import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
 import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
@@ -13,6 +14,7 @@ import 'package:jobfy/features/company/presentation/company_labels.dart';
 import 'package:jobfy/features/company/presentation/controllers/company_controller.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +29,11 @@ String companyErrorMessage(AppLocalizations l10n, String code) => switch (code) 
     };
 
 class CompanyPage extends StatefulWidget {
-  const CompanyPage({super.key});
+  /// Where the data comes from. Defaults to [CompanyRepositoryImpl]
+  /// (MySQL/fake/remote per AppConfig); tests pass their own.
+  final CompanyRepository? repository;
+
+  const CompanyPage({super.key, this.repository});
 
   @override
   State<CompanyPage> createState() => _CompanyPageState();
@@ -39,7 +45,7 @@ class _CompanyPageState extends State<CompanyPage> {
   @override
   void initState() {
     super.initState();
-    final repo = CompanyRepositoryImpl();
+    final repo = widget.repository ?? CompanyRepositoryImpl();
     _controller = CompanyController(
       getCompanyUsecase: GetCompanyUsecase(repo),
       getCompanyJobsUsecase: GetCompanyJobsUsecase(repo),
@@ -69,6 +75,11 @@ class _CompanyPageState extends State<CompanyPage> {
         ),
         title: const Text('Jobfy'),
         actions: [
+          IconButton(
+            tooltip: AppLocalizations.of(context)!.headerSettingsTooltip,
+            icon: const Icon(Icons.settings_outlined),
+            onPressed: () => context.go('/settings'),
+          ),
           IconButton(
             tooltip: AppLocalizations.of(context)!.navLogout,
             icon: const Icon(Icons.logout),
@@ -113,38 +124,85 @@ class _CompanyDashboard extends StatefulWidget {
 }
 
 class _CompanyDashboardState extends State<_CompanyDashboard> {
+  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
+  final _areaController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  final _contractTypeController = TextEditingController();
-  final _salaryController = TextEditingController();
+  final _salaryMinController = TextEditingController();
+  final _salaryMaxController = TextEditingController();
+  WorkMode? _workMode;
+  ContractType? _contractType;
 
   @override
   void dispose() {
     _titleController.dispose();
+    _areaController.dispose();
     _descriptionController.dispose();
     _locationController.dispose();
-    _contractTypeController.dispose();
-    _salaryController.dispose();
+    _salaryMinController.dispose();
+    _salaryMaxController.dispose();
     super.dispose();
   }
 
-  void _publishJob() {
-    if (_titleController.text.trim().isEmpty) return;
-    widget.controller.publishJob(JobEntity(
-      id: '',
+  Future<void> _publishJob() async {
+    if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+
+    final ok = await widget.controller.publishJob(NewJobEntity(
       companyId: widget.company.companyId,
       title: _titleController.text.trim(),
-      description: _descriptionController.text.trim(),
+      area: _areaController.text.trim(),
       location: _locationController.text.trim(),
-      contractType: _contractTypeController.text.trim(),
-      salary: _salaryController.text.trim(),
+      workMode: _workMode!,
+      description: _descriptionController.text.trim(),
+      contractType: _contractType!,
+      salaryMin: int.parse(_salaryMinController.text),
+      salaryMax: int.parse(_salaryMaxController.text),
     ));
-    _titleController.clear();
-    _descriptionController.clear();
-    _locationController.clear();
-    _contractTypeController.clear();
-    _salaryController.clear();
+    if (!ok || !mounted) return;
+
+    _formKey.currentState!.reset();
+    setState(() {
+      _workMode = null;
+      _contractType = null;
+    });
+    messenger.showSnackBar(SnackBar(content: Text(l10n.companyJobPublished)));
+  }
+
+  String? _required(AppLocalizations l10n, String? value) =>
+      value == null || value.trim().isEmpty ? l10n.fieldRequired : null;
+
+  /// Side by side from tablet up; stacked on phones.
+  Widget _fieldPair(BuildContext context, Widget first, Widget second) {
+    return Flex(
+      direction: context.isMobile ? Axis.vertical : Axis.horizontal,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 12,
+      children: [
+        for (final field in [first, second])
+          context.isMobile ? field : Expanded(child: field),
+      ],
+    );
+  }
+
+  /// Whole reais only: 8 digits is the most `jobs.salary_*` (DECIMAL(10,2)) holds.
+  Widget _salaryField({
+    required TextEditingController controller,
+    required String label,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(8),
+      ],
+      decoration: InputDecoration(labelText: label),
+      validator: validator,
+    );
   }
 
   @override
@@ -172,7 +230,9 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
               ),
               _CompanyInfoCard(company: widget.company),
               _Card(
-                child: Column(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   spacing: 12,
                   children: [
@@ -180,52 +240,89 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                       l10n.companyPublishJobTitle,
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: colors.textPrimary),
                     ),
-                    TextField(
+                    TextFormField(
                       controller: _titleController,
+                      maxLength: 150,
                       decoration: InputDecoration(
                         labelText: l10n.jobTitleLabel,
                         hintText: l10n.jobTitleHint,
+                        counterText: '',
+                      ),
+                      validator: (v) => _required(l10n, v),
+                    ),
+                    _fieldPair(
+                      context,
+                      TextFormField(
+                        controller: _areaController,
+                        maxLength: 80,
+                        decoration: InputDecoration(
+                          labelText: l10n.jobAreaLabel,
+                          hintText: l10n.jobAreaHint,
+                          counterText: '',
+                        ),
+                      ),
+                      TextFormField(
+                        controller: _locationController,
+                        maxLength: 100,
+                        decoration: InputDecoration(
+                          labelText: l10n.jobLocationLabel,
+                          hintText: l10n.jobLocationHint,
+                          counterText: '',
+                        ),
+                        validator: (v) => _required(l10n, v),
                       ),
                     ),
-                    TextField(
+                    _fieldPair(
+                      context,
+                      DropdownButtonFormField<WorkMode>(
+                        initialValue: _workMode,
+                        isExpanded: true,
+                        onChanged: (v) => setState(() => _workMode = v),
+                        decoration: InputDecoration(labelText: l10n.jobWorkModeLabel),
+                        items: [
+                          for (final mode in WorkMode.values)
+                            DropdownMenuItem(value: mode, child: Text(l10n.workMode(mode))),
+                        ],
+                        validator: (v) => v == null ? l10n.fieldRequired : null,
+                      ),
+                      DropdownButtonFormField<ContractType>(
+                        initialValue: _contractType,
+                        isExpanded: true,
+                        onChanged: (v) => setState(() => _contractType = v),
+                        decoration: InputDecoration(labelText: l10n.jobContractTypeLabel),
+                        items: [
+                          for (final type in ContractType.values)
+                            DropdownMenuItem(value: type, child: Text(l10n.contractType(type))),
+                        ],
+                        validator: (v) => v == null ? l10n.fieldRequired : null,
+                      ),
+                    ),
+                    _fieldPair(
+                      context,
+                      _salaryField(
+                        controller: _salaryMinController,
+                        label: l10n.jobSalaryMinLabel,
+                        validator: (v) => _required(l10n, v),
+                      ),
+                      _salaryField(
+                        controller: _salaryMaxController,
+                        label: l10n.jobSalaryMaxLabel,
+                        validator: (v) {
+                          final min = int.tryParse(_salaryMinController.text);
+                          final max = int.tryParse(v ?? '');
+                          if (max == null) return l10n.fieldRequired;
+                          return min != null && max < min ? l10n.jobSalaryRangeError : null;
+                        },
+                      ),
+                    ),
+                    TextFormField(
                       controller: _descriptionController,
                       maxLines: 3,
                       decoration: InputDecoration(
                         labelText: l10n.jobDescriptionLabel,
                         hintText: l10n.jobDescriptionHint,
                       ),
-                    ),
-                    // Side by side from tablet up; stacked on phones.
-                    Flex(
-                      direction:
-                          context.isMobile ? Axis.vertical : Axis.horizontal,
-                      spacing: 12,
-                      children: [
-                        for (final field in [
-                          TextField(
-                            controller: _locationController,
-                            decoration: InputDecoration(
-                              labelText: l10n.jobLocationLabel,
-                              hintText: l10n.jobLocationHint,
-                            ),
-                          ),
-                          TextField(
-                            controller: _contractTypeController,
-                            decoration: InputDecoration(
-                              labelText: l10n.jobContractTypeLabel,
-                              hintText: l10n.jobContractTypeHint,
-                            ),
-                          ),
-                        ])
-                          context.isMobile ? field : Expanded(child: field),
-                      ],
-                    ),
-                    TextField(
-                      controller: _salaryController,
-                      decoration: InputDecoration(
-                        labelText: l10n.jobSalaryLabel,
-                        hintText: l10n.jobSalaryHint,
-                      ),
+                      validator: (v) => _required(l10n, v),
                     ),
                     if (widget.controller.error == 'companyJobPublishError')
                       Text(
@@ -235,7 +332,7 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: ElevatedButton(
-                        onPressed: _publishJob,
+                        onPressed: widget.controller.isPublishing ? null : _publishJob,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colors.accent,
                           foregroundColor: colors.onAccent,
@@ -244,6 +341,7 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                       ),
                     ),
                   ],
+                ),
                 ),
               ),
               Column(
@@ -431,33 +529,12 @@ class _JobCard extends StatelessWidget {
   }
 }
 
-class _CandidatesDialog extends StatefulWidget {
+/// The candidates of one job, as a plain list.
+class _CandidatesDialog extends StatelessWidget {
   final CompanyController controller;
   final JobEntity job;
 
   const _CandidatesDialog({required this.controller, required this.job});
-
-  @override
-  State<_CandidatesDialog> createState() => _CandidatesDialogState();
-}
-
-class _CandidatesDialogState extends State<_CandidatesDialog> {
-  final _roleFilterController = TextEditingController();
-  double _minMatch = 0;
-
-  @override
-  void dispose() {
-    _roleFilterController.dispose();
-    super.dispose();
-  }
-
-  void _applyFilter() {
-    widget.controller.filterCandidates(
-      widget.job.id,
-      roleFilter: _roleFilterController.text.trim().isEmpty ? null : _roleFilterController.text.trim(),
-      minMatch: _minMatch == 0 ? null : _minMatch.round(),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -478,7 +555,7 @@ class _CandidatesDialogState extends State<_CandidatesDialog> {
                 children: [
                   Expanded(
                     child: Text(
-                      l10n.companyCandidatesTitle(widget.job.title),
+                      l10n.companyCandidatesTitle(job.title),
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -489,34 +566,11 @@ class _CandidatesDialogState extends State<_CandidatesDialog> {
                   ),
                 ],
               ),
-              TextField(
-                controller: _roleFilterController,
-                decoration: InputDecoration(labelText: l10n.companyRoleFilterLabel),
-                onSubmitted: (_) => _applyFilter(),
-              ),
-              StatefulBuilder(
-                builder: (context, setLocalState) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.companyMinMatchLabel(_minMatch.round()),
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                    Slider(
-                      value: _minMatch,
-                      max: 100,
-                      divisions: 20,
-                      onChanged: (v) => setLocalState(() => _minMatch = v),
-                      onChangeEnd: (_) => _applyFilter(),
-                    ),
-                  ],
-                ),
-              ),
               Expanded(
                 child: ListenableBuilder(
-                  listenable: widget.controller,
+                  listenable: controller,
                   builder: (context, _) {
-                    final candidates = widget.controller.candidates;
+                    final candidates = controller.candidates;
                     if (candidates.isEmpty) {
                       return Center(
                         child: Text(
@@ -530,7 +584,7 @@ class _CandidatesDialogState extends State<_CandidatesDialog> {
                       separatorBuilder: (_, __) => const Divider(height: 16),
                       itemBuilder: (context, i) => _CandidateRow(
                         candidate: candidates[i],
-                        controller: widget.controller,
+                        controller: controller,
                       ),
                     );
                   },

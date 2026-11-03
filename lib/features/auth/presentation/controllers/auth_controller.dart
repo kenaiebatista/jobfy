@@ -15,6 +15,8 @@ enum AuthErrorCode {
   emailInUse,
   cpfInUse,
   network,
+  notCompanyAccount,
+  notCandidateAccount,
 }
 
 class AuthController extends ChangeNotifier {
@@ -32,20 +34,27 @@ class AuthController extends ChangeNotifier {
   AuthErrorCode? get errorCode => _errorCode;
   bool get isLoading => _status == AuthStatus.loading;
 
-  Future<bool> login(String email, String password) async {
+  /// [asCompany] is the option picked on the login screen; the login fails
+  /// when the account is of the other kind.
+  Future<bool> login(String email, String password, {bool? asCompany}) async {
     _status = AuthStatus.loading;
     _errorCode = null;
     notifyListeners();
 
     try {
       final user = await _loginUsecase(email, password);
-      if (user != null) {
+      if (user == null) {
+        _errorCode = AuthErrorCode.invalidCredentials;
+      } else if (asCompany != null && user.isCompany != asCompany) {
+        _errorCode = asCompany
+            ? AuthErrorCode.notCompanyAccount
+            : AuthErrorCode.notCandidateAccount;
+      } else {
         _user = user;
         _status = AuthStatus.success;
         notifyListeners();
         return true;
       }
-      _errorCode = AuthErrorCode.invalidCredentials;
     } on ApiException {
       _errorCode = AuthErrorCode.network;
     }

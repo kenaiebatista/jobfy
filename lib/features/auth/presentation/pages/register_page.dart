@@ -88,6 +88,8 @@ class _RegisterPageState extends State<RegisterPage> {
         AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
         AuthErrorCode.cpfInUse => l10n.authErrorCpfInUse,
         AuthErrorCode.network => l10n.authErrorNetwork,
+        AuthErrorCode.notCompanyAccount => l10n.authErrorNotCompanyAccount,
+        AuthErrorCode.notCandidateAccount => l10n.authErrorNotCandidateAccount,
       };
 
   static String _digits(String s) => s.replaceAll(RegExp(r'\D'), '');

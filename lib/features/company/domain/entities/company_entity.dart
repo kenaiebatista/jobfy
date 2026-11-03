@@ -12,7 +12,7 @@ class JobEntity {
   final String salary;
 
   /// `jobs.work_mode` (Presencial/Híbrido/Remoto) and `jobs.status`
-  /// (open/paused/closed). Optional until job insertion is built.
+  /// (open/paused/closed).
   final String? workMode;
   final String? status;
 
@@ -29,7 +29,43 @@ class JobEntity {
   });
 }
 
-/// Values of `jobs.contract_type`, ready for the job insertion form.
+/// What the company fills in to publish a job (the `jobs` columns; the
+/// publication date and status come from the database defaults).
+class NewJobEntity {
+  final String companyId;
+  final String title;
+  final String? area;
+  final String location;
+  final WorkMode workMode;
+  final String description;
+  final ContractType contractType;
+  final int salaryMin;
+  final int salaryMax;
+
+  const NewJobEntity({
+    required this.companyId,
+    required this.title,
+    this.area,
+    required this.location,
+    required this.workMode,
+    required this.description,
+    required this.contractType,
+    required this.salaryMin,
+    required this.salaryMax,
+  });
+}
+
+/// Values of `jobs.work_mode`, kept in [dbValue].
+enum WorkMode {
+  onSite('Presencial'),
+  hybrid('Híbrido'),
+  remote('Remoto');
+
+  const WorkMode(this.dbValue);
+  final String dbValue;
+}
+
+/// Values of `jobs.contract_type`.
 enum ContractType {
   clt,
   pj,

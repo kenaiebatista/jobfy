@@ -36,7 +36,7 @@ class CompanyRepositoryImpl implements CompanyRepository {
   Future<List<JobEntity>> getCompanyJobs(String companyId) => _dataSource.getCompanyJobs(companyId);
 
   @override
-  Future<JobEntity> publishJob(JobEntity job) {
+  Future<void> publishJob(NewJobEntity job) {
     return _dataSource.publishJob(job);
   }
 

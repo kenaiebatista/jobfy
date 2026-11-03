@@ -12,8 +12,8 @@ import 'company_fake_data_source.dart';
 /// [DatabaseService]. Stand-in until the Go backend
 /// ([CompanyRemoteDataSource]) is deployed.
 ///
-/// Publishing jobs and the candidate tools still use [CompanyFakeDataSource]
-/// (they only live on screen); they move to the database with job insertion.
+/// Rating and messaging candidates still use [CompanyFakeDataSource]; they
+/// move to the database together with job applications.
 class CompanyMysqlDataSource implements CompanyDataSource {
   final CompanyFakeDataSource _notYetInDatabase = CompanyFakeDataSource();
 
@@ -91,11 +91,24 @@ class CompanyMysqlDataSource implements CompanyDataSource {
   }
 
   @override
-  Future<JobEntity> publishJob(JobEntity job) => _notYetInDatabase.publishJob(job);
+  Future<void> publishJob(NewJobEntity job) {
+    final area = job.area?.trim();
+    return DatabaseService.insertJob(
+      companyId: int.parse(job.companyId),
+      title: job.title,
+      area: area == null || area.isEmpty ? null : area,
+      location: job.location,
+      workMode: job.workMode.dbValue,
+      description: job.description,
+      contractType: job.contractType.name,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+    );
+  }
 
   @override
-  Future<List<CandidateEntity>> filterCandidates(String jobId, {String? roleFilter, int? minMatch}) =>
-      _notYetInDatabase.filterCandidates(jobId, roleFilter: roleFilter, minMatch: minMatch);
+  // Users can't apply to jobs yet, so no job has candidates.
+  Future<List<CandidateEntity>> filterCandidates(String jobId, {String? roleFilter, int? minMatch}) async => [];
 
   @override
   Future<void> rateCandidate(String candidateId, double rating, {String? comment}) =>

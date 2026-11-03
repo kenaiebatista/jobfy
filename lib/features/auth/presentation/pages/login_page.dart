@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
+  bool _isCompany = false;
 
   late final AuthController _authController;
 
@@ -50,6 +51,7 @@ class _LoginPageState extends State<LoginPage> {
     final ok = await _authController.login(
       _emailController.text.trim(),
       _passwordController.text,
+      asCompany: _isCompany,
     );
     if (ok && mounted) {
       final user = _authController.user!;
@@ -70,6 +72,8 @@ class _LoginPageState extends State<LoginPage> {
         AuthErrorCode.emailInUse => l10n.authErrorEmailInUse,
         AuthErrorCode.cpfInUse => l10n.authErrorCpfInUse,
         AuthErrorCode.network => l10n.authErrorNetwork,
+        AuthErrorCode.notCompanyAccount => l10n.authErrorNotCompanyAccount,
+        AuthErrorCode.notCandidateAccount => l10n.authErrorNotCandidateAccount,
       };
 
   @override
@@ -155,6 +159,20 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(fontSize: 13, color: colors.textMuted),
                   ),
                 ],
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<bool>(
+                  segments: [
+                    ButtonSegment(value: false, icon: const Icon(Icons.person_outline, size: 18), label: Text(l10n.registerAsCandidate)),
+                    ButtonSegment(value: true, icon: const Icon(Icons.business_outlined, size: 18), label: Text(l10n.registerAsCompany)),
+                  ],
+                  selected: {_isCompany},
+                  onSelectionChanged: (v) {
+                    setState(() => _isCompany = v.first);
+                    _authController.resetStatus();
+                  },
+                ),
               ),
               TextField(
                 controller: _emailController,
@@ -253,16 +271,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   HoverLink(
                     label: l10n.createAccount,
-                    onTap: () => context.go('/register'),
-                    style: (hovered) => TextStyle(
-                      fontSize: 12,
-                      color: hovered ? colors.accent : colors.textMuted,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                  HoverLink(
-                    label: l10n.iAmCompany,
-                    onTap: () => context.go('/register?type=company'),
+                    onTap: () => context.go(_isCompany ? '/register?type=company' : '/register'),
                     style: (hovered) => TextStyle(
                       fontSize: 12,
                       color: hovered ? colors.accent : colors.textMuted,
