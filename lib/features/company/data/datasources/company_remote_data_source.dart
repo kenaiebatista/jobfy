@@ -12,7 +12,7 @@ import '../models/job_model.dart';
 ///   GET  /companies/{companyId}                        -> CompanyModel
 ///   GET  /companies/{companyId}/jobs                   -> `List<JobModel>`
 ///   POST /companies/{companyId}/jobs                   -> JobModel
-///   GET  /companies/{companyId}/jobs/{jobId}/candidates -> `List<CandidateModel>`
+///   GET  /jobs/{jobId}/candidates                      -> `List<CandidateModel>`
 ///   POST /candidates/{id}/ratings   {rating, comment}
 ///   POST /candidates/{id}/messages  {message}
 class CompanyRemoteDataSource implements CompanyDataSource {
@@ -67,23 +67,16 @@ class CompanyRemoteDataSource implements CompanyDataSource {
         'contract_type': job.contractType.name,
         'salary_min': job.salaryMin,
         'salary_max': job.salaryMax,
+        'workload': job.workload,
+        'requirements': job.requirements,
+        'benefits': job.benefits,
       },
     );
   }
 
   @override
-  Future<List<CandidateEntity>> filterCandidates(
-    String jobId, {
-    String? roleFilter,
-    int? minMatch,
-  }) async {
-    final json = await _client.get(
-      '/jobs/$jobId/candidates',
-      query: {
-        if (roleFilter != null) 'role': roleFilter,
-        if (minMatch != null) 'min_match': '$minMatch',
-      },
-    ) as List;
+  Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
+    final json = await _client.get('/jobs/$jobId/candidates') as List;
     return json
         .map((c) => CandidateModel.fromJson(c as Map<String, dynamic>))
         .toList();

@@ -11,11 +11,14 @@
 --    - companies: nome fantasia, atividade, CEP, endereço, cidade, UF e
 --      descrição (cadastro de empresa com busca por CNPJ)
 --    - jobs: colunas location, work_mode, salary_min e salary_max
---      (tela de vagas)
---    - dados de exemplo: habilidades, instituições, cursos, empresas e
---      4 vagas abertas
+--      (tela de vagas) e workload, requirements e benefits (detalhes
+--      da vaga: carga horária, requisitos e benefícios)
+--    - applications: candidaturas dos usuários nas vagas
+--    - dados de exemplo: habilidades, instituições, cursos, empresas,
+--      4 vagas abertas e 1 candidata com 2 candidaturas
 --
---  Contas de exemplo (empresas e instituições) usam a senha: jobfy123
+--  Contas de exemplo (empresas, instituições e a candidata) usam a
+--  senha: jobfy123
 --  As senhas são salvas como hash bcrypt, igual ao cadastro do app.
 -- =====================================================================
 
@@ -175,6 +178,9 @@ CREATE TABLE jobs (
   contract_type  ENUM('clt', 'pj', 'internship', 'apprentice', 'temporary', 'freelance') NOT NULL,
   salary_min     DECIMAL(10,2),
   salary_max     DECIMAL(10,2),
+  workload       VARCHAR(60),                                          -- carga horária, ex.: 40h semanais
+  requirements   TEXT,                                                 -- requisitos
+  benefits       TEXT,                                                 -- benefícios
   published_at   DATE NOT NULL DEFAULT (CURRENT_DATE),
   status         ENUM('open', 'paused', 'closed') NOT NULL DEFAULT 'open',
   CONSTRAINT ck_jobs_salary CHECK (salary_max IS NULL OR salary_min IS NULL OR salary_max >= salary_min),
@@ -335,19 +341,52 @@ SET @co_pixel := LAST_INSERT_ID();
 
 -- As 4 vagas de emprego (abertas e com todos os campos)
 INSERT INTO jobs (company_id, title, area, location, work_mode, description,
-                  contract_type, salary_min, salary_max, published_at, status) VALUES
+                  contract_type, salary_min, salary_max, workload, requirements,
+                  benefits, published_at, status) VALUES
   (@co_technova, 'Desenvolvedor(a) Flutter Pleno', 'Tecnologia', 'São Paulo, SP', 'Remoto',
-   'Buscamos desenvolvedor(a) Flutter para evoluir nosso app de gestão financeira. Requisitos: 2+ anos com Flutter/Dart, consumo de APIs REST e Git. Diferencial: testes automatizados.',
-   'clt', 7000.00, 10000.00, CURRENT_DATE - INTERVAL 2 DAY, 'open'),
+   'Buscamos desenvolvedor(a) Flutter para evoluir nosso app de gestão financeira.',
+   'clt', 7000.00, 10000.00, '40h semanais, seg. a sex.',
+   '2+ anos com Flutter/Dart, consumo de APIs REST e Git. Diferencial: testes automatizados.',
+   'Vale-refeição, plano de saúde e auxílio home office.',
+   CURRENT_DATE - INTERVAL 2 DAY, 'open'),
   (@co_verdeagro, 'Analista de Dados Júnior', 'Dados', 'Campinas, SP', 'Híbrido',
-   'Atuação na análise de dados de produtividade agrícola, criação de dashboards e relatórios. Requisitos: SQL, Excel avançado e noções de Python.',
-   'clt', 4500.00, 6500.00, CURRENT_DATE - INTERVAL 5 DAY, 'open'),
+   'Atuação na análise de dados de produtividade agrícola, criação de dashboards e relatórios.',
+   'clt', 4500.00, 6500.00, '40h semanais, 3 dias no escritório',
+   'SQL, Excel avançado e noções de Python.',
+   'Vale-transporte, vale-refeição e plano odontológico.',
+   CURRENT_DATE - INTERVAL 5 DAY, 'open'),
   (@co_conecta, 'Estágio em Suporte de TI', 'Tecnologia', 'Belo Horizonte, MG', 'Presencial',
-   'Estágio para atendimento a usuários, instalação de softwares e manutenção de computadores. Requisitos: cursando TI ou áreas afins, boa comunicação. Bolsa + vale-transporte.',
-   'internship', 1500.00, 1800.00, CURRENT_DATE - INTERVAL 1 DAY, 'open'),
+   'Estágio para atendimento a usuários, instalação de softwares e manutenção de computadores.',
+   'internship', 1500.00, 1800.00, '30h semanais (6h por dia)',
+   'Cursando TI ou áreas afins, boa comunicação.',
+   'Bolsa-auxílio e vale-transporte.',
+   CURRENT_DATE - INTERVAL 1 DAY, 'open'),
   (@co_pixel, 'Designer UX/UI', 'Design', 'Curitiba, PR', 'Remoto',
-   'Criação de interfaces para apps e sites de clientes, protótipos no Figma e testes de usabilidade. Requisitos: portfólio, Figma e noções de design responsivo.',
-   'pj', 6000.00, 9000.00, CURRENT_DATE - INTERVAL 7 DAY, 'open');
+   'Criação de interfaces para apps e sites de clientes, protótipos no Figma e testes de usabilidade.',
+   'pj', 6000.00, 9000.00, 'Flexível, cerca de 40h semanais',
+   'Portfólio, Figma e noções de design responsivo.',
+   'Horário flexível e equipamento fornecido pela empresa.',
+   CURRENT_DATE - INTERVAL 7 DAY, 'open');
+
+-- Uma candidata de exemplo, já inscrita em 2 vagas (a empresa vê ela em
+-- "Ver candidatos"). Login: ana.souza@email.com / jobfy123
+INSERT INTO accounts (email, password_hash, account_type)
+VALUES ('ana.souza@email.com', @pwd, 'user');
+INSERT INTO users (account_id, name, cpf, gender, birth_date, phone, education_level)
+VALUES (LAST_INSERT_ID(), 'Ana Clara Souza', '52998224725', 'female', '2007-03-15',
+        '(47) 99876-5432', 'high_school_complete');
+SET @usr_ana := LAST_INSERT_ID();
+
+INSERT INTO user_skills (user_id, skill_id, level)
+SELECT @usr_ana, skill_id, 'intermediate' FROM skills WHERE name IN ('Flutter', 'Dart', 'Git');
+
+INSERT INTO experiences (user_id, job_title, company_name, description, start_date, end_date)
+VALUES (@usr_ana, 'Monitora de informática (voluntária)', 'Escola Estadual Gaspar',
+        'Ajudava alunos e professores no laboratório de informática.', '2024-02-01', '2025-12-15');
+
+INSERT INTO applications (user_id, job_id)
+SELECT @usr_ana, job_id FROM jobs
+WHERE title IN ('Desenvolvedor(a) Flutter Pleno', 'Estágio em Suporte de TI');
 
 COMMIT;
 

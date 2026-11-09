@@ -387,6 +387,70 @@ class DatabaseService {
     }
   }
 
+  /// One job with its company, for the job details screen, or null if it
+  /// doesn't exist. `applied` is '1' when [userId] already applied to it.
+  static Future<Map<String, String?>?> getJob(int jobId, {int? userId}) async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        "SELECT CAST(j.job_id AS CHAR) AS id, j.title, j.area, j.location, "
+        "j.work_mode, j.contract_type, j.workload, j.description, "
+        "j.requirements, j.benefits, j.published_at, j.status, "
+        "CONCAT('R\$ ', FORMAT(j.salary_min, 0, 'de_DE'), ' – ', "
+        "FORMAT(j.salary_max, 0, 'de_DE')) AS salary, "
+        "c.company_name, c.trade_name, c.business_area, c.city, c.state, "
+        "c.phone AS company_phone, c.description AS company_description, "
+        "a.email AS company_email, "
+        "EXISTS (SELECT 1 FROM applications ap "
+        "WHERE ap.job_id = j.job_id AND ap.user_id = :user) AS applied "
+        "FROM jobs j JOIN companies c ON c.company_id = j.company_id "
+        "JOIN accounts a ON a.account_id = c.account_id "
+        "WHERE j.job_id = :id",
+        {'id': jobId, 'user': userId},
+      );
+      return result.rows.isEmpty ? null : result.rows.first.assoc();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Saves the user's application to the job (`applications`). Applying
+  /// twice is ignored: the UNIQUE (user_id, job_id) keeps a single row.
+  static Future<void> applyToJob({required int userId, required int jobId}) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'INSERT IGNORE INTO applications (user_id, job_id) VALUES (:user, :job)',
+        {'user': userId, 'job': jobId},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Who applied to the job, newest first. Deactivated accounts are left
+  /// out, like everywhere else in the app.
+  static Future<List<Map<String, String?>>> getJobCandidates(int jobId) async {
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        'SELECT CAST(u.user_id AS CHAR) AS user_id, u.name, a.email, u.phone, '
+        'ap.applied_at, ap.status FROM applications ap '
+        'JOIN users u ON u.user_id = ap.user_id '
+        'JOIN accounts a ON a.account_id = u.account_id '
+        'WHERE ap.job_id = :job AND a.is_active = TRUE '
+        'ORDER BY ap.applied_at DESC, ap.application_id DESC',
+        {'job': jobId},
+      );
+      return [for (final row in result.rows) row.assoc()];
+    } finally {
+      await conn.close();
+    }
+  }
+
   /// Creates a company sign-up in one transaction: the `accounts` row
   /// (password hashed with bcrypt) and its `companies` profile. Optional
   /// fields may be null. Returns the new company_id.
@@ -477,15 +541,19 @@ class DatabaseService {
     required String contractType,
     required int salaryMin,
     required int salaryMax,
+    String? workload,
+    String? requirements,
+    String? benefits,
   }) async {
     final conn = await connect();
 
     try {
       await conn.execute(
         'INSERT INTO jobs (company_id, title, area, location, work_mode, '
-        'description, contract_type, salary_min, salary_max) '
+        'description, contract_type, salary_min, salary_max, workload, '
+        'requirements, benefits) '
         'VALUES (:company, :title, :area, :location, :mode, :description, '
-        ':contract, :min, :max)',
+        ':contract, :min, :max, :workload, :requirements, :benefits)',
         {
           'company': companyId,
           'title': title,
@@ -496,6 +564,9 @@ class DatabaseService {
           'contract': contractType,
           'min': salaryMin,
           'max': salaryMax,
+          'workload': workload,
+          'requirements': requirements,
+          'benefits': benefits,
         },
       );
     } finally {
@@ -503,7 +574,8 @@ class DatabaseService {
     }
   }
 
-  /// Every job the company published (any status), newest first.
+  /// Every job the company published (any status), newest first, with how
+  /// many (active) users applied to each one.
   static Future<List<Map<String, String?>>> getCompanyJobs(int companyId) async {
     final conn = await connect();
 
@@ -512,7 +584,11 @@ class DatabaseService {
         "SELECT CAST(job_id AS CHAR) AS id, title, description, location, "
         "work_mode, contract_type, status, "
         "CONCAT('R\$ ', FORMAT(salary_min, 0, 'de_DE'), ' – ', "
-        "FORMAT(salary_max, 0, 'de_DE')) AS salary "
+        "FORMAT(salary_max, 0, 'de_DE')) AS salary, "
+        "(SELECT COUNT(*) FROM applications ap "
+        "JOIN users u ON u.user_id = ap.user_id "
+        "JOIN accounts a ON a.account_id = u.account_id "
+        "WHERE ap.job_id = jobs.job_id AND a.is_active = TRUE) AS candidates "
         "FROM jobs WHERE company_id = :id ORDER BY published_at DESC, job_id DESC",
         {'id': companyId},
       );

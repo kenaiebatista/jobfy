@@ -758,6 +758,67 @@ class AppLocalizationsPt extends AppLocalizations {
   String get registerAsCompany => 'Sou empresa';
 
   @override
+  String get jobWorkloadLabel => 'Carga horária';
+
+  @override
+  String get jobWorkloadHint => 'ex.: 40h semanais, seg. a sex.';
+
+  @override
+  String get jobRequirementsLabel => 'Requisitos';
+
+  @override
+  String get jobRequirementsHint =>
+      'ex.: Ensino médio completo, noções de Excel';
+
+  @override
+  String get jobBenefitsLabel => 'Benefícios';
+
+  @override
+  String get jobBenefitsHint => 'ex.: Vale-transporte, vale-refeição';
+
+  @override
+  String get jobDetailsTitle => 'Detalhes da vaga';
+
+  @override
+  String get jobAboutCompany => 'Sobre a empresa';
+
+  @override
+  String get jobSalary => 'Salário';
+
+  @override
+  String jobPublishedOn(String date) {
+    return 'Publicada em $date';
+  }
+
+  @override
+  String get jobNotFound => 'Vaga não encontrada.';
+
+  @override
+  String get jobDetailsLoadError =>
+      'Não foi possível carregar a vaga. Tente novamente.';
+
+  @override
+  String get companyCandidateSearchHint => 'Buscar candidato pelo nome';
+
+  @override
+  String companyCandidateAppliedOn(String date) {
+    return 'Candidatou-se em $date';
+  }
+
+  @override
+  String get companyNoCandidatesFound => 'Nenhum candidato com esse nome.';
+
+  @override
+  String get companyCandidateTitle => 'Candidato';
+
+  @override
+  String get companyCandidateLoadError =>
+      'Não foi possível carregar o candidato. Tente novamente.';
+
+  @override
+  String get companyGenerateResume => 'Gerar currículo (PDF)';
+
+  @override
   String get jobAreaLabel => 'Área';
 
   @override
@@ -1642,6 +1703,67 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get jobWorkloadLabel => 'Carga horária';
+
+  @override
+  String get jobWorkloadHint => 'ex.: 40h semanais, seg. a sex.';
+
+  @override
+  String get jobRequirementsLabel => 'Requisitos';
+
+  @override
+  String get jobRequirementsHint =>
+      'ex.: Ensino médio completo, noções de Excel';
+
+  @override
+  String get jobBenefitsLabel => 'Benefícios';
+
+  @override
+  String get jobBenefitsHint => 'ex.: Vale-transporte, vale-refeição';
+
+  @override
+  String get jobDetailsTitle => 'Detalhes da vaga';
+
+  @override
+  String get jobAboutCompany => 'Sobre a empresa';
+
+  @override
+  String get jobSalary => 'Salário';
+
+  @override
+  String jobPublishedOn(String date) {
+    return 'Publicada em $date';
+  }
+
+  @override
+  String get jobNotFound => 'Vaga não encontrada.';
+
+  @override
+  String get jobDetailsLoadError =>
+      'Não foi possível carregar a vaga. Tente novamente.';
+
+  @override
+  String get companyCandidateSearchHint => 'Buscar candidato pelo nome';
+
+  @override
+  String companyCandidateAppliedOn(String date) {
+    return 'Candidatou-se em $date';
+  }
+
+  @override
+  String get companyNoCandidatesFound => 'Nenhum candidato com esse nome.';
+
+  @override
+  String get companyCandidateTitle => 'Candidato';
+
+  @override
+  String get companyCandidateLoadError =>
+      'Não foi possível carregar o candidato. Tente novamente.';
+
+  @override
+  String get companyGenerateResume => 'Gerar currículo (PDF)';
 
   @override
   String get jobAreaLabel => 'Área';

@@ -6,24 +6,19 @@ import '../models/job_model.dart';
 /// In-memory stand-in for [CompanyRemoteDataSource], used until the Go
 /// backend is deployed.
 class CompanyFakeDataSource implements CompanyDataSource {
-  final List<CandidateEntity> _candidatesMock = const [
+  final List<CandidateEntity> _candidatesMock = [
     CandidateEntity(
-      id: 'cand_001',
+      id: 'usr_001',
       name: 'Caue Bueno',
-      desiredRole: 'Flutter Developer',
-      matchPercent: 97,
+      email: 'caue.bueno@email.com',
+      phone: '(47) 99999-0001',
+      appliedAt: DateTime(2026, 10, 20),
     ),
     CandidateEntity(
-      id: 'cand_002',
+      id: 'usr_002',
       name: 'Marina Alves',
-      desiredRole: 'Mobile Engineer',
-      matchPercent: 88,
-    ),
-    CandidateEntity(
-      id: 'cand_003',
-      name: 'Rafael Souza',
-      desiredRole: 'Dart/Flutter Developer',
-      matchPercent: 74,
+      email: 'marina.alves@email.com',
+      appliedAt: DateTime(2026, 10, 18),
     ),
   ];
 
@@ -88,18 +83,9 @@ class CompanyFakeDataSource implements CompanyDataSource {
   }
 
   @override
-  Future<List<CandidateEntity>> filterCandidates(
-    String jobId, {
-    String? roleFilter,
-    int? minMatch,
-  }) async {
+  Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
     await Future.delayed(const Duration(milliseconds: 400));
-    return _candidatesMock.where((c) {
-      final matchesRole = roleFilter == null ||
-          c.desiredRole.toLowerCase().contains(roleFilter.toLowerCase());
-      final matchesScore = minMatch == null || c.matchPercent >= minMatch;
-      return matchesRole && matchesScore;
-    }).toList();
+    return List.of(_candidatesMock);
   }
 
   @override

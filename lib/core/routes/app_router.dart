@@ -6,13 +6,21 @@ import 'package:jobfy/features/jobs/presentation/pages/jobs_page.dart';
 import 'package:jobfy/features/resume/presentation/pages/resume_page.dart';
 import 'package:jobfy/features/settings/presentation/pages/settings_page.dart';
 import 'package:jobfy/features/user/presentation/pages/user_area_page.dart';
+import 'package:jobfy/features/company/presentation/pages/candidate_page.dart';
 import 'package:jobfy/features/company/presentation/pages/company_page.dart';
+import 'package:jobfy/features/jobs/presentation/pages/job_details_page.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 /// Screens that need a signed-in user. Without one (e.g. after a restart,
 /// since the session lives in memory) they send you to the login screen.
 const _signedInOnly = {'/user', '/jobs', '/settings', '/resume'};
+
+/// [location] is [path] or one of its sub-screens (e.g. '/jobs/3').
+bool _isUnder(String location, String path) =>
+    location == path || location.startsWith('$path/');
+
+bool _isUserScreen(String location) => _signedInOnly.any((p) => _isUnder(location, p));
 
 final appRouter = GoRouter(
   redirect: (context, state) {
@@ -21,13 +29,13 @@ final appRouter = GoRouter(
     // A company has its own dashboard; of the user's screens it only shares
     // the settings.
     if (session.isCompanySignedIn) {
-      return _signedInOnly.contains(location) && location != '/settings' ? '/company' : null;
+      return _isUserScreen(location) && location != '/settings' ? '/company' : null;
     }
-    if (!session.isSignedIn && _signedInOnly.contains(location)) {
+    if (!session.isSignedIn && _isUserScreen(location)) {
       return '/login';
     }
-    // The company dashboard needs a signed-in company.
-    if (location == '/company') {
+    // The company dashboard (and its candidate screens) need a signed-in company.
+    if (_isUnder(location, '/company')) {
       return '/login';
     }
     return null;
@@ -55,6 +63,12 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/company',
       builder: (_, __) => const CompanyPage(),
+      routes: [
+        GoRoute(
+          path: 'candidates/:userId',
+          builder: (_, state) => CandidatePage(userId: state.pathParameters['userId']!),
+        ),
+      ],
     ),
     GoRoute(
       path: '/settings',
@@ -63,6 +77,12 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/jobs',
       builder: (_, __) => const JobsPage(),
+      routes: [
+        GoRoute(
+          path: ':id',
+          builder: (_, state) => JobDetailsPage(jobId: state.pathParameters['id']!),
+        ),
+      ],
     ),
     GoRoute(
       path: '/resume',

@@ -3,7 +3,6 @@ import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:jobfy/features/jobs/domain/entities/job_listing_entity.dart';
-import 'package:jobfy/features/jobs/domain/usecases/apply_to_job_usecase.dart';
 import 'package:jobfy/features/jobs/domain/usecases/search_jobs_usecase.dart';
 import 'package:jobfy/features/jobs/presentation/controllers/job_controller.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
@@ -29,10 +28,7 @@ class _JobsPageState extends State<JobsPage> {
   void initState() {
     super.initState();
     final repo = JobRepositoryImpl();
-    _controller = JobController(
-      SearchJobsUsecase(repo),
-      ApplyToJobUsecase(repo),
-    );
+    _controller = JobController(SearchJobsUsecase(repo));
     _controller.search();
     context.read<UserSessionController>().ensureLoaded();
   }
@@ -194,7 +190,10 @@ class _JobListingCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
 
-    return Container(
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () => _openDetails(context),
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: colors.surface,
@@ -270,44 +269,20 @@ class _JobListingCard extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () => _showDetails(context, l10n),
+                onPressed: () => _openDetails(context),
                 child: Text(l10n.jobViewDetails),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  void _showDetails(BuildContext context, AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(job.title),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 8,
-            children: [
-              Text('${job.company} · ${job.location} · ${job.type}'),
-              Text(
-                job.salary,
-                style: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Text(job.description),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(l10n.settingsBack),
-          ),
-        ],
       ),
     );
   }
+
+  // push (not go) so going back keeps the search.
+  void _openDetails(BuildContext context) => context.push('/jobs/${job.id}');
+
 }
 
 class _Tag extends StatelessWidget {

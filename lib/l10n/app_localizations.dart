@@ -1505,6 +1505,114 @@ abstract class AppLocalizations {
   /// **'I\'m a company'**
   String get registerAsCompany;
 
+  /// No description provided for @jobWorkloadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload'**
+  String get jobWorkloadLabel;
+
+  /// No description provided for @jobWorkloadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 40h/week, Mon to Fri'**
+  String get jobWorkloadHint;
+
+  /// No description provided for @jobRequirementsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Requirements'**
+  String get jobRequirementsLabel;
+
+  /// No description provided for @jobRequirementsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. High school diploma, basic Excel'**
+  String get jobRequirementsHint;
+
+  /// No description provided for @jobBenefitsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get jobBenefitsLabel;
+
+  /// No description provided for @jobBenefitsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Transportation and meal vouchers'**
+  String get jobBenefitsHint;
+
+  /// No description provided for @jobDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Job details'**
+  String get jobDetailsTitle;
+
+  /// No description provided for @jobAboutCompany.
+  ///
+  /// In en, this message translates to:
+  /// **'About the company'**
+  String get jobAboutCompany;
+
+  /// No description provided for @jobSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Salary'**
+  String get jobSalary;
+
+  /// No description provided for @jobPublishedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Published on {date}'**
+  String jobPublishedOn(String date);
+
+  /// No description provided for @jobNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Job not found.'**
+  String get jobNotFound;
+
+  /// No description provided for @jobDetailsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the job. Please try again.'**
+  String get jobDetailsLoadError;
+
+  /// No description provided for @companyCandidateSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search candidates by name'**
+  String get companyCandidateSearchHint;
+
+  /// No description provided for @companyCandidateAppliedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied on {date}'**
+  String companyCandidateAppliedOn(String date);
+
+  /// No description provided for @companyNoCandidatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No candidates with that name.'**
+  String get companyNoCandidatesFound;
+
+  /// No description provided for @companyCandidateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate'**
+  String get companyCandidateTitle;
+
+  /// No description provided for @companyCandidateLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the candidate. Please try again.'**
+  String get companyCandidateLoadError;
+
+  /// No description provided for @companyGenerateResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate resume (PDF)'**
+  String get companyGenerateResume;
+
   /// No description provided for @jobAreaLabel.
   ///
   /// In en, this message translates to:

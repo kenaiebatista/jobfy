@@ -61,17 +61,19 @@ class _ResumePageState extends State<ResumePage> {
           }
           final missing = missingResumeInfo(profile);
           if (missing.isNotEmpty) return _MissingInfo(missing: missing);
-          return _ResumePreview(profile: profile);
+          return ResumePreview(profile: profile);
         },
       ),
     );
   }
 }
 
-class _ResumePreview extends StatelessWidget {
+/// The resume PDF with a Share button. Also used by the company to see a
+/// candidate's resume.
+class ResumePreview extends StatelessWidget {
   final UserProfileEntity profile;
 
-  const _ResumePreview({required this.profile});
+  const ResumePreview({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {

@@ -3,6 +3,7 @@ import 'package:jobfy/core/database/database_service.dart';
 import 'package:jobfy/core/network/api_exception.dart';
 import 'package:mysql_client/exception.dart';
 import '../../domain/entities/company_entity.dart';
+import '../models/candidate_model.dart';
 import '../models/company_model.dart';
 import '../models/job_model.dart';
 import 'company_data_source.dart';
@@ -12,8 +13,7 @@ import 'company_fake_data_source.dart';
 /// [DatabaseService]. Stand-in until the Go backend
 /// ([CompanyRemoteDataSource]) is deployed.
 ///
-/// Rating and messaging candidates still use [CompanyFakeDataSource]; they
-/// move to the database together with job applications.
+/// Rating and messaging candidates still use [CompanyFakeDataSource].
 class CompanyMysqlDataSource implements CompanyDataSource {
   final CompanyFakeDataSource _notYetInDatabase = CompanyFakeDataSource();
 
@@ -86,29 +86,35 @@ class CompanyMysqlDataSource implements CompanyDataSource {
           salary: r['salary'] ?? '',
           workMode: r['work_mode'],
           status: r['status'],
+          candidateCount: int.tryParse(r['candidates'] ?? '') ?? 0,
         ),
     ];
   }
 
   @override
   Future<void> publishJob(NewJobEntity job) {
-    final area = job.area?.trim();
+    String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
     return DatabaseService.insertJob(
       companyId: int.parse(job.companyId),
       title: job.title,
-      area: area == null || area.isEmpty ? null : area,
+      area: opt(job.area),
       location: job.location,
       workMode: job.workMode.dbValue,
       description: job.description,
       contractType: job.contractType.name,
       salaryMin: job.salaryMin,
       salaryMax: job.salaryMax,
+      workload: opt(job.workload),
+      requirements: opt(job.requirements),
+      benefits: opt(job.benefits),
     );
   }
 
   @override
-  // Users can't apply to jobs yet, so no job has candidates.
-  Future<List<CandidateEntity>> filterCandidates(String jobId, {String? roleFilter, int? minMatch}) async => [];
+  Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
+    final rows = await DatabaseService.getJobCandidates(int.parse(jobId));
+    return [for (final r in rows) CandidateModel.fromJson(r)];
+  }
 
   @override
   Future<void> rateCandidate(String candidateId, double rating, {String? comment}) =>

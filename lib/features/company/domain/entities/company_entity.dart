@@ -16,6 +16,9 @@ class JobEntity {
   final String? workMode;
   final String? status;
 
+  /// How many users applied (`applications`).
+  final int candidateCount;
+
   const JobEntity({
     required this.id,
     required this.companyId,
@@ -26,6 +29,7 @@ class JobEntity {
     required this.salary,
     this.workMode,
     this.status,
+    this.candidateCount = 0,
   });
 }
 
@@ -42,6 +46,11 @@ class NewJobEntity {
   final int salaryMin;
   final int salaryMax;
 
+  /// Optional details: carga horária, requisitos and benefícios.
+  final String? workload;
+  final String? requirements;
+  final String? benefits;
+
   const NewJobEntity({
     required this.companyId,
     required this.title,
@@ -52,6 +61,9 @@ class NewJobEntity {
     required this.contractType,
     required this.salaryMin,
     required this.salaryMax,
+    this.workload,
+    this.requirements,
+    this.benefits,
   });
 }
 
@@ -77,20 +89,25 @@ enum ContractType {
   static ContractType? fromDb(String? value) => values.asNameMap()[value];
 }
 
-/// A candidate returned by the candidate filter.
+/// Someone who applied to one of the company's jobs (`applications` +
+/// `users`). [id] is the `users.user_id`, used to open their profile.
 class CandidateEntity {
   final String id;
   final String name;
-  final String desiredRole;
-  final int matchPercent;
-  final double? rating;
+  final String email;
+  final String? phone;
+  final DateTime? appliedAt;
+
+  /// `applications.status`: under_review, approved, rejected or withdrawn.
+  final String status;
 
   const CandidateEntity({
     required this.id,
     required this.name,
-    required this.desiredRole,
-    required this.matchPercent,
-    this.rating,
+    required this.email,
+    this.phone,
+    this.appliedAt,
+    this.status = 'under_review',
   });
 }
 

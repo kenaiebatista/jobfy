@@ -3,7 +3,7 @@ import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
-import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_job_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
 
@@ -15,7 +15,7 @@ class CompanyController extends ChangeNotifier {
   final GetCompanyUsecase _getCompanyUsecase;
   final GetCompanyJobsUsecase _getCompanyJobsUsecase;
   final PublishJobUsecase _publishJobUsecase;
-  final FilterCandidatesUsecase _filterCandidatesUsecase;
+  final GetJobCandidatesUsecase _getJobCandidatesUsecase;
   final RateCandidateUsecase _rateCandidateUsecase;
   final SendMessageUsecase _sendMessageUsecase;
 
@@ -23,18 +23,19 @@ class CompanyController extends ChangeNotifier {
     required GetCompanyUsecase getCompanyUsecase,
     required GetCompanyJobsUsecase getCompanyJobsUsecase,
     required PublishJobUsecase publishJobUsecase,
-    required FilterCandidatesUsecase filterCandidatesUsecase,
+    required GetJobCandidatesUsecase getJobCandidatesUsecase,
     required RateCandidateUsecase rateCandidateUsecase,
     required SendMessageUsecase sendMessageUsecase,
   })  : _getCompanyUsecase = getCompanyUsecase,
         _getCompanyJobsUsecase = getCompanyJobsUsecase,
         _publishJobUsecase = publishJobUsecase,
-        _filterCandidatesUsecase = filterCandidatesUsecase,
+        _getJobCandidatesUsecase = getJobCandidatesUsecase,
         _rateCandidateUsecase = rateCandidateUsecase,
         _sendMessageUsecase = sendMessageUsecase;
 
   CompanyStatus _status = CompanyStatus.idle;
   bool _isPublishing = false;
+  bool _isLoadingCandidates = false;
   CompanyEntity? _company;
   final List<JobEntity> _jobs = [];
   List<CandidateEntity> _candidates = [];
@@ -47,6 +48,7 @@ class CompanyController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == CompanyStatus.loading;
   bool get isPublishing => _isPublishing;
+  bool get isLoadingCandidates => _isLoadingCandidates;
 
   /// Loads the company profile and the jobs it already published.
   Future<void> load(String companyId) async {
@@ -88,21 +90,19 @@ class CompanyController extends ChangeNotifier {
     return ok;
   }
 
-  Future<void> filterCandidates(
-    String jobId, {
-    String? roleFilter,
-    int? minMatch,
-  }) async {
+  /// Loads who applied to [jobId].
+  Future<void> loadCandidates(String jobId) async {
+    _candidates = [];
+    _isLoadingCandidates = true;
+    _error = null;
+    notifyListeners();
     try {
-      _candidates = await _filterCandidatesUsecase(
-        jobId,
-        roleFilter: roleFilter,
-        minMatch: minMatch,
-      );
-      _error = null;
-    } catch (_) {
+      _candidates = await _getJobCandidatesUsecase(jobId);
+    } catch (e) {
+      debugPrint('Could not load candidates of job $jobId: $e');
       _error = 'companyCandidateFilterError';
     }
+    _isLoadingCandidates = false;
     notifyListeners();
   }
 

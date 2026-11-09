@@ -4,14 +4,15 @@ import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
 import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
-import 'package:jobfy/features/company/domain/usecases/filter_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_job_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
 import 'package:jobfy/features/company/presentation/company_labels.dart';
 import 'package:jobfy/features/company/presentation/controllers/company_controller.dart';
+import 'package:jobfy/features/user/presentation/user_labels.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +51,7 @@ class _CompanyPageState extends State<CompanyPage> {
       getCompanyUsecase: GetCompanyUsecase(repo),
       getCompanyJobsUsecase: GetCompanyJobsUsecase(repo),
       publishJobUsecase: PublishJobUsecase(repo),
-      filterCandidatesUsecase: FilterCandidatesUsecase(repo),
+      getJobCandidatesUsecase: GetJobCandidatesUsecase(repo),
       rateCandidateUsecase: RateCandidateUsecase(repo),
       sendMessageUsecase: SendMessageUsecase(repo),
     );
@@ -131,6 +132,9 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
   final _locationController = TextEditingController();
   final _salaryMinController = TextEditingController();
   final _salaryMaxController = TextEditingController();
+  final _workloadController = TextEditingController();
+  final _requirementsController = TextEditingController();
+  final _benefitsController = TextEditingController();
   WorkMode? _workMode;
   ContractType? _contractType;
 
@@ -142,6 +146,9 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
     _locationController.dispose();
     _salaryMinController.dispose();
     _salaryMaxController.dispose();
+    _workloadController.dispose();
+    _requirementsController.dispose();
+    _benefitsController.dispose();
     super.dispose();
   }
 
@@ -160,6 +167,9 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
       contractType: _contractType!,
       salaryMin: int.parse(_salaryMinController.text),
       salaryMax: int.parse(_salaryMaxController.text),
+      workload: _workloadController.text,
+      requirements: _requirementsController.text,
+      benefits: _benefitsController.text,
     ));
     if (!ok || !mounted) return;
 
@@ -316,6 +326,15 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                       ),
                     ),
                     TextFormField(
+                      controller: _workloadController,
+                      maxLength: 60,
+                      decoration: InputDecoration(
+                        labelText: l10n.jobWorkloadLabel,
+                        hintText: l10n.jobWorkloadHint,
+                        counterText: '',
+                      ),
+                    ),
+                    TextFormField(
                       controller: _descriptionController,
                       maxLines: 3,
                       decoration: InputDecoration(
@@ -323,6 +342,22 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
                         hintText: l10n.jobDescriptionHint,
                       ),
                       validator: (v) => _required(l10n, v),
+                    ),
+                    TextFormField(
+                      controller: _requirementsController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: l10n.jobRequirementsLabel,
+                        hintText: l10n.jobRequirementsHint,
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _benefitsController,
+                      maxLines: 2,
+                      decoration: InputDecoration(
+                        labelText: l10n.jobBenefitsLabel,
+                        hintText: l10n.jobBenefitsHint,
+                      ),
                     ),
                     if (widget.controller.error == 'companyJobPublishError')
                       Text(
@@ -372,7 +407,7 @@ class _CompanyDashboardState extends State<_CompanyDashboard> {
   }
 
   void _showCandidates(BuildContext context, JobEntity job) {
-    widget.controller.filterCandidates(job.id);
+    widget.controller.loadCandidates(job.id);
     showDialog(
       context: context,
       builder: (_) => _CandidatesDialog(controller: widget.controller, job: job),
@@ -521,7 +556,7 @@ class _JobCard extends StatelessWidget {
           ),
           TextButton(
             onPressed: onViewCandidates,
-            child: Text(l10n.companyViewCandidates),
+            child: Text('${l10n.companyViewCandidates} (${job.candidateCount})'),
           ),
         ],
       ),
@@ -529,17 +564,29 @@ class _JobCard extends StatelessWidget {
   }
 }
 
-/// The candidates of one job, as a plain list.
-class _CandidatesDialog extends StatelessWidget {
+/// Who applied to one job, with a search by name. Tapping a candidate
+/// opens their profile.
+class _CandidatesDialog extends StatefulWidget {
   final CompanyController controller;
   final JobEntity job;
 
   const _CandidatesDialog({required this.controller, required this.job});
 
   @override
+  State<_CandidatesDialog> createState() => _CandidatesDialogState();
+}
+
+class _CandidatesDialogState extends State<_CandidatesDialog> {
+  String _nameFilter = '';
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
+
+    Widget message(String text, {Color? color}) => Center(
+          child: Text(text, style: TextStyle(color: color ?? colors.textMuted, fontSize: 13)),
+        );
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -555,7 +602,7 @@ class _CandidatesDialog extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      l10n.companyCandidatesTitle(job.title),
+                      l10n.companyCandidatesTitle(widget.job.title),
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -566,26 +613,32 @@ class _CandidatesDialog extends StatelessWidget {
                   ),
                 ],
               ),
+              TextField(
+                decoration: InputDecoration(
+                  hintText: l10n.companyCandidateSearchHint,
+                  prefixIcon: const Icon(Icons.search, size: 18),
+                ),
+                onChanged: (v) => setState(() => _nameFilter = v.trim().toLowerCase()),
+              ),
               Expanded(
                 child: ListenableBuilder(
-                  listenable: controller,
+                  listenable: widget.controller,
                   builder: (context, _) {
-                    final candidates = controller.candidates;
-                    if (candidates.isEmpty) {
-                      return Center(
-                        child: Text(
-                          l10n.companyNoCandidates,
-                          style: TextStyle(color: colors.textMuted, fontSize: 13),
-                        ),
-                      );
+                    if (widget.controller.isLoadingCandidates) {
+                      return const Center(child: CircularProgressIndicator());
                     }
+                    if (widget.controller.error == 'companyCandidateFilterError') {
+                      return message(l10n.companyCandidateFilterError, color: colors.danger);
+                    }
+                    final all = widget.controller.candidates;
+                    if (all.isEmpty) return message(l10n.companyNoCandidates);
+                    final candidates =
+                        all.where((c) => c.name.toLowerCase().contains(_nameFilter)).toList();
+                    if (candidates.isEmpty) return message(l10n.companyNoCandidatesFound);
                     return ListView.separated(
                       itemCount: candidates.length,
-                      separatorBuilder: (_, __) => const Divider(height: 16),
-                      itemBuilder: (context, i) => _CandidateRow(
-                        candidate: candidates[i],
-                        controller: controller,
-                      ),
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, i) => _CandidateRow(candidate: candidates[i]),
                     );
                   },
                 ),
@@ -600,108 +653,34 @@ class _CandidatesDialog extends StatelessWidget {
 
 class _CandidateRow extends StatelessWidget {
   final CandidateEntity candidate;
-  final CompanyController controller;
 
-  const _CandidateRow({required this.candidate, required this.controller});
+  const _CandidateRow({required this.candidate});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
+    final appliedAt = candidate.appliedAt;
 
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(candidate.name, style: TextStyle(fontWeight: FontWeight.w600, color: colors.textPrimary)),
-              Text(
-                '${candidate.desiredRole} · ${candidate.matchPercent}%'
-                '${candidate.rating != null ? ' · ★ ${candidate.rating}' : ''}',
-                style: TextStyle(fontSize: 12, color: colors.textMuted),
-              ),
-            ],
-          ),
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        backgroundColor: colors.accent,
+        child: Text(
+          candidate.name.isNotEmpty ? candidate.name[0].toUpperCase() : '?',
+          style: TextStyle(color: colors.onAccent, fontWeight: FontWeight.bold),
         ),
-        IconButton(
-          tooltip: l10n.companyRateCandidate,
-          icon: const Icon(Icons.star_outline),
-          onPressed: () => _showRateDialog(context, l10n),
-        ),
-        IconButton(
-          tooltip: l10n.companyMessageCandidate,
-          icon: const Icon(Icons.mail_outline),
-          onPressed: () => _showMessageDialog(context, l10n),
-        ),
-      ],
-    );
-  }
-
-  void _showRateDialog(BuildContext context, AppLocalizations l10n) {
-    final ratingController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.companyRateCandidate),
-        content: TextField(
-          controller: ratingController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(labelText: l10n.companyRatingLabel),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final rating = double.tryParse(ratingController.text.replaceAll(',', '.'));
-              if (rating == null) return;
-              Navigator.pop(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-              final ok = await controller.rateCandidate(candidate.id, rating);
-              messenger.showSnackBar(SnackBar(
-                content: Text(ok
-                    ? l10n.companyRatingSaved
-                    : companyErrorMessage(l10n, controller.error ?? '')),
-              ));
-            },
-            child: Text(l10n.companySend),
-          ),
-        ],
       ),
-    );
-  }
-
-  void _showMessageDialog(BuildContext context, AppLocalizations l10n) {
-    final messageController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.companyMessageCandidate),
-        content: TextField(
-          controller: messageController,
-          maxLines: 3,
-          decoration: InputDecoration(
-            labelText: l10n.companyMessageLabel,
-            hintText: l10n.companyMessageHint,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final text = messageController.text.trim();
-              if (text.isEmpty) return;
-              Navigator.pop(dialogContext);
-              final messenger = ScaffoldMessenger.of(context);
-              final ok = await controller.sendMessage(candidate.id, text);
-              messenger.showSnackBar(SnackBar(
-                content: Text(ok
-                    ? l10n.companyMessageSent
-                    : companyErrorMessage(l10n, controller.error ?? '')),
-              ));
-            },
-            child: Text(l10n.companySend),
-          ),
-        ],
+      title: Text(candidate.name, style: TextStyle(fontWeight: FontWeight.w600, color: colors.textPrimary)),
+      subtitle: Text(
+        [
+          candidate.email,
+          if (appliedAt != null) l10n.companyCandidateAppliedOn(formatDate(appliedAt)),
+        ].join(' · '),
+        style: TextStyle(fontSize: 12, color: colors.textMuted),
       ),
+      trailing: Icon(Icons.chevron_right, color: colors.textMuted),
+      onTap: () => context.push('/company/candidates/${candidate.id}'),
     );
   }
 }

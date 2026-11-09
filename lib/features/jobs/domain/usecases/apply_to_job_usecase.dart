@@ -5,5 +5,5 @@ class ApplyToJobUsecase {
 
   ApplyToJobUsecase(this._repository);
 
-  Future<void> call(String jobId) => _repository.applyToJob(jobId);
+  Future<void> call(String jobId, String userId) => _repository.applyToJob(jobId, userId);
 }

@@ -1,3 +1,4 @@
+import '../models/job_details_model.dart';
 import '../models/job_listing_model.dart';
 
 /// Where [JobRepositoryImpl] gets its data from. [JobRemoteDataSource] is
@@ -7,5 +8,9 @@ import '../models/job_listing_model.dart';
 abstract class JobDataSource {
   Future<List<JobListingModel>> searchJobs({String? query, String? location});
 
-  Future<void> applyToJob(String jobId);
+  /// One job with its company, or null if it doesn't exist. [userId] tells
+  /// whether that user already applied.
+  Future<JobDetailsModel?> getJobDetails(String jobId, {String? userId});
+
+  Future<void> applyToJob(String jobId, String userId);
 }

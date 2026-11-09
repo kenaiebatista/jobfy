@@ -1,5 +1,6 @@
 import 'package:jobfy/core/database/database_service.dart';
 import 'job_data_source.dart';
+import '../models/job_details_model.dart';
 import '../models/job_listing_model.dart';
 
 /// Reads the job openings straight from the Jobfy MySQL database through
@@ -23,9 +24,17 @@ class JobMysqlDataSource implements JobDataSource {
         .toList();
   }
 
-  // Not saved to the `applications` table yet: the button only marks the
-  // job as applied on screen. (The signed-in user's id is available from
-  // UserSessionController, so this is the next step.)
   @override
-  Future<void> applyToJob(String jobId) async {}
+  Future<JobDetailsModel?> getJobDetails(String jobId, {String? userId}) async {
+    final row = await DatabaseService.getJob(
+      int.parse(jobId),
+      userId: userId == null ? null : int.parse(userId),
+    );
+    return row == null ? null : JobDetailsModel.fromJson(row);
+  }
+
+  @override
+  Future<void> applyToJob(String jobId, String userId) {
+    return DatabaseService.applyToJob(userId: int.parse(userId), jobId: int.parse(jobId));
+  }
 }

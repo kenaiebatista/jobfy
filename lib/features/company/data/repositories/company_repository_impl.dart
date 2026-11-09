@@ -41,16 +41,8 @@ class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   @override
-  Future<List<CandidateEntity>> filterCandidates(
-    String jobId, {
-    String? roleFilter,
-    int? minMatch,
-  }) {
-    return _dataSource.filterCandidates(
-      jobId,
-      roleFilter: roleFilter,
-      minMatch: minMatch,
-    );
+  Future<List<CandidateEntity>> getJobCandidates(String jobId) {
+    return _dataSource.getJobCandidates(jobId);
   }
 
   @override

@@ -13,11 +13,8 @@ abstract class CompanyRepository {
 
   Future<void> publishJob(NewJobEntity job);
 
-  Future<List<CandidateEntity>> filterCandidates(
-    String jobId, {
-    String? roleFilter,
-    int? minMatch,
-  });
+  /// Who applied to the job.
+  Future<List<CandidateEntity>> getJobCandidates(String jobId);
 
   Future<void> rateCandidate(String candidateId, double rating, {String? comment});
 

@@ -752,6 +752,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerAsCompany => 'I\'m a company';
 
   @override
+  String get jobWorkloadLabel => 'Workload';
+
+  @override
+  String get jobWorkloadHint => 'e.g. 40h/week, Mon to Fri';
+
+  @override
+  String get jobRequirementsLabel => 'Requirements';
+
+  @override
+  String get jobRequirementsHint => 'e.g. High school diploma, basic Excel';
+
+  @override
+  String get jobBenefitsLabel => 'Benefits';
+
+  @override
+  String get jobBenefitsHint => 'e.g. Transportation and meal vouchers';
+
+  @override
+  String get jobDetailsTitle => 'Job details';
+
+  @override
+  String get jobAboutCompany => 'About the company';
+
+  @override
+  String get jobSalary => 'Salary';
+
+  @override
+  String jobPublishedOn(String date) {
+    return 'Published on $date';
+  }
+
+  @override
+  String get jobNotFound => 'Job not found.';
+
+  @override
+  String get jobDetailsLoadError => 'Could not load the job. Please try again.';
+
+  @override
+  String get companyCandidateSearchHint => 'Search candidates by name';
+
+  @override
+  String companyCandidateAppliedOn(String date) {
+    return 'Applied on $date';
+  }
+
+  @override
+  String get companyNoCandidatesFound => 'No candidates with that name.';
+
+  @override
+  String get companyCandidateTitle => 'Candidate';
+
+  @override
+  String get companyCandidateLoadError =>
+      'Could not load the candidate. Please try again.';
+
+  @override
+  String get companyGenerateResume => 'Generate resume (PDF)';
+
+  @override
   String get jobAreaLabel => 'Area';
 
   @override

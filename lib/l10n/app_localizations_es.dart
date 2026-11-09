@@ -758,6 +758,67 @@ class AppLocalizationsEs extends AppLocalizations {
   String get registerAsCompany => 'Soy empresa';
 
   @override
+  String get jobWorkloadLabel => 'Carga horaria';
+
+  @override
+  String get jobWorkloadHint => 'ej.: 40 h semanales, lun. a vie.';
+
+  @override
+  String get jobRequirementsLabel => 'Requisitos';
+
+  @override
+  String get jobRequirementsHint =>
+      'ej.: Secundaria completa, nociones de Excel';
+
+  @override
+  String get jobBenefitsLabel => 'Beneficios';
+
+  @override
+  String get jobBenefitsHint => 'ej.: Vales de transporte y comida';
+
+  @override
+  String get jobDetailsTitle => 'Detalles del empleo';
+
+  @override
+  String get jobAboutCompany => 'Sobre la empresa';
+
+  @override
+  String get jobSalary => 'Salario';
+
+  @override
+  String jobPublishedOn(String date) {
+    return 'Publicado el $date';
+  }
+
+  @override
+  String get jobNotFound => 'Empleo no encontrado.';
+
+  @override
+  String get jobDetailsLoadError =>
+      'No se pudo cargar el empleo. Inténtalo de nuevo.';
+
+  @override
+  String get companyCandidateSearchHint => 'Buscar candidato por nombre';
+
+  @override
+  String companyCandidateAppliedOn(String date) {
+    return 'Se postuló el $date';
+  }
+
+  @override
+  String get companyNoCandidatesFound => 'Ningún candidato con ese nombre.';
+
+  @override
+  String get companyCandidateTitle => 'Candidato';
+
+  @override
+  String get companyCandidateLoadError =>
+      'No se pudo cargar el candidato. Inténtalo de nuevo.';
+
+  @override
+  String get companyGenerateResume => 'Generar currículum (PDF)';
+
+  @override
   String get jobAreaLabel => 'Área';
 
   @override

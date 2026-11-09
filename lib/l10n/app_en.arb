@@ -272,6 +272,34 @@
 
   "registerAsCandidate": "I'm a candidate",
   "registerAsCompany": "I'm a company",
+  "jobWorkloadLabel": "Workload",
+  "jobWorkloadHint": "e.g. 40h/week, Mon to Fri",
+  "jobRequirementsLabel": "Requirements",
+  "jobRequirementsHint": "e.g. High school diploma, basic Excel",
+  "jobBenefitsLabel": "Benefits",
+  "jobBenefitsHint": "e.g. Transportation and meal vouchers",
+  "jobDetailsTitle": "Job details",
+  "jobAboutCompany": "About the company",
+  "jobSalary": "Salary",
+  "jobPublishedOn": "Published on {date}",
+  "@jobPublishedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "jobNotFound": "Job not found.",
+  "jobDetailsLoadError": "Could not load the job. Please try again.",
+  "companyCandidateSearchHint": "Search candidates by name",
+  "companyCandidateAppliedOn": "Applied on {date}",
+  "@companyCandidateAppliedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "companyNoCandidatesFound": "No candidates with that name.",
+  "companyCandidateTitle": "Candidate",
+  "companyCandidateLoadError": "Could not load the candidate. Please try again.",
+  "companyGenerateResume": "Generate resume (PDF)",
   "jobAreaLabel": "Area",
   "jobAreaHint": "e.g. Technology",
   "jobWorkModeLabel": "Work mode",

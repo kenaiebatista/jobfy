@@ -11,6 +11,7 @@ class JobModel extends JobEntity {
     required super.salary,
     super.workMode,
     super.status,
+    super.candidateCount,
   });
 
   factory JobModel.fromJson(Map<String, dynamic> json) {
@@ -24,6 +25,7 @@ class JobModel extends JobEntity {
       salary: json['salary'] as String,
       workMode: json['work_mode'] as String?,
       status: json['status'] as String?,
+      candidateCount: int.tryParse('${json['candidates'] ?? 0}') ?? 0,
     );
   }
 

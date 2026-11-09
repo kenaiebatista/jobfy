@@ -1,5 +1,6 @@
 import 'package:jobfy/core/config/app_config.dart';
 import 'package:jobfy/core/network/api_client.dart';
+import '../../domain/entities/job_details_entity.dart';
 import '../../domain/entities/job_listing_entity.dart';
 import '../../domain/repositories/job_repository.dart';
 import '../datasources/job_data_source.dart';
@@ -21,5 +22,10 @@ class JobRepositoryImpl implements JobRepository {
   }
 
   @override
-  Future<void> applyToJob(String jobId) => _dataSource.applyToJob(jobId);
+  Future<JobDetailsEntity?> getJobDetails(String jobId, {String? userId}) {
+    return _dataSource.getJobDetails(jobId, userId: userId);
+  }
+
+  @override
+  Future<void> applyToJob(String jobId, String userId) => _dataSource.applyToJob(jobId, userId);
 }
