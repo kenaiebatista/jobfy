@@ -71,7 +71,7 @@ Future<void> _pump(WidgetTester tester, CompanyRepository repository) async {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        home: CompanyPage(repository: repository),
+        home: Scaffold(body: CompanyPage(repository: repository)),
       ),
     ),
   );

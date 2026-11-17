@@ -39,7 +39,7 @@ Widget _wrap(SettingsController settings, Widget home, {String? companyId}) {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: home,
+      home: Scaffold(body: home),
     ),
   );
 }

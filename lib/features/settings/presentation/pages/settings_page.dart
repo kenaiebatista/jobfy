@@ -14,10 +14,8 @@ import 'package:jobfy/features/user/domain/usecases/change_password_usecase.dart
 import 'package:jobfy/features/user/domain/usecases/delete_account_usecase.dart';
 import 'package:jobfy/features/user/domain/usecases/update_user_profile_usecase.dart';
 import 'package:jobfy/features/user/presentation/user_labels.dart';
-import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
-import 'package:jobfy/shared/widgets/theme_toggle_button.dart';
-import 'package:jobfy/shared/widgets/user_shell.dart';
+import 'package:jobfy/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -201,17 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ];
 
   Widget _buildCompanySettings(AppLocalizations l10n, SettingsController settings) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.settingsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l10n.settingsBack,
-          onPressed: () => context.go('/company'),
-        ),
-        actions: const [ThemeToggleButton(color: Colors.white)],
-      ),
-      body: ListenableBuilder(
+    return ListenableBuilder(
         listenable: _controller,
         builder: (context, _) => Center(
           child: ConstrainedBox(
@@ -229,8 +217,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
         ),
-      ),
-    );
+        );
   }
 
   @override
@@ -241,28 +228,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (session.isCompanySignedIn) return _buildCompanySettings(l10n, settings);
 
-    return Scaffold(
-      drawer: UserShell.drawer(
-        context,
-        profile: session.profile,
-        current: SidebarSection.settings,
-      ),
-      appBar: AppBar(
-        title: Text(l10n.settingsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l10n.settingsBack,
-          onPressed: () => context.canPop() ? context.pop() : context.go('/user'),
-        ),
-        actions: const [
-          ThemeToggleButton(color: Colors.white),
-          MenuButton(color: Colors.white),
-        ],
-      ),
-      body: UserShell(
+    return ProfileGate(
         profile: session.profile,
         isError: session.status == UserSessionStatus.error,
-        current: SidebarSection.settings,
         builder: (context, profile) {
           _fillForm(profile);
 
@@ -321,8 +289,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           );
         },
-      ),
-    );
+      );
   }
 }
 

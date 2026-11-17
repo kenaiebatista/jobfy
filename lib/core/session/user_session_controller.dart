@@ -14,6 +14,7 @@ class UserSessionController extends ChangeNotifier {
 
   String? _userId;
   String? _companyId;
+  String? _companyName;
   UserSessionStatus _status = UserSessionStatus.idle;
   UserProfileEntity? _profile;
 
@@ -23,15 +24,19 @@ class UserSessionController extends ChangeNotifier {
 
   /// The signed-in company's `companies.company_id`, or null.
   String? get companyId => _companyId;
+
+  /// The signed-in company's name, for the sidebar.
+  String? get companyName => _companyName;
   bool get isCompanySignedIn => _companyId != null;
 
   /// Called after a company signs in or registers. A company session has
   /// no user profile; the company dashboard loads its own data.
-  void startCompany(String companyId) {
+  void startCompany(String companyId, {String? name}) {
     _userId = null;
     _profile = null;
     _status = UserSessionStatus.idle;
     _companyId = companyId;
+    _companyName = name;
     notifyListeners();
   }
   UserSessionStatus get status => _status;
@@ -42,6 +47,7 @@ class UserSessionController extends ChangeNotifier {
   /// over from a previous user; screens load the new one on demand.
   void start(String userId) {
     _companyId = null;
+    _companyName = null;
     _userId = userId;
     _profile = null;
     _status = UserSessionStatus.idle;
@@ -65,6 +71,7 @@ class UserSessionController extends ChangeNotifier {
   void clear() {
     _userId = null;
     _companyId = null;
+    _companyName = null;
     _profile = null;
     _status = UserSessionStatus.idle;
     notifyListeners();

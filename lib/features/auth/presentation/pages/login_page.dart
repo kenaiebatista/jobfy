@@ -57,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       final user = _authController.user!;
       final session = context.read<UserSessionController>();
       if (user.isCompany) {
-        session.startCompany(user.id);
+        session.startCompany(user.id, name: user.name);
         context.go('/company');
       } else {
         session.start(user.id);

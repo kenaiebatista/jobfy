@@ -13,10 +13,20 @@ abstract class CompanyRepository {
 
   Future<void> publishJob(NewJobEntity job);
 
+  Future<void> updateJob(String jobId, NewJobEntity job);
+
+  Future<void> setJobStatus(String companyId, String jobId, JobStatus status);
+
+  /// The company's answer to [userId]'s application to [jobId].
+  Future<void> setCandidateStatus(
+    String companyId,
+    String jobId,
+    String userId,
+    ApplicationStatus status,
+  );
+
   /// Who applied to the job.
   Future<List<CandidateEntity>> getJobCandidates(String jobId);
 
   Future<void> rateCandidate(String candidateId, double rating, {String? comment});
-
-  Future<void> sendMessage(String candidateId, String message);
 }

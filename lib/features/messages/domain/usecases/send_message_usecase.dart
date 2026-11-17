@@ -7,12 +7,10 @@ class SendMessageUsecase {
   const SendMessageUsecase(this._repository);
 
   Future<MessageEntity> call({
-    required String conversationId,
-    required String texto,
+    required ChatParticipant me,
+    required String partnerId,
+    required String text,
   }) {
-    return _repository.sendMessage(
-      conversationId: conversationId,
-      texto: texto,
-    );
+    return _repository.sendMessage(me: me, partnerId: partnerId, text: text);
   }
 }

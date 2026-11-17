@@ -758,6 +758,130 @@ class AppLocalizationsEs extends AppLocalizations {
   String get registerAsCompany => 'Soy empresa';
 
   @override
+  String get messagesSearchHint => 'Buscar conversaciones...';
+
+  @override
+  String get messagesEmpty => 'Aún no hay conversaciones.';
+
+  @override
+  String get messagesEmptyHint =>
+      'Las conversaciones aparecen aquí cuando se aprueba una postulación.';
+
+  @override
+  String get messagesNoMatch => 'No se encontraron conversaciones.';
+
+  @override
+  String get messagesSelect => 'Selecciona una conversación';
+
+  @override
+  String get messagesNoMessagesYet => 'Aún no hay mensajes. ¡Saluda!';
+
+  @override
+  String get messagesInputHint => 'Escribe un mensaje...';
+
+  @override
+  String get messagesSendTooltip => 'Enviar';
+
+  @override
+  String get messagesLocked =>
+      'Solo se pueden enviar mensajes mientras la postulación esté aprobada.';
+
+  @override
+  String get messagesLoadError => 'No se pudieron cargar los mensajes.';
+
+  @override
+  String get messagesSendError =>
+      'No se pudo enviar el mensaje. Inténtalo de nuevo.';
+
+  @override
+  String get messagesNotAllowed =>
+      'Mensaje no enviado: el chat solo se abre después de aprobar la postulación.';
+
+  @override
+  String get companySendMessage => 'Enviar mensaje';
+
+  @override
+  String get companyMessagesTooltip => 'Mensajes';
+
+  @override
+  String get jobsAreaHint => 'Área (ej.: Tecnología)';
+
+  @override
+  String get jobsContractAll => 'Todos los contratos';
+
+  @override
+  String get companyEditJob => 'Editar empleo';
+
+  @override
+  String get companyEditJobTitle => 'Editar empleo';
+
+  @override
+  String get companySaveJobButton => 'Guardar cambios';
+
+  @override
+  String get companyJobUpdated => '¡Empleo actualizado!';
+
+  @override
+  String get companyJobUpdateError =>
+      'No se pudo guardar el empleo. Inténtalo de nuevo.';
+
+  @override
+  String get companyCloseJob => 'Cerrar empleo';
+
+  @override
+  String get companyCloseJobConfirm =>
+      '¿Cerrar este empleo? Deja de mostrarse a los candidatos y no recibe más postulaciones.';
+
+  @override
+  String get companyJobClosed => 'Empleo cerrado.';
+
+  @override
+  String get companyReopenJob => 'Reabrir empleo';
+
+  @override
+  String get companyJobReopened => 'Empleo reabierto.';
+
+  @override
+  String get companyJobStatusError =>
+      'No se pudo cambiar el empleo. Inténtalo de nuevo.';
+
+  @override
+  String get companyJobOptions => 'Opciones del empleo';
+
+  @override
+  String get companyAnswerCandidate => 'Responder candidato';
+
+  @override
+  String get companyApproveCandidate => 'Aprobar';
+
+  @override
+  String get companyRejectCandidate => 'Rechazar';
+
+  @override
+  String get companyBackToReview => 'Volver a en revisión';
+
+  @override
+  String get companyCandidateStatusError =>
+      'No se pudo actualizar la postulación. Inténtalo de nuevo.';
+
+  @override
+  String get applicationStatusUnderReview => 'En revisión';
+
+  @override
+  String get applicationStatusApproved => 'Aprobada';
+
+  @override
+  String get applicationStatusRejected => 'Rechazada';
+
+  @override
+  String get applicationStatusWithdrawn => 'Retirada';
+
+  @override
+  String jobApplicationStatus(String status) {
+    return 'Tu postulación: $status';
+  }
+
+  @override
   String get jobWorkloadLabel => 'Carga horaria';
 
   @override

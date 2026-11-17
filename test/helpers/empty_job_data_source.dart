@@ -5,7 +5,12 @@ import 'package:jobfy/features/jobs/data/models/job_listing_model.dart';
 /// Returns no jobs, so widget tests don't try to reach the MySQL database.
 class EmptyJobDataSource implements JobDataSource {
   @override
-  Future<List<JobListingModel>> searchJobs({String? query, String? location}) async => [];
+  Future<List<JobListingModel>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) async => [];
 
   @override
   Future<JobDetailsModel?> getJobDetails(String jobId, {String? userId}) async => null;

@@ -30,8 +30,18 @@ class _TestJobDataSource implements JobDataSource {
     ),
   ];
 
+  String? lastArea;
+  String? lastContractType;
+
   @override
-  Future<List<JobListingModel>> searchJobs({String? query, String? location}) async {
+  Future<List<JobListingModel>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) async {
+    lastArea = area;
+    lastContractType = contractType;
     final q = (query ?? '').toLowerCase();
     return _jobs
         .where((j) =>
@@ -48,10 +58,12 @@ class _TestJobDataSource implements JobDataSource {
 }
 
 void main() {
+  late _TestJobDataSource source;
   late JobController controller;
 
   setUp(() {
-    final repo = JobRepositoryImpl(_TestJobDataSource());
+    source = _TestJobDataSource();
+    final repo = JobRepositoryImpl(source);
     controller = JobController(SearchJobsUsecase(repo));
   });
 
@@ -68,5 +80,12 @@ void main() {
     await controller.search(query: 'this role does not exist');
     expect(controller.jobs, isEmpty);
     expect(controller.error, isNull);
+  });
+
+  test('search passes the area and contract type filters on', () async {
+    await controller.search(area: 'Tecnologia', contractType: 'internship');
+
+    expect(source.lastArea, 'Tecnologia');
+    expect(source.lastContractType, 'internship');
   });
 }

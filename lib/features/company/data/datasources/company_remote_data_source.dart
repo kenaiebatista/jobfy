@@ -12,9 +12,11 @@ import '../models/job_model.dart';
 ///   GET  /companies/{companyId}                        -> CompanyModel
 ///   GET  /companies/{companyId}/jobs                   -> `List<JobModel>`
 ///   POST /companies/{companyId}/jobs                   -> JobModel
+///   PUT  /companies/{companyId}/jobs/{jobId}           {same body as POST}
+///   PUT  /companies/{companyId}/jobs/{jobId}/status    {status: open|paused|closed}
+///   PUT  /companies/{companyId}/jobs/{jobId}/candidates/{userId} {status: under_review|approved|rejected}
 ///   GET  /jobs/{jobId}/candidates                      -> `List<CandidateModel>`
 ///   POST /candidates/{id}/ratings   {rating, comment}
-///   POST /candidates/{id}/messages  {message}
 class CompanyRemoteDataSource implements CompanyDataSource {
   final ApiClient _client;
 
@@ -75,6 +77,47 @@ class CompanyRemoteDataSource implements CompanyDataSource {
   }
 
   @override
+  Future<void> updateJob(String jobId, NewJobEntity job) {
+    return _client.put(
+      '/companies/${job.companyId}/jobs/$jobId',
+      body: {
+        'title': job.title,
+        'area': job.area,
+        'description': job.description,
+        'location': job.location,
+        'work_mode': job.workMode.dbValue,
+        'contract_type': job.contractType.name,
+        'salary_min': job.salaryMin,
+        'salary_max': job.salaryMax,
+        'workload': job.workload,
+        'requirements': job.requirements,
+        'benefits': job.benefits,
+      },
+    );
+  }
+
+  @override
+  Future<void> setJobStatus(String companyId, String jobId, JobStatus status) {
+    return _client.put(
+      '/companies/$companyId/jobs/$jobId/status',
+      body: {'status': status.name},
+    );
+  }
+
+  @override
+  Future<void> setCandidateStatus(
+    String companyId,
+    String jobId,
+    String userId,
+    ApplicationStatus status,
+  ) {
+    return _client.put(
+      '/companies/$companyId/jobs/$jobId/candidates/$userId',
+      body: {'status': status.dbValue},
+    );
+  }
+
+  @override
   Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
     final json = await _client.get('/jobs/$jobId/candidates') as List;
     return json
@@ -87,13 +130,6 @@ class CompanyRemoteDataSource implements CompanyDataSource {
     return _client.post('/candidates/$candidateId/ratings', body: {
       'rating': rating,
       if (comment != null) 'comment': comment,
-    });
-  }
-
-  @override
-  Future<void> sendMessage(String candidateId, String message) {
-    return _client.post('/candidates/$candidateId/messages', body: {
-      'message': message,
     });
   }
 }

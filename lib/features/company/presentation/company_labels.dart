@@ -25,6 +25,15 @@ extension CompanyLabels on AppLocalizations {
     return type == null ? value : contractType(type);
   }
 
+  /// [value] is the raw `applications.status`.
+  String applicationStatus(String? value) => switch (value) {
+        'under_review' => applicationStatusUnderReview,
+        'approved' => applicationStatusApproved,
+        'rejected' => applicationStatusRejected,
+        'withdrawn' => applicationStatusWithdrawn,
+        _ => value ?? '',
+      };
+
   /// [value] is the raw `jobs.status`: open, paused or closed.
   String jobStatus(String? value) => switch (value) {
         'open' => jobStatusOpen,

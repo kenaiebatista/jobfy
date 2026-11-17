@@ -1,28 +1,45 @@
-import 'package:jobfy/core/theme/app_breakpoints.dart';
-import 'package:jobfy/core/theme/app_colors.dart';
+import 'dart:async';
+
+import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/messages/data/repositories/messages_repository_impl.dart';
 import 'package:jobfy/features/messages/domain/entities/conversation_entity.dart';
+import 'package:jobfy/features/messages/domain/repositories/messages_repository.dart';
 import 'package:jobfy/features/messages/domain/usecases/get_conversations_usecase.dart';
+import 'package:jobfy/features/messages/domain/usecases/mark_conversation_read_usecase.dart';
 import 'package:jobfy/features/messages/domain/usecases/send_message_usecase.dart';
 import 'package:jobfy/features/messages/presentation/controllers/messages_controller.dart';
-import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
-import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
-import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
-import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
+import 'package:jobfy/l10n/app_localizations.dart';
+import 'package:jobfy/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
-/// Messages screen. Follows the same shell used by the dashboard and by
-/// Settings: a dark ProfileSidebar for navigation and a light content area
-/// made of rounded white cards.
+/// Chat between a user and a company. It only lists people the signed-in
+/// side can talk to (a company approved the user's application), and only
+/// lets them write while that approval stands.
 ///
-/// Below [AppBreakpoints.mobile] the fixed sidebar becomes a Drawer opened
-/// from a menu button in the top bar, and the conversation list / thread
-/// split collapses into a single pane: the list is shown first, and
-/// selecting a conversation shows the thread full-width with a back button.
+/// Users get the usual sidebar shell; a company has no sidebar, so it gets a
+/// plain page with a back button, like its settings. On wide screens the
+/// conversation list and the thread sit side by side; on narrow ones they
+/// are two panes with a back button in the thread.
 class MessagesPage extends StatefulWidget {
-  const MessagesPage({super.key});
+  /// Opens this partner's conversation once loaded (the company's
+  /// "Send message" button on an approved candidate).
+  final String? openPartnerId;
+
+  /// Where the chat comes from. Defaults to [MessagesRepositoryImpl]
+  /// (MySQL/fake/remote per AppConfig); tests pass their own.
+  final MessagesRepository? repository;
+
+  /// How often new messages are fetched while the page is open.
+  final Duration pollInterval;
+
+  const MessagesPage({
+    super.key,
+    this.openPartnerId,
+    this.repository,
+    this.pollInterval = const Duration(seconds: 5),
+  });
 
   @override
   State<MessagesPage> createState() => _MessagesPageState();
@@ -30,453 +47,338 @@ class MessagesPage extends StatefulWidget {
 
 class _MessagesPageState extends State<MessagesPage> {
   late final MessagesController _controller;
-  late final GetUserProfileUsecase _getProfileUsecase;
-  UserProfileEntity? _profile;
-
-  final _mensagemCtrl = TextEditingController();
+  late final Timer _poll;
+  final _inputController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final messagesRepository = MessagesRepositoryImpl();
+    final session = context.read<UserSessionController>();
+    final repo = widget.repository ?? MessagesRepositoryImpl();
     _controller = MessagesController(
-      GetConversationsUsecase(messagesRepository),
-      SendMessageUsecase(messagesRepository),
+      me: ChatParticipant(
+        id: session.companyId ?? session.userId ?? '',
+        isCompany: session.isCompanySignedIn,
+      ),
+      getConversationsUsecase: GetConversationsUsecase(repo),
+      sendMessageUsecase: SendMessageUsecase(repo),
+      markReadUsecase: MarkConversationReadUsecase(repo),
     );
-    _controller.loadConversations('usr_001');
-
-    _getProfileUsecase = GetUserProfileUsecase(UserRepositoryImpl());
-    _getProfileUsecase('usr_001').then((profile) {
-      if (!mounted) return;
-      setState(() => _profile = profile);
-    });
+    _controller.load(openPartnerId: widget.openPartnerId);
+    _poll = Timer.periodic(widget.pollInterval, (_) => _controller.refresh());
+    if (!session.isCompanySignedIn) session.ensureLoaded();
   }
 
   @override
   void dispose() {
+    _poll.cancel();
     _controller.dispose();
-    _mensagemCtrl.dispose();
+    _inputController.dispose();
     super.dispose();
   }
 
-  _handleNav(BuildContext context, int index, bool isMobile) {
-    if (isMobile) {
-      Navigator.pop(context);
-    }
-    if (index == 0) {
-      context.go('/user');
-    } else if (index == 4) {
-      context.go('/settings');
-    }
-    // Vagas e Currículo ainda não têm tela própria.
-    // index 3 (Mensagens) já é a página atual.
-  }
+  Future<void> _send() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final text = _inputController.text;
+    if (text.trim().isEmpty) return;
 
-  Future<void> _enviarMensagem() async {
-    final texto = _mensagemCtrl.text;
-    if (texto.trim().isEmpty) return;
-    _mensagemCtrl.clear();
-    await _controller.enviarMensagem(texto);
+    final ok = await _controller.send(text);
+    if (ok) {
+      _inputController.clear();
+      return;
+    }
+    final error = _controller.error;
+    if (error == null) return;
+    messenger.showSnackBar(SnackBar(
+      content: Text(error == MessagesError.notAllowed
+          ? l10n.messagesNotAllowed
+          : l10n.messagesSendError),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    final profile = _profile;
+    final session = context.watch<UserSessionController>();
 
-    if (profile == null) {
-      return Scaffold(
-        backgroundColor: context.colors.background,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColors.accent),
-        ),
-      );
-    }
-
-    final isMobile = MediaQuery.sizeOf(context).width < AppBreakpoints.mobile;
-
-    final sidebar = ProfileSidebar(
-      profile: profile,
-      selectedIndex: 3,
-      onNavTap: _handleNav(context, 4, true), current: SidebarSection.messages,
-    );
-
-    return Scaffold(
-      backgroundColor: context.colors.background,
-      drawer: isMobile ? Drawer(child: sidebar) : null,
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (!isMobile) sidebar,
-          Expanded(
-            child: ListenableBuilder(
-              listenable: _controller,
-              builder: (context, _) {
-                return _MessagesContent(
-                  controller: _controller,
-                  isMobile: isMobile,
-                  mensagemCtrl: _mensagemCtrl,
-                  onEnviar: _enviarMensagem,
-                );
-              },
-            ),
-          ),
-        ],
+    final body = ListenableBuilder(
+      listenable: _controller,
+      builder: (context, _) => _ChatBody(
+        controller: _controller,
+        inputController: _inputController,
+        onSend: _send,
       ),
     );
+
+    if (session.isCompanySignedIn) {
+      return body;
+    }
+
+    return ProfileGate(
+        profile: session.profile,
+        isError: session.status == UserSessionStatus.error,
+        builder: (context, profile) => body,
+      );
   }
 }
 
-class _MessagesContent extends StatelessWidget {
-  final MessagesController controller;
-  final bool isMobile;
-  final TextEditingController mensagemCtrl;
-  final VoidCallback onEnviar;
+/// Minimum content width for the conversation list and thread side by side.
+const _splitWidth = 640.0;
 
-  const _MessagesContent({
+class _ChatBody extends StatelessWidget {
+  final MessagesController controller;
+  final TextEditingController inputController;
+  final VoidCallback onSend;
+
+  const _ChatBody({
     required this.controller,
-    required this.isMobile,
-    required this.mensagemCtrl,
-    required this.onEnviar,
+    required this.inputController,
+    required this.onSend,
   });
 
   @override
   Widget build(BuildContext context) {
-    final selecionada = controller.conversaSelecionada;
-    final mostrarThreadEmMobile = isMobile && selecionada != null;
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
 
-    return Column(
-      children: [
-        _MessagesTopBar(
-          totalNaoLidas: controller.totalNaoLidas,
-          isMobile: isMobile,
-        ),
-        Expanded(
-          child: controller.isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(color: AppColors.accent),
-                )
-              : isMobile
-                  ? (mostrarThreadEmMobile
-                      ? _ThreadPane(
-                          conversa: selecionada,
-                          isMobile: isMobile,
-                          mensagemCtrl: mensagemCtrl,
-                          isSending: controller.isSending,
-                          onEnviar: onEnviar,
-                          onVoltar: controller.fecharConversa,
-                        )
-                      : _ConversationListPane(
-                          controller: controller,
-                          isMobile: isMobile,
-                        ))
-                  : Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        SizedBox(
-                          width: 320,
-                          child: _ConversationListPane(
-                            controller: controller,
-                            isMobile: isMobile,
-                          ),
-                        ),
-                        VerticalDivider(
-                          width: 1,
-                          color: context.colors.surfaceBorder,
-                        ),
-                        Expanded(
-                          child: selecionada == null
-                              ? const _EmptyThreadState()
-                              : _ThreadPane(
-                                  conversa: selecionada,
-                                  isMobile: isMobile,
-                                  mensagemCtrl: mensagemCtrl,
-                                  isSending: controller.isSending,
-                                  onEnviar: onEnviar,
-                                  onVoltar: null,
-                                ),
-                        ),
-                      ],
-                    ),
-        ),
-      ],
+    if (controller.isLoading) return const Center(child: CircularProgressIndicator());
+    if (controller.status == MessagesStatus.error) {
+      return Center(
+        child: Text(l10n.messagesLoadError, style: TextStyle(color: colors.danger)),
+      );
+    }
+
+    final selected = controller.selected;
+    final list = _ConversationList(controller: controller);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Two panes side by side only when there's room for both; the
+        // content area already excludes the sidebar.
+        final split = constraints.maxWidth >= _splitWidth;
+        final thread = selected == null
+            ? const _EmptyThread()
+            : _Thread(
+                conversation: selected,
+                inputController: inputController,
+                isSending: controller.isSending,
+                onSend: onSend,
+                // Without the list beside it, the thread needs a way back.
+                onBack: split ? null : controller.closeConversation,
+              );
+        if (split) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(width: 320, child: list),
+              VerticalDivider(width: 1, color: colors.surfaceBorder),
+              Expanded(child: thread),
+            ],
+          );
+        }
+        return selected == null ? list : thread;
+      },
     );
   }
 }
 
-class _MessagesTopBar extends StatelessWidget {
-  final int totalNaoLidas;
-  final bool isMobile;
-
-  const _MessagesTopBar({required this.totalNaoLidas, required this.isMobile});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 16 : 28,
-        vertical: 14,
-      ),
-      decoration: BoxDecoration(
-        color: context.colors.surface,
-        border: Border(bottom: BorderSide(color: context.colors.surfaceBorder)),
-      ),
-      child: Row(
-        children: [
-          if (isMobile)
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.menu),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              ),
-            )
-          else
-            const Icon(Icons.lightbulb_circle, size: 28),
-          const SizedBox(width: 10),
-          const Text(
-            'Jobfy',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          const Spacer(),
-          if (totalNaoLidas > 0)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: AppColors.accent.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
-              ),
-              child: Text(
-                '$totalNaoLidas não lida${totalNaoLidas == 1 ? '' : 's'}',
-                style: const TextStyle(
-                  color: AppColors.accent,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ConversationListPane extends StatelessWidget {
+class _ConversationList extends StatelessWidget {
   final MessagesController controller;
-  final bool isMobile;
 
-  const _ConversationListPane({required this.controller, required this.isMobile});
+  const _ConversationList({required this.controller});
 
   @override
   Widget build(BuildContext context) {
-    final conversas = controller.conversas;
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final conversations = controller.conversations;
 
     return Container(
-      color: context.colors.surface,
+      color: colors.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Mensagens',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  onChanged: controller.setBusca,
-                  decoration: InputDecoration(
-                    hintText: 'Buscar conversas...',
-                    hintStyle: TextStyle(
-                      fontSize: 13,
-                      color: context.colors.textMuted,
-                    ),
-                    prefixIcon: const Icon(Icons.search, size: 18),
-                    isDense: true,
-                    filled: true,
-                    fillColor: context.colors.background,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: context.colors.surfaceBorder),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: context.colors.surfaceBorder),
-                    ),
-                  ),
-                ),
-              ],
+            child: TextField(
+              onChanged: controller.setSearch,
+              decoration: InputDecoration(
+                hintText: l10n.messagesSearchHint,
+                prefixIcon: const Icon(Icons.search, size: 18),
+              ),
             ),
           ),
-          Divider(height: 1, color: context.colors.surfaceBorder),
+          Divider(height: 1, color: colors.surfaceBorder),
           Expanded(
-            child: conversas.isEmpty
+            child: conversations.isEmpty
                 ? Center(
                     child: Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Text(
-                        'Nenhuma conversa encontrada.',
-                        style: TextStyle(color: context.colors.textMuted, fontSize: 13),
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        spacing: 6,
+                        children: [
+                          Icon(Icons.chat_bubble_outline, size: 36, color: colors.textMuted),
+                          Text(
+                            controller.hasConversations ? l10n.messagesNoMatch : l10n.messagesEmpty,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: colors.textPrimary, fontSize: 14),
+                          ),
+                          if (!controller.hasConversations)
+                            Text(
+                              l10n.messagesEmptyHint,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: colors.textMuted, fontSize: 12.5),
+                            ),
+                        ],
                       ),
                     ),
                   )
                 : ListView.separated(
-                    itemCount: conversas.length,
-                    separatorBuilder: (_, __) =>
-                        Divider(height: 1, color: context.colors.surfaceBorder),
-                    itemBuilder: (context, i) {
-                      final conversa = conversas[i];
-                      final isSelected = controller.selectedId == conversa.id;
-                      return _ConversationTile(
-                        conversa: conversa,
-                        isSelected: isSelected,
-                        onTap: () => controller.selecionarConversa(conversa.id),
-                      );
-                    },
+                    itemCount: conversations.length,
+                    separatorBuilder: (_, __) => Divider(height: 1, color: colors.surfaceBorder),
+                    itemBuilder: (context, i) => _ConversationTile(
+                      conversation: conversations[i],
+                      isSelected: controller.selectedId == conversations[i].id,
+                      onTap: () => controller.select(conversations[i].id),
+                    ),
                   ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+String _initials(String name) {
+  final words = name.trim().split(RegExp(r'\s+')).where((w) => w.isNotEmpty);
+  return words.isEmpty ? '?' : words.take(2).map((w) => w[0]).join().toUpperCase();
+}
+
+/// "14:05" for today, "02/11 14:05" for any other day.
+String _formatMessageTime(DateTime time) {
+  String two(int n) => n.toString().padLeft(2, '0');
+  final now = DateTime.now();
+  final clock = '${two(time.hour)}:${two(time.minute)}';
+  final today = time.year == now.year && time.month == now.month && time.day == now.day;
+  return today ? clock : '${two(time.day)}/${two(time.month)} $clock';
+}
+
+class _Avatar extends StatelessWidget {
+  final String name;
+  final double radius;
+
+  const _Avatar({required this.name, required this.radius});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return CircleAvatar(
+      radius: radius,
+      backgroundColor: colors.accent,
+      child: Text(
+        _initials(name),
+        style: TextStyle(
+          color: colors.onAccent,
+          fontWeight: FontWeight.bold,
+          fontSize: radius * 0.6,
+        ),
       ),
     );
   }
 }
 
 class _ConversationTile extends StatelessWidget {
-  final ConversationEntity conversa;
+  final ConversationEntity conversation;
   final bool isSelected;
   final VoidCallback onTap;
 
   const _ConversationTile({
-    required this.conversa,
+    required this.conversation,
     required this.isSelected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final ultima = conversa.ultimaMensagem;
-    final initials = conversa.nome.trim().isNotEmpty
-        ? conversa.nome.trim().split(' ').take(2).map((w) => w[0]).join()
-        : '?';
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final last = conversation.lastMessage;
+    final hasUnread = conversation.unread > 0;
 
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        color: isSelected ? AppColors.accent.withValues(alpha: 0.06) : null,
+        color: isSelected ? colors.accent.withValues(alpha: 0.08) : null,
         child: Row(
+          spacing: 12,
           children: [
-            Stack(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: AppColors.accent,
-                  child: Text(
-                    initials.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                ),
-                if (conversa.online)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      width: 12,
-                      height: 12,
-                      decoration: BoxDecoration(
-                        color: AppColors.success,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: context.colors.surface, width: 2),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 12),
+            _Avatar(name: conversation.name, radius: 22),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: 2,
                 children: [
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          conversa.nome,
+                          conversation.name,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 13.5,
+                            color: colors.textPrimary,
                           ),
                         ),
                       ),
-                      if (ultima != null)
+                      if (last != null)
                         Text(
-                          ultima.hora,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: context.colors.textMuted,
-                          ),
+                          _formatMessageTime(last.sentAt),
+                          style: TextStyle(fontSize: 11, color: colors.textMuted),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    conversa.subtitulo,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 11, color: context.colors.textMuted),
-                  ),
-                  const SizedBox(height: 3),
+                  if (conversation.subtitle != null)
+                    Text(
+                      conversation.subtitle!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11, color: colors.textMuted),
+                    ),
                   Row(
+                    spacing: 6,
                     children: [
                       Expanded(
                         child: Text(
-                          ultima?.texto ?? 'Sem mensagens ainda.',
+                          last?.text ?? l10n.messagesNoMessagesYet,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 12.5,
-                            color: conversa.naoLidas > 0
-                                ? context.colors.textPrimary
-                                : context.colors.textMuted,
-                            fontWeight: conversa.naoLidas > 0
-                                ? FontWeight.w600
-                                : FontWeight.normal,
+                            color: hasUnread ? colors.textPrimary : colors.textMuted,
+                            fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
                           ),
                         ),
                       ),
-                      if (conversa.naoLidas > 0) ...[
-                        const SizedBox(width: 6),
+                      if (hasUnread)
                         Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 7,
-                            vertical: 2,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: AppColors.accent,
+                            color: colors.accent,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            '${conversa.naoLidas}',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            '${conversation.unread}',
+                            style: TextStyle(
+                              color: colors.onAccent,
                               fontSize: 10.5,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      ],
                     ],
                   ),
                 ],
@@ -489,20 +391,21 @@ class _ConversationTile extends StatelessWidget {
   }
 }
 
-class _EmptyThreadState extends StatelessWidget {
-  const _EmptyThreadState();
+class _EmptyThread extends StatelessWidget {
+  const _EmptyThread();
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        spacing: 12,
         children: [
-          Icon(Icons.chat_bubble_outline, size: 48, color: context.colors.textMuted),
-          SizedBox(height: 12),
+          Icon(Icons.chat_bubble_outline, size: 48, color: colors.textMuted),
           Text(
-            'Selecione uma conversa',
-            style: TextStyle(color: context.colors.textMuted, fontSize: 13),
+            AppLocalizations.of(context)!.messagesSelect,
+            style: TextStyle(color: colors.textMuted, fontSize: 13),
           ),
         ],
       ),
@@ -510,79 +413,67 @@ class _EmptyThreadState extends StatelessWidget {
   }
 }
 
-class _ThreadPane extends StatelessWidget {
-  final ConversationEntity conversa;
-  final bool isMobile;
-  final TextEditingController mensagemCtrl;
+class _Thread extends StatelessWidget {
+  final ConversationEntity conversation;
+  final TextEditingController inputController;
   final bool isSending;
-  final VoidCallback onEnviar;
-  final VoidCallback? onVoltar;
+  final VoidCallback onSend;
+  final VoidCallback? onBack;
 
-  const _ThreadPane({
-    required this.conversa,
-    required this.isMobile,
-    required this.mensagemCtrl,
+  const _Thread({
+    required this.conversation,
+    required this.inputController,
     required this.isSending,
-    required this.onEnviar,
-    required this.onVoltar,
+    required this.onSend,
+    required this.onBack,
   });
 
   @override
   Widget build(BuildContext context) {
-    final initials = conversa.nome.trim().isNotEmpty
-        ? conversa.nome.trim().split(' ').take(2).map((w) => w[0]).join()
-        : '?';
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
 
     return Column(
       children: [
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: context.colors.surface,
-            border: Border(bottom: BorderSide(color: context.colors.surfaceBorder)),
+            color: colors.surface,
+            border: Border(bottom: BorderSide(color: colors.surfaceBorder)),
           ),
           child: Row(
+            spacing: 10,
             children: [
-              if (onVoltar != null)
+              if (onBack != null)
                 IconButton(
+                  tooltip: l10n.settingsBack,
                   icon: const Icon(Icons.arrow_back),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  onPressed: onVoltar,
+                  onPressed: onBack,
                 ),
-              if (onVoltar != null) const SizedBox(width: 8),
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.accent,
-                child: Text(
-                  initials.toUpperCase(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
+              _Avatar(name: conversation.name, radius: 18),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      conversa.nome,
+                      conversation.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                    ),
-                    Text(
-                      conversa.online ? 'Online' : conversa.subtitulo,
                       style: TextStyle(
-                        fontSize: 11.5,
-                        color: conversa.online
-                            ? AppColors.success
-                            : context.colors.textMuted,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: colors.textPrimary,
                       ),
                     ),
+                    if (conversation.subtitle != null)
+                      Text(
+                        conversation.subtitle!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 11.5, color: colors.textMuted),
+                      ),
                   ],
                 ),
               ),
@@ -591,140 +482,137 @@ class _ThreadPane extends StatelessWidget {
         ),
         Expanded(
           child: Container(
-            color: context.colors.background,
-            child: ListView.builder(
-              reverse: true,
-              padding: const EdgeInsets.all(16),
-              itemCount: conversa.mensagens.length,
-              itemBuilder: (context, i) {
-                final mensagem =
-                    conversa.mensagens[conversa.mensagens.length - 1 - i];
-                return _MessageBubble(mensagem: mensagem);
-              },
-            ),
+            color: colors.background,
+            child: conversation.messages.isEmpty
+                ? Center(
+                    child: Text(
+                      l10n.messagesNoMessagesYet,
+                      style: TextStyle(color: colors.textMuted, fontSize: 13),
+                    ),
+                  )
+                : ListView.builder(
+                    reverse: true,
+                    padding: const EdgeInsets.all(16),
+                    itemCount: conversation.messages.length,
+                    itemBuilder: (context, i) => _MessageBubble(
+                      message: conversation.messages[conversation.messages.length - 1 - i],
+                    ),
+                  ),
           ),
         ),
-        Container(
-          padding: EdgeInsets.fromLTRB(
-            isMobile ? 12 : 16,
-            10,
-            isMobile ? 12 : 16,
-            10,
-          ),
-          decoration: BoxDecoration(
-            color: context.colors.surface,
-            border: Border(top: BorderSide(color: context.colors.surfaceBorder)),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: mensagemCtrl,
-                  minLines: 1,
-                  maxLines: 4,
-                  textInputAction: TextInputAction.send,
-                  onSubmitted: (_) => onEnviar(),
-                  decoration: InputDecoration(
-                    hintText: 'Escreva uma mensagem...',
-                    hintStyle: TextStyle(fontSize: 13, color: context.colors.textMuted),
-                    isDense: true,
-                    filled: true,
-                    fillColor: context.colors.background,
-                    contentPadding:
-                        const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(color: context.colors.surfaceBorder),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: BorderSide(color: context.colors.surfaceBorder),
+        if (conversation.canSend)
+          Container(
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              border: Border(top: BorderSide(color: colors.surfaceBorder)),
+            ),
+            child: Row(
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: inputController,
+                    minLines: 1,
+                    maxLines: 4,
+                    maxLength: 2000,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => onSend(),
+                    decoration: InputDecoration(
+                      hintText: l10n.messagesInputHint,
+                      counterText: '',
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              SizedBox(
-                width: 44,
-                height: 44,
-                child: IconButton(
-                  onPressed: isSending ? null : onEnviar,
+                IconButton(
+                  tooltip: l10n.messagesSendTooltip,
+                  onPressed: isSending ? null : onSend,
                   style: IconButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
+                    backgroundColor: colors.accent,
+                    foregroundColor: colors.onAccent,
                     shape: const CircleBorder(),
                   ),
                   icon: isSending
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(strokeWidth: 2, color: colors.onAccent),
                         )
                       : const Icon(Icons.send, size: 18),
                 ),
-              ),
-            ],
+              ],
+            ),
+          )
+        else
+          // The approval is gone (or was never there): history only.
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: colors.surface,
+              border: Border(top: BorderSide(color: colors.surfaceBorder)),
+            ),
+            child: Row(
+              spacing: 10,
+              children: [
+                Icon(Icons.lock_outline, size: 18, color: colors.textMuted),
+                Expanded(
+                  child: Text(
+                    l10n.messagesLocked,
+                    style: TextStyle(fontSize: 13, color: colors.textMuted),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
 }
 
 class _MessageBubble extends StatelessWidget {
-  final MessageEntity mensagem;
+  final MessageEntity message;
 
-  const _MessageBubble({required this.mensagem});
+  const _MessageBubble({required this.message});
 
   @override
   Widget build(BuildContext context) {
-    final isUsuario = mensagem.deUsuario;
+    final colors = context.colors;
+    final mine = message.fromMe;
 
     return Align(
-      alignment: isUsuario ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: mine ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         constraints: const BoxConstraints(maxWidth: 360),
         decoration: BoxDecoration(
-          color: isUsuario ? AppColors.accent : context.colors.surface,
+          color: mine ? colors.accent : colors.surface,
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(14),
             topRight: const Radius.circular(14),
-            bottomLeft: Radius.circular(isUsuario ? 14 : 2),
-            bottomRight: Radius.circular(isUsuario ? 2 : 14),
+            bottomLeft: Radius.circular(mine ? 14 : 2),
+            bottomRight: Radius.circular(mine ? 2 : 14),
           ),
-          border: isUsuario ? null : Border.all(color: context.colors.surfaceBorder),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: mine ? null : Border.all(color: colors.surfaceBorder),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,
+          spacing: 4,
           children: [
             Text(
-              mensagem.texto,
+              message.text,
               style: TextStyle(
-                color: isUsuario ? Colors.white : context.colors.textPrimary,
+                color: mine ? colors.onAccent : colors.textPrimary,
                 fontSize: 13.5,
                 height: 1.4,
               ),
             ),
-            const SizedBox(height: 4),
             Text(
-              mensagem.hora,
+              _formatMessageTime(message.sentAt),
               style: TextStyle(
-                color: isUsuario
-                    ? Colors.white.withValues(alpha: 0.7)
-                    : context.colors.textMuted,
+                color: (mine ? colors.onAccent : colors.textMuted).withValues(alpha: 0.7),
                 fontSize: 10.5,
               ),
             ),

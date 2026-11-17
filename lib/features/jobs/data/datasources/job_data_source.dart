@@ -6,7 +6,13 @@ import '../models/job_listing_model.dart';
 /// MySQL database directly while the backend
 /// isn't deployed yet.
 abstract class JobDataSource {
-  Future<List<JobListingModel>> searchJobs({String? query, String? location});
+  /// [area] is free text; [contractType] a `jobs.contract_type` value.
+  Future<List<JobListingModel>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  });
 
   /// One job with its company, or null if it doesn't exist. [userId] tells
   /// whether that user already applied.

@@ -19,6 +19,14 @@ class JobEntity {
   /// How many users applied (`applications`).
   final int candidateCount;
 
+  /// The rest of the `jobs` columns, used to fill the edit form.
+  final String? area;
+  final int? salaryMin;
+  final int? salaryMax;
+  final String? workload;
+  final String? requirements;
+  final String? benefits;
+
   const JobEntity({
     required this.id,
     required this.companyId,
@@ -30,11 +38,32 @@ class JobEntity {
     this.workMode,
     this.status,
     this.candidateCount = 0,
+    this.area,
+    this.salaryMin,
+    this.salaryMax,
+    this.workload,
+    this.requirements,
+    this.benefits,
   });
 }
 
-/// What the company fills in to publish a job (the `jobs` columns; the
-/// publication date and status come from the database defaults).
+/// Values of `jobs.status`; the name is the database value.
+enum JobStatus { open, paused, closed }
+
+/// Values of `applications.status`; the company answers with the first
+/// three, [withdrawn] is only shown.
+enum ApplicationStatus {
+  underReview('under_review'),
+  approved('approved'),
+  rejected('rejected'),
+  withdrawn('withdrawn');
+
+  const ApplicationStatus(this.dbValue);
+  final String dbValue;
+}
+
+/// What the company fills in to publish or edit a job (the `jobs` columns;
+/// the publication date and status are not part of it).
 class NewJobEntity {
   final String companyId;
   final String title;
@@ -109,6 +138,15 @@ class CandidateEntity {
     this.appliedAt,
     this.status = 'under_review',
   });
+
+  CandidateEntity copyWith({String? status}) => CandidateEntity(
+        id: id,
+        name: name,
+        email: email,
+        phone: phone,
+        appliedAt: appliedAt,
+        status: status ?? this.status,
+      );
 }
 
 /// A row of `companies` plus the account email. [companyName] is the

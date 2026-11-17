@@ -17,8 +17,18 @@ class JobRepositoryImpl implements JobRepository {
                 : JobRemoteDataSource(ApiClient()));
 
   @override
-  Future<List<JobListingEntity>> searchJobs({String? query, String? location}) {
-    return _dataSource.searchJobs(query: query, location: location);
+  Future<List<JobListingEntity>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) {
+    return _dataSource.searchJobs(
+      query: query,
+      location: location,
+      area: area,
+      contractType: contractType,
+    );
   }
 
   @override

@@ -758,6 +758,130 @@ class AppLocalizationsPt extends AppLocalizations {
   String get registerAsCompany => 'Sou empresa';
 
   @override
+  String get messagesSearchHint => 'Buscar conversas...';
+
+  @override
+  String get messagesEmpty => 'Nenhuma conversa ainda.';
+
+  @override
+  String get messagesEmptyHint =>
+      'As conversas aparecem aqui quando uma candidatura é aprovada.';
+
+  @override
+  String get messagesNoMatch => 'Nenhuma conversa encontrada.';
+
+  @override
+  String get messagesSelect => 'Selecione uma conversa';
+
+  @override
+  String get messagesNoMessagesYet => 'Nenhuma mensagem ainda. Diga olá!';
+
+  @override
+  String get messagesInputHint => 'Escreva uma mensagem...';
+
+  @override
+  String get messagesSendTooltip => 'Enviar';
+
+  @override
+  String get messagesLocked =>
+      'Só é possível enviar mensagens enquanto a candidatura estiver aprovada.';
+
+  @override
+  String get messagesLoadError => 'Não foi possível carregar as mensagens.';
+
+  @override
+  String get messagesSendError =>
+      'Não foi possível enviar a mensagem. Tente novamente.';
+
+  @override
+  String get messagesNotAllowed =>
+      'Mensagem não enviada: o chat só fica liberado após a aprovação da candidatura.';
+
+  @override
+  String get companySendMessage => 'Enviar mensagem';
+
+  @override
+  String get companyMessagesTooltip => 'Mensagens';
+
+  @override
+  String get jobsAreaHint => 'Área (ex.: Tecnologia)';
+
+  @override
+  String get jobsContractAll => 'Todos os contratos';
+
+  @override
+  String get companyEditJob => 'Editar vaga';
+
+  @override
+  String get companyEditJobTitle => 'Editar vaga';
+
+  @override
+  String get companySaveJobButton => 'Salvar alterações';
+
+  @override
+  String get companyJobUpdated => 'Vaga atualizada!';
+
+  @override
+  String get companyJobUpdateError =>
+      'Não foi possível salvar a vaga. Tente novamente.';
+
+  @override
+  String get companyCloseJob => 'Encerrar vaga';
+
+  @override
+  String get companyCloseJobConfirm =>
+      'Encerrar esta vaga? Ela deixa de aparecer para os candidatos e não recebe mais candidaturas.';
+
+  @override
+  String get companyJobClosed => 'Vaga encerrada.';
+
+  @override
+  String get companyReopenJob => 'Reabrir vaga';
+
+  @override
+  String get companyJobReopened => 'Vaga reaberta.';
+
+  @override
+  String get companyJobStatusError =>
+      'Não foi possível alterar a vaga. Tente novamente.';
+
+  @override
+  String get companyJobOptions => 'Opções da vaga';
+
+  @override
+  String get companyAnswerCandidate => 'Responder candidato';
+
+  @override
+  String get companyApproveCandidate => 'Aprovar';
+
+  @override
+  String get companyRejectCandidate => 'Recusar';
+
+  @override
+  String get companyBackToReview => 'Voltar para em análise';
+
+  @override
+  String get companyCandidateStatusError =>
+      'Não foi possível atualizar a candidatura. Tente novamente.';
+
+  @override
+  String get applicationStatusUnderReview => 'Em análise';
+
+  @override
+  String get applicationStatusApproved => 'Aprovada';
+
+  @override
+  String get applicationStatusRejected => 'Recusada';
+
+  @override
+  String get applicationStatusWithdrawn => 'Desistência';
+
+  @override
+  String jobApplicationStatus(String status) {
+    return 'Sua candidatura: $status';
+  }
+
+  @override
   String get jobWorkloadLabel => 'Carga horária';
 
   @override
@@ -1703,6 +1827,130 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get messagesSearchHint => 'Buscar conversas...';
+
+  @override
+  String get messagesEmpty => 'Nenhuma conversa ainda.';
+
+  @override
+  String get messagesEmptyHint =>
+      'As conversas aparecem aqui quando uma candidatura é aprovada.';
+
+  @override
+  String get messagesNoMatch => 'Nenhuma conversa encontrada.';
+
+  @override
+  String get messagesSelect => 'Selecione uma conversa';
+
+  @override
+  String get messagesNoMessagesYet => 'Nenhuma mensagem ainda. Diga olá!';
+
+  @override
+  String get messagesInputHint => 'Escreva uma mensagem...';
+
+  @override
+  String get messagesSendTooltip => 'Enviar';
+
+  @override
+  String get messagesLocked =>
+      'Só é possível enviar mensagens enquanto a candidatura estiver aprovada.';
+
+  @override
+  String get messagesLoadError => 'Não foi possível carregar as mensagens.';
+
+  @override
+  String get messagesSendError =>
+      'Não foi possível enviar a mensagem. Tente novamente.';
+
+  @override
+  String get messagesNotAllowed =>
+      'Mensagem não enviada: o chat só fica liberado após a aprovação da candidatura.';
+
+  @override
+  String get companySendMessage => 'Enviar mensagem';
+
+  @override
+  String get companyMessagesTooltip => 'Mensagens';
+
+  @override
+  String get jobsAreaHint => 'Área (ex.: Tecnologia)';
+
+  @override
+  String get jobsContractAll => 'Todos os contratos';
+
+  @override
+  String get companyEditJob => 'Editar vaga';
+
+  @override
+  String get companyEditJobTitle => 'Editar vaga';
+
+  @override
+  String get companySaveJobButton => 'Salvar alterações';
+
+  @override
+  String get companyJobUpdated => 'Vaga atualizada!';
+
+  @override
+  String get companyJobUpdateError =>
+      'Não foi possível salvar a vaga. Tente novamente.';
+
+  @override
+  String get companyCloseJob => 'Encerrar vaga';
+
+  @override
+  String get companyCloseJobConfirm =>
+      'Encerrar esta vaga? Ela deixa de aparecer para os candidatos e não recebe mais candidaturas.';
+
+  @override
+  String get companyJobClosed => 'Vaga encerrada.';
+
+  @override
+  String get companyReopenJob => 'Reabrir vaga';
+
+  @override
+  String get companyJobReopened => 'Vaga reaberta.';
+
+  @override
+  String get companyJobStatusError =>
+      'Não foi possível alterar a vaga. Tente novamente.';
+
+  @override
+  String get companyJobOptions => 'Opções da vaga';
+
+  @override
+  String get companyAnswerCandidate => 'Responder candidato';
+
+  @override
+  String get companyApproveCandidate => 'Aprovar';
+
+  @override
+  String get companyRejectCandidate => 'Recusar';
+
+  @override
+  String get companyBackToReview => 'Voltar para em análise';
+
+  @override
+  String get companyCandidateStatusError =>
+      'Não foi possível atualizar a candidatura. Tente novamente.';
+
+  @override
+  String get applicationStatusUnderReview => 'Em análise';
+
+  @override
+  String get applicationStatusApproved => 'Aprovada';
+
+  @override
+  String get applicationStatusRejected => 'Recusada';
+
+  @override
+  String get applicationStatusWithdrawn => 'Desistência';
+
+  @override
+  String jobApplicationStatus(String status) {
+    return 'Sua candidatura: $status';
+  }
 
   @override
   String get jobWorkloadLabel => 'Carga horária';

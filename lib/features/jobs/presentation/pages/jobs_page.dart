@@ -1,13 +1,14 @@
 import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/presentation/company_labels.dart';
 import 'package:jobfy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:jobfy/features/jobs/domain/entities/job_listing_entity.dart';
 import 'package:jobfy/features/jobs/domain/usecases/search_jobs_usecase.dart';
 import 'package:jobfy/features/jobs/presentation/controllers/job_controller.dart';
-import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
-import 'package:jobfy/shared/widgets/user_shell.dart';
+import 'package:jobfy/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -22,6 +23,8 @@ class JobsPage extends StatefulWidget {
 class _JobsPageState extends State<JobsPage> {
   final _queryController = TextEditingController();
   final _locationController = TextEditingController();
+  final _areaController = TextEditingController();
+  ContractType? _contractType;
   late final JobController _controller;
 
   @override
@@ -37,6 +40,7 @@ class _JobsPageState extends State<JobsPage> {
   void dispose() {
     _queryController.dispose();
     _locationController.dispose();
+    _areaController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -45,6 +49,8 @@ class _JobsPageState extends State<JobsPage> {
     _controller.search(
       query: _queryController.text.trim(),
       location: _locationController.text.trim(),
+      area: _areaController.text.trim(),
+      contractType: _contractType?.name,
     );
   }
 
@@ -72,30 +78,39 @@ class _JobsPageState extends State<JobsPage> {
       ),
       onSubmitted: (_) => _runSearch(),
     );
+    final areaField = TextField(
+      controller: _areaController,
+      decoration: InputDecoration(
+        hintText: l10n.jobsAreaHint,
+        prefixIcon: const Icon(Icons.category_outlined, size: 18),
+      ),
+      onSubmitted: (_) => _runSearch(),
+    );
+    // null = every contract type.
+    final contractField = DropdownButtonFormField<ContractType?>(
+      initialValue: _contractType,
+      isExpanded: true,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.description_outlined, size: 18),
+      ),
+      items: [
+        DropdownMenuItem(value: null, child: Text(l10n.jobsContractAll)),
+        for (final type in ContractType.values)
+          DropdownMenuItem(value: type, child: Text(l10n.contractType(type))),
+      ],
+      onChanged: (type) {
+        setState(() => _contractType = type);
+        _runSearch();
+      },
+    );
     final searchButton = IconButton.filled(
       onPressed: _runSearch,
       icon: const Icon(Icons.arrow_forward),
     );
 
-    return Scaffold(
-      drawer: UserShell.drawer(
-        context,
-        profile: session.profile,
-        current: SidebarSection.jobs,
-      ),
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () =>
-              context.canPop() ? context.pop() : context.go('/user'),
-        ),
-        title: Text(l10n.jobsPageTitle),
-        actions: const [MenuButton(color: Colors.white)],
-      ),
-      body: UserShell(
+    return ProfileGate(
         profile: session.profile,
         isError: session.status == UserSessionStatus.error,
-        current: SidebarSection.jobs,
         builder: (context, profile) => Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
@@ -108,7 +123,7 @@ class _JobsPageState extends State<JobsPage> {
             child: Column(
               children: [
                 Padding(
-                  padding: EdgeInsets.all(gutter),
+                  padding: EdgeInsets.fromLTRB(gutter, gutter, gutter, 12),
                   // Phones: the two fields don't fit side by side, so the
                   // location goes on its own line under the query.
                   child: context.isMobile
@@ -131,6 +146,18 @@ class _JobsPageState extends State<JobsPage> {
                             Expanded(flex: 2, child: queryField),
                             Expanded(child: locationField),
                             searchButton,
+                          ],
+                        ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(gutter, 0, gutter, gutter),
+                  child: context.isMobile
+                      ? Column(spacing: 12, children: [areaField, contractField])
+                      : Row(
+                          spacing: 12,
+                          children: [
+                            Expanded(child: areaField),
+                            Expanded(child: contractField),
                           ],
                         ),
                 ),
@@ -175,8 +202,7 @@ class _JobsPageState extends State<JobsPage> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

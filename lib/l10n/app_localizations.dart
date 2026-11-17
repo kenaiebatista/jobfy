@@ -1505,6 +1505,234 @@ abstract class AppLocalizations {
   /// **'I\'m a company'**
   String get registerAsCompany;
 
+  /// No description provided for @messagesSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search conversations...'**
+  String get messagesSearchHint;
+
+  /// No description provided for @messagesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet.'**
+  String get messagesEmpty;
+
+  /// No description provided for @messagesEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations show up here once an application is approved.'**
+  String get messagesEmptyHint;
+
+  /// No description provided for @messagesNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations found.'**
+  String get messagesNoMatch;
+
+  /// No description provided for @messagesSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a conversation'**
+  String get messagesSelect;
+
+  /// No description provided for @messagesNoMessagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Say hello!'**
+  String get messagesNoMessagesYet;
+
+  /// No description provided for @messagesInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a message...'**
+  String get messagesInputHint;
+
+  /// No description provided for @messagesSendTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get messagesSendTooltip;
+
+  /// No description provided for @messagesLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages can only be sent while the application is approved.'**
+  String get messagesLocked;
+
+  /// No description provided for @messagesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the messages.'**
+  String get messagesLoadError;
+
+  /// No description provided for @messagesSendError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the message. Please try again.'**
+  String get messagesSendError;
+
+  /// No description provided for @messagesNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Message not sent: the chat is only open after the application is approved.'**
+  String get messagesNotAllowed;
+
+  /// No description provided for @companySendMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Send message'**
+  String get companySendMessage;
+
+  /// No description provided for @companyMessagesTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get companyMessagesTooltip;
+
+  /// No description provided for @jobsAreaHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Area (e.g. Technology)'**
+  String get jobsAreaHint;
+
+  /// No description provided for @jobsContractAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All contract types'**
+  String get jobsContractAll;
+
+  /// No description provided for @companyEditJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit job'**
+  String get companyEditJob;
+
+  /// No description provided for @companyEditJobTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit job'**
+  String get companyEditJobTitle;
+
+  /// No description provided for @companySaveJobButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get companySaveJobButton;
+
+  /// No description provided for @companyJobUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Job updated!'**
+  String get companyJobUpdated;
+
+  /// No description provided for @companyJobUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the job. Please try again.'**
+  String get companyJobUpdateError;
+
+  /// No description provided for @companyCloseJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Close job'**
+  String get companyCloseJob;
+
+  /// No description provided for @companyCloseJobConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this job? It stops showing to candidates and takes no more applications.'**
+  String get companyCloseJobConfirm;
+
+  /// No description provided for @companyJobClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Job closed.'**
+  String get companyJobClosed;
+
+  /// No description provided for @companyReopenJob.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen job'**
+  String get companyReopenJob;
+
+  /// No description provided for @companyJobReopened.
+  ///
+  /// In en, this message translates to:
+  /// **'Job reopened.'**
+  String get companyJobReopened;
+
+  /// No description provided for @companyJobStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not change the job. Please try again.'**
+  String get companyJobStatusError;
+
+  /// No description provided for @companyJobOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Job options'**
+  String get companyJobOptions;
+
+  /// No description provided for @companyAnswerCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer candidate'**
+  String get companyAnswerCandidate;
+
+  /// No description provided for @companyApproveCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get companyApproveCandidate;
+
+  /// No description provided for @companyRejectCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get companyRejectCandidate;
+
+  /// No description provided for @companyBackToReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to under review'**
+  String get companyBackToReview;
+
+  /// No description provided for @companyCandidateStatusError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not update the application. Please try again.'**
+  String get companyCandidateStatusError;
+
+  /// No description provided for @applicationStatusUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get applicationStatusUnderReview;
+
+  /// No description provided for @applicationStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get applicationStatusApproved;
+
+  /// No description provided for @applicationStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get applicationStatusRejected;
+
+  /// No description provided for @applicationStatusWithdrawn.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawn'**
+  String get applicationStatusWithdrawn;
+
+  /// No description provided for @jobApplicationStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Your application: {status}'**
+  String jobApplicationStatus(String status);
+
   /// No description provided for @jobWorkloadLabel.
   ///
   /// In en, this message translates to:

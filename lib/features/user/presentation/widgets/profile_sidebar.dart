@@ -16,10 +16,14 @@ class ProfileSidebar extends StatelessWidget {
   final UserProfileEntity profile;
   final SidebarSection current;
 
+  /// Called when an entry is picked, e.g. to close the drawer.
+  final VoidCallback onNavTap;
+
   const ProfileSidebar({
     super.key,
     required this.profile,
-    required this.current, required void Function() onNavTap, int? selectedIndex,
+    required this.current,
+    required this.onNavTap,
   });
 
   List<({IconData icon, String label, SidebarSection section, String? route})> _navItems(
@@ -29,7 +33,7 @@ class ProfileSidebar extends StatelessWidget {
         (icon: Icons.dashboard_outlined, label: l10n.navDashboard, section: SidebarSection.dashboard, route: '/user'),
         (icon: Icons.work_outline, label: l10n.navJobs, section: SidebarSection.jobs, route: '/jobs'),
         (icon: Icons.description_outlined, label: l10n.navResume, section: SidebarSection.resume, route: '/resume'),
-        (icon: Icons.chat_bubble_outline, label: l10n.navMessages, section: SidebarSection.messages, route: null),
+        (icon: Icons.chat_bubble_outline, label: l10n.navMessages, section: SidebarSection.messages, route: '/messages'),
       ];
 
   static const double width = 216;
@@ -174,11 +178,16 @@ class ProfileSidebar extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, i) {
         final item = items[i];
-        return _NavItem(
+        return SidebarNavItem(
           icon: item.icon,
           label: item.label,
           isSelected: current == item.section,
-          onTap: item.route == null ? () {} : () => context.go(item.route!),
+          onTap: item.route == null
+              ? () {}
+              : () {
+                  onNavTap();
+                  context.go(item.route!);
+                },
         );
       },
     );
@@ -191,13 +200,16 @@ class ProfileSidebar extends StatelessWidget {
       child: Column(
         spacing: 2,
         children: [
-          _NavItem(
+          SidebarNavItem(
             icon: Icons.settings_outlined,
             label: l10n.navSettings,
             isSelected: current == SidebarSection.settings,
-            onTap: () => context.go('/settings'),
+            onTap: () {
+              onNavTap();
+              context.go('/settings');
+            },
           ),
-          _NavItem(
+          SidebarNavItem(
             icon: Icons.logout,
             label: l10n.navLogout,
             isSelected: false,
@@ -214,14 +226,16 @@ class ProfileSidebar extends StatelessWidget {
   }
 }
 
-class _NavItem extends StatefulWidget {
+/// One entry of the sidebar (also used by the company sidebar).
+class SidebarNavItem extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isSelected;
   final bool isDanger;
   final VoidCallback onTap;
 
-  const _NavItem({
+  const SidebarNavItem({
+    super.key,
     required this.icon,
     required this.label,
     required this.isSelected,
@@ -230,10 +244,10 @@ class _NavItem extends StatefulWidget {
   });
 
   @override
-  State<_NavItem> createState() => _NavItemState();
+  State<SidebarNavItem> createState() => _SidebarNavItemState();
 }
 
-class _NavItemState extends State<_NavItem> {
+class _SidebarNavItemState extends State<SidebarNavItem> {
   bool _hovered = false;
 
   @override

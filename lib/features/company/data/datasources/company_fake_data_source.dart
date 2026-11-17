@@ -78,7 +78,63 @@ class CompanyFakeDataSource implements CompanyDataSource {
         salary: 'R\$ ${job.salaryMin} – ${job.salaryMax}',
         workMode: job.workMode.dbValue,
         status: 'open',
+        area: job.area,
+        salaryMin: job.salaryMin,
+        salaryMax: job.salaryMax,
+        workload: job.workload,
+        requirements: job.requirements,
+        benefits: job.benefits,
       ),
+    );
+  }
+
+  @override
+  Future<void> updateJob(String jobId, NewJobEntity job) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final i = _jobs.indexWhere((j) => j.id == jobId);
+    if (i < 0) return;
+    _jobs[i] = _copyJob(_jobs[i], job: job);
+  }
+
+  @override
+  Future<void> setJobStatus(String companyId, String jobId, JobStatus status) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final i = _jobs.indexWhere((j) => j.id == jobId);
+    if (i < 0) return;
+    _jobs[i] = _copyJob(_jobs[i], status: status.name);
+  }
+
+  @override
+  Future<void> setCandidateStatus(
+    String companyId,
+    String jobId,
+    String userId,
+    ApplicationStatus status,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final i = _candidatesMock.indexWhere((c) => c.id == userId);
+    if (i >= 0) _candidatesMock[i] = _candidatesMock[i].copyWith(status: status.dbValue);
+  }
+
+  /// [old] with the edited fields and/or a new status.
+  JobEntity _copyJob(JobEntity old, {NewJobEntity? job, String? status}) {
+    return JobModel(
+      id: old.id,
+      companyId: old.companyId,
+      title: job?.title ?? old.title,
+      description: job?.description ?? old.description,
+      location: job?.location ?? old.location,
+      contractType: job?.contractType.name ?? old.contractType,
+      salary: job == null ? old.salary : 'R\$ ${job.salaryMin} – ${job.salaryMax}',
+      workMode: job?.workMode.dbValue ?? old.workMode,
+      status: status ?? old.status,
+      candidateCount: old.candidateCount,
+      area: job == null ? old.area : job.area,
+      salaryMin: job?.salaryMin ?? old.salaryMin,
+      salaryMax: job?.salaryMax ?? old.salaryMax,
+      workload: job == null ? old.workload : job.workload,
+      requirements: job == null ? old.requirements : job.requirements,
+      benefits: job == null ? old.benefits : job.benefits,
     );
   }
 
@@ -90,11 +146,6 @@ class CompanyFakeDataSource implements CompanyDataSource {
 
   @override
   Future<void> rateCandidate(String candidateId, double rating, {String? comment}) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-  }
-
-  @override
-  Future<void> sendMessage(String candidateId, String message) async {
     await Future.delayed(const Duration(milliseconds: 300));
   }
 }

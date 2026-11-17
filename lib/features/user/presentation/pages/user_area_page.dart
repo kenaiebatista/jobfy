@@ -6,10 +6,9 @@ import 'package:jobfy/l10n/app_localizations.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/user/presentation/widgets/activity_item.dart';
 import 'package:jobfy/features/user/presentation/widgets/job_match_card.dart';
-import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/features/user/presentation/user_labels.dart';
 import 'package:jobfy/features/user/presentation/widgets/stats_card.dart';
-import 'package:jobfy/shared/widgets/user_shell.dart';
+import 'package:jobfy/shared/widgets/app_shell.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -31,19 +30,11 @@ class _UserAreaPageState extends State<UserAreaPage> {
   @override
   Widget build(BuildContext context) {
     final session = context.watch<UserSessionController>();
-    return Scaffold(
-      drawer: UserShell.drawer(
-        context,
-        profile: session.profile,
-        current: SidebarSection.dashboard,
-      ),
-      body: UserShell(
+    return ProfileGate(
         profile: session.profile,
         isError: session.status == UserSessionStatus.error,
-        current: SidebarSection.dashboard,
         builder: (context, profile) => _MainContent(profile: profile),
-      ),
-    );
+      );
   }
 }
 
@@ -62,7 +53,6 @@ class _MainContent extends StatelessWidget {
 
     return Column(
       children: [
-        _TopBar(profile: profile),
         Expanded(
           child: SingleChildScrollView(
             child: ResponsiveContent(
@@ -108,95 +98,6 @@ class _MainContent extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _TopBar extends StatelessWidget {
-  final UserProfileEntity profile;
-
-  const _TopBar({required this.profile});
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final l10n = AppLocalizations.of(context)!;
-    final compact = context.isMobile;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: context.pagePadding,
-        vertical: context.responsive(mobile: 6.0, laptop: 14.0),
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border(bottom: BorderSide(color: colors.surfaceBorder)),
-      ),
-      child: Row(
-        spacing: 8,
-        children: [
-          // Phones/tablets: the sidebar lives in a drawer opened from here.
-          if (context.isCompactLayout) MenuButton(color: colors.textPrimary),
-          Icon(Icons.lightbulb_circle, size: 28, color: colors.textPrimary),
-          if (!compact)
-            Text(
-              l10n.appName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: colors.textPrimary,
-              ),
-            ),
-          const Spacer(),
-          // Phones only get the search icon; the pill's label doesn't fit.
-          if (compact)
-            IconButton(
-              icon: Icon(Icons.search, color: colors.textPrimary),
-              onPressed: () => context.go('/jobs'),
-              style: IconButton.styleFrom(backgroundColor: colors.background),
-            )
-          else
-            InkWell(
-              onTap: () => context.go('/jobs'),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: colors.background,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: colors.surfaceBorder),
-                ),
-                child: Row(
-                  spacing: 6,
-                  children: [
-                    Icon(Icons.search, size: 16, color: colors.textMuted),
-                    Text(
-                      l10n.searchJobsPlaceholder,
-                      style: TextStyle(fontSize: 13, color: colors.textMuted),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          IconButton(
-            icon: Icon(Icons.notifications_outlined, color: colors.textPrimary),
-            onPressed: () {},
-            style: IconButton.styleFrom(backgroundColor: colors.background),
-          ),
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: colors.accent,
-            child: Text(
-              profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-              style: TextStyle(
-                color: colors.onAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -41,6 +41,24 @@ class CompanyRepositoryImpl implements CompanyRepository {
   }
 
   @override
+  Future<void> updateJob(String jobId, NewJobEntity job) => _dataSource.updateJob(jobId, job);
+
+  @override
+  Future<void> setJobStatus(String companyId, String jobId, JobStatus status) {
+    return _dataSource.setJobStatus(companyId, jobId, status);
+  }
+
+  @override
+  Future<void> setCandidateStatus(
+    String companyId,
+    String jobId,
+    String userId,
+    ApplicationStatus status,
+  ) {
+    return _dataSource.setCandidateStatus(companyId, jobId, userId, status);
+  }
+
+  @override
   Future<List<CandidateEntity>> getJobCandidates(String jobId) {
     return _dataSource.getJobCandidates(jobId);
   }
@@ -48,10 +66,5 @@ class CompanyRepositoryImpl implements CompanyRepository {
   @override
   Future<void> rateCandidate(String candidateId, double rating, {String? comment}) {
     return _dataSource.rateCandidate(candidateId, rating, comment: comment);
-  }
-
-  @override
-  Future<void> sendMessage(String candidateId, String message) {
-    return _dataSource.sendMessage(candidateId, message);
   }
 }

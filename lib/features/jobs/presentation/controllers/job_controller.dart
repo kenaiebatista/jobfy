@@ -18,13 +18,23 @@ class JobController extends ChangeNotifier {
   String? get error => _error;
   bool get isLoading => _status == JobListStatus.loading;
 
-  Future<void> search({String? query, String? location}) async {
+  Future<void> search({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) async {
     _status = JobListStatus.loading;
     _error = null;
     notifyListeners();
 
     try {
-      _jobs = await _searchJobsUsecase(query: query, location: location);
+      _jobs = await _searchJobsUsecase(
+        query: query,
+        location: location,
+        area: area,
+        contractType: contractType,
+      );
       _status = JobListStatus.loaded;
     } catch (_) {
       _error = 'jobSearchError';

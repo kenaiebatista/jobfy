@@ -8,8 +8,18 @@ import '../models/job_listing_model.dart';
 /// is deployed.
 class JobMysqlDataSource implements JobDataSource {
   @override
-  Future<List<JobListingModel>> searchJobs({String? query, String? location}) async {
-    final rows = await DatabaseService.getOpenJobs(query: query, location: location);
+  Future<List<JobListingModel>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) async {
+    final rows = await DatabaseService.getOpenJobs(
+      query: query,
+      location: location,
+      area: area,
+      contractType: contractType,
+    );
 
     return rows
         .map((row) => JobListingModel(

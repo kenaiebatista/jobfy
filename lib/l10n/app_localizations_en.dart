@@ -752,6 +752,130 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerAsCompany => 'I\'m a company';
 
   @override
+  String get messagesSearchHint => 'Search conversations...';
+
+  @override
+  String get messagesEmpty => 'No conversations yet.';
+
+  @override
+  String get messagesEmptyHint =>
+      'Conversations show up here once an application is approved.';
+
+  @override
+  String get messagesNoMatch => 'No conversations found.';
+
+  @override
+  String get messagesSelect => 'Select a conversation';
+
+  @override
+  String get messagesNoMessagesYet => 'No messages yet. Say hello!';
+
+  @override
+  String get messagesInputHint => 'Write a message...';
+
+  @override
+  String get messagesSendTooltip => 'Send';
+
+  @override
+  String get messagesLocked =>
+      'Messages can only be sent while the application is approved.';
+
+  @override
+  String get messagesLoadError => 'Could not load the messages.';
+
+  @override
+  String get messagesSendError =>
+      'Could not send the message. Please try again.';
+
+  @override
+  String get messagesNotAllowed =>
+      'Message not sent: the chat is only open after the application is approved.';
+
+  @override
+  String get companySendMessage => 'Send message';
+
+  @override
+  String get companyMessagesTooltip => 'Messages';
+
+  @override
+  String get jobsAreaHint => 'Area (e.g. Technology)';
+
+  @override
+  String get jobsContractAll => 'All contract types';
+
+  @override
+  String get companyEditJob => 'Edit job';
+
+  @override
+  String get companyEditJobTitle => 'Edit job';
+
+  @override
+  String get companySaveJobButton => 'Save changes';
+
+  @override
+  String get companyJobUpdated => 'Job updated!';
+
+  @override
+  String get companyJobUpdateError =>
+      'Could not save the job. Please try again.';
+
+  @override
+  String get companyCloseJob => 'Close job';
+
+  @override
+  String get companyCloseJobConfirm =>
+      'Close this job? It stops showing to candidates and takes no more applications.';
+
+  @override
+  String get companyJobClosed => 'Job closed.';
+
+  @override
+  String get companyReopenJob => 'Reopen job';
+
+  @override
+  String get companyJobReopened => 'Job reopened.';
+
+  @override
+  String get companyJobStatusError =>
+      'Could not change the job. Please try again.';
+
+  @override
+  String get companyJobOptions => 'Job options';
+
+  @override
+  String get companyAnswerCandidate => 'Answer candidate';
+
+  @override
+  String get companyApproveCandidate => 'Approve';
+
+  @override
+  String get companyRejectCandidate => 'Reject';
+
+  @override
+  String get companyBackToReview => 'Back to under review';
+
+  @override
+  String get companyCandidateStatusError =>
+      'Could not update the application. Please try again.';
+
+  @override
+  String get applicationStatusUnderReview => 'Under review';
+
+  @override
+  String get applicationStatusApproved => 'Approved';
+
+  @override
+  String get applicationStatusRejected => 'Rejected';
+
+  @override
+  String get applicationStatusWithdrawn => 'Withdrawn';
+
+  @override
+  String jobApplicationStatus(String status) {
+    return 'Your application: $status';
+  }
+
+  @override
   String get jobWorkloadLabel => 'Workload';
 
   @override

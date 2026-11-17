@@ -7,7 +7,7 @@ import '../models/job_listing_model.dart';
 /// Talks to the Jobfy backend's public job-search endpoints.
 ///
 /// Expected contract (Go backend, JSON, snake_case fields):
-///   GET  /jobs?query=&location=  -> `List<JobListingModel>`
+///   GET  /jobs?query=&location=&area=&contract_type=  -> `List<JobListingModel>`
 ///   GET  /jobs/{id}?user_id=     -> JobDetailsModel (404 if missing)
 ///   POST /jobs/{id}/apply  {user_id} -> 204
 class JobRemoteDataSource implements JobDataSource {
@@ -16,10 +16,17 @@ class JobRemoteDataSource implements JobDataSource {
   JobRemoteDataSource(this._client);
 
   @override
-  Future<List<JobListingModel>> searchJobs({String? query, String? location}) async {
+  Future<List<JobListingModel>> searchJobs({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) async {
     final json = await _client.get('/jobs', query: {
       if (query != null && query.isNotEmpty) 'query': query,
       if (location != null && location.isNotEmpty) 'location': location,
+      if (area != null && area.isNotEmpty) 'area': area,
+      if (contractType != null && contractType.isNotEmpty) 'contract_type': contractType,
     }) as List;
     return json.map((j) => JobListingModel.fromJson(j as Map<String, dynamic>)).toList();
   }

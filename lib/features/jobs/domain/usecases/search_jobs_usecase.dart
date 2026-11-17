@@ -6,7 +6,17 @@ class SearchJobsUsecase {
 
   SearchJobsUsecase(this._repository);
 
-  Future<List<JobListingEntity>> call({String? query, String? location}) {
-    return _repository.searchJobs(query: query, location: location);
+  Future<List<JobListingEntity>> call({
+    String? query,
+    String? location,
+    String? area,
+    String? contractType,
+  }) {
+    return _repository.searchJobs(
+      query: query,
+      location: location,
+      area: area,
+      contractType: contractType,
+    );
   }
 }

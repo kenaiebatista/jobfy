@@ -6,7 +6,7 @@ class GetConversationsUsecase {
 
   const GetConversationsUsecase(this._repository);
 
-  Future<List<ConversationEntity>> call(String userId) {
-    return _repository.getConversations(userId);
+  Future<List<ConversationEntity>> call(ChatParticipant me) {
+    return _repository.getConversations(me);
   }
 }

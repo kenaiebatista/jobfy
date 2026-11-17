@@ -4,8 +4,10 @@ import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.da
 import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_job_candidates_usecase.dart';
-import 'package:jobfy/features/company/domain/usecases/send_message_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/set_candidate_status_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/set_job_status_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/update_job_usecase.dart';
 
 enum CompanyStatus { idle, loading, loaded, error }
 
@@ -15,23 +17,29 @@ class CompanyController extends ChangeNotifier {
   final GetCompanyUsecase _getCompanyUsecase;
   final GetCompanyJobsUsecase _getCompanyJobsUsecase;
   final PublishJobUsecase _publishJobUsecase;
+  final UpdateJobUsecase _updateJobUsecase;
+  final SetJobStatusUsecase _setJobStatusUsecase;
+  final SetCandidateStatusUsecase _setCandidateStatusUsecase;
   final GetJobCandidatesUsecase _getJobCandidatesUsecase;
   final RateCandidateUsecase _rateCandidateUsecase;
-  final SendMessageUsecase _sendMessageUsecase;
 
   CompanyController({
     required GetCompanyUsecase getCompanyUsecase,
     required GetCompanyJobsUsecase getCompanyJobsUsecase,
     required PublishJobUsecase publishJobUsecase,
+    required UpdateJobUsecase updateJobUsecase,
+    required SetJobStatusUsecase setJobStatusUsecase,
+    required SetCandidateStatusUsecase setCandidateStatusUsecase,
     required GetJobCandidatesUsecase getJobCandidatesUsecase,
     required RateCandidateUsecase rateCandidateUsecase,
-    required SendMessageUsecase sendMessageUsecase,
   })  : _getCompanyUsecase = getCompanyUsecase,
         _getCompanyJobsUsecase = getCompanyJobsUsecase,
         _publishJobUsecase = publishJobUsecase,
+        _updateJobUsecase = updateJobUsecase,
+        _setJobStatusUsecase = setJobStatusUsecase,
+        _setCandidateStatusUsecase = setCandidateStatusUsecase,
         _getJobCandidatesUsecase = getJobCandidatesUsecase,
-        _rateCandidateUsecase = rateCandidateUsecase,
-        _sendMessageUsecase = sendMessageUsecase;
+        _rateCandidateUsecase = rateCandidateUsecase;
 
   CompanyStatus _status = CompanyStatus.idle;
   bool _isPublishing = false;
@@ -90,6 +98,72 @@ class CompanyController extends ChangeNotifier {
     return ok;
   }
 
+  /// Saves the edited job and reloads the company's list. Returns false on error.
+  Future<bool> updateJob(String jobId, NewJobEntity job) async {
+    return _saveJob(
+      () => _updateJobUsecase(jobId, job),
+      job.companyId,
+      'companyJobUpdateError',
+    );
+  }
+
+  /// Opens, pauses or closes the job and reloads the list. Returns false on error.
+  Future<bool> setJobStatus(String jobId, JobStatus status) async {
+    final companyId = _company?.companyId;
+    if (companyId == null) return false;
+    return _saveJob(
+      () => _setJobStatusUsecase(companyId, jobId, status),
+      companyId,
+      'companyJobStatusError',
+    );
+  }
+
+  Future<bool> _saveJob(Future<void> Function() save, String companyId, String errorCode) async {
+    _isPublishing = true;
+    _error = null;
+    notifyListeners();
+    var ok = true;
+    try {
+      await save();
+      _jobs
+        ..clear()
+        ..addAll(await _getCompanyJobsUsecase(companyId));
+    } catch (e) {
+      debugPrint('Could not save job: $e');
+      _error = errorCode;
+      ok = false;
+    }
+    _isPublishing = false;
+    notifyListeners();
+    return ok;
+  }
+
+  /// Approves, rejects or puts back in review [candidate]'s application to
+  /// [jobId]. Returns false on error.
+  Future<bool> setCandidateStatus(
+    String jobId,
+    CandidateEntity candidate,
+    ApplicationStatus status,
+  ) async {
+    final companyId = _company?.companyId;
+    if (companyId == null) return false;
+    try {
+      await _setCandidateStatusUsecase(companyId, jobId, candidate.id, status);
+      _candidates = [
+        for (final c in _candidates)
+          c.id == candidate.id ? c.copyWith(status: status.dbValue) : c,
+      ];
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('Could not answer candidate ${candidate.id}: $e');
+      _error = 'companyCandidateStatusError';
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Loads who applied to [jobId].
   Future<void> loadCandidates(String jobId) async {
     _candidates = [];
@@ -114,19 +188,6 @@ class CompanyController extends ChangeNotifier {
       return true;
     } catch (_) {
       _error = 'companyCandidateRateError';
-      notifyListeners();
-      return false;
-    }
-  }
-
-  Future<bool> sendMessage(String candidateId, String message) async {
-    try {
-      await _sendMessageUsecase(candidateId, message);
-      _error = null;
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _error = 'companyMessageSendError';
       notifyListeners();
       return false;
     }

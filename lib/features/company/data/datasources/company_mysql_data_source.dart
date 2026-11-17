@@ -13,7 +13,7 @@ import 'company_fake_data_source.dart';
 /// [DatabaseService]. Stand-in until the Go backend
 /// ([CompanyRemoteDataSource]) is deployed.
 ///
-/// Rating and messaging candidates still use [CompanyFakeDataSource].
+/// Rating candidates still uses [CompanyFakeDataSource].
 class CompanyMysqlDataSource implements CompanyDataSource {
   final CompanyFakeDataSource _notYetInDatabase = CompanyFakeDataSource();
 
@@ -76,18 +76,8 @@ class CompanyMysqlDataSource implements CompanyDataSource {
     final rows = await DatabaseService.getCompanyJobs(int.parse(companyId));
     return [
       for (final r in rows)
-        JobModel(
-          id: r['id'] ?? '',
-          companyId: companyId,
-          title: r['title'] ?? '',
-          description: r['description'] ?? '',
-          location: r['location'] ?? '',
-          contractType: r['contract_type'] ?? '',
-          salary: r['salary'] ?? '',
-          workMode: r['work_mode'],
-          status: r['status'],
-          candidateCount: int.tryParse(r['candidates'] ?? '') ?? 0,
-        ),
+        // The row has the same snake_case names as the backend JSON.
+        JobModel.fromJson({...r, 'company_id': companyId}),
     ];
   }
 
@@ -111,6 +101,50 @@ class CompanyMysqlDataSource implements CompanyDataSource {
   }
 
   @override
+  Future<void> updateJob(String jobId, NewJobEntity job) {
+    String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
+    return DatabaseService.updateJob(
+      jobId: int.parse(jobId),
+      companyId: int.parse(job.companyId),
+      title: job.title,
+      area: opt(job.area),
+      location: job.location,
+      workMode: job.workMode.dbValue,
+      description: job.description,
+      contractType: job.contractType.name,
+      salaryMin: job.salaryMin,
+      salaryMax: job.salaryMax,
+      workload: opt(job.workload),
+      requirements: opt(job.requirements),
+      benefits: opt(job.benefits),
+    );
+  }
+
+  @override
+  Future<void> setJobStatus(String companyId, String jobId, JobStatus status) {
+    return DatabaseService.setJobStatus(
+      jobId: int.parse(jobId),
+      companyId: int.parse(companyId),
+      status: status.name,
+    );
+  }
+
+  @override
+  Future<void> setCandidateStatus(
+    String companyId,
+    String jobId,
+    String userId,
+    ApplicationStatus status,
+  ) {
+    return DatabaseService.setApplicationStatus(
+      jobId: int.parse(jobId),
+      userId: int.parse(userId),
+      companyId: int.parse(companyId),
+      status: status.dbValue,
+    );
+  }
+
+  @override
   Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
     final rows = await DatabaseService.getJobCandidates(int.parse(jobId));
     return [for (final r in rows) CandidateModel.fromJson(r)];
@@ -119,8 +153,4 @@ class CompanyMysqlDataSource implements CompanyDataSource {
   @override
   Future<void> rateCandidate(String candidateId, double rating, {String? comment}) =>
       _notYetInDatabase.rateCandidate(candidateId, rating, comment: comment);
-
-  @override
-  Future<void> sendMessage(String candidateId, String message) =>
-      _notYetInDatabase.sendMessage(candidateId, message);
 }

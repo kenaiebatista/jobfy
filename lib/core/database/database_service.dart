@@ -23,6 +23,12 @@ class CnpjAlreadyInUseException implements Exception {
   const CnpjAlreadyInUseException();
 }
 
+/// A chat message was refused: the chat is only open between a user and a
+/// company, and only while the company has approved that user's application.
+class ChatNotAllowedException implements Exception {
+  const ChatNotAllowedException();
+}
+
 class DatabaseService {
   /// MySQL error code for a duplicate key on a UNIQUE constraint.
   static const _duplicateEntry = 1062;
@@ -360,14 +366,20 @@ class DatabaseService {
 
   // Open jobs with the company name, already in the shape the app shows
   // (column names match JobListingModel). [query] searches title/company,
-  // [location] searches the city.
+  // [location] searches the city, [area] searches `jobs.area` and
+  // [contractType] is an exact `jobs.contract_type` value; empty filters
+  // are ignored.
   static Future<List<Map<String, String?>>> getOpenJobs({
     String? query,
     String? location,
+    String? area,
+    String? contractType,
   }) async {
     final conn = await connect();
 
     try {
+      final hasArea = (area ?? '').trim().isNotEmpty;
+      final hasContract = (contractType ?? '').isNotEmpty;
       final result = await conn.execute(
         "SELECT CAST(j.job_id AS CHAR) AS id, j.title, "
         "c.company_name AS company, j.location, j.work_mode AS type, "
@@ -377,8 +389,15 @@ class DatabaseService {
         "WHERE j.status = 'open' "
         "AND (j.title LIKE :query OR c.company_name LIKE :query) "
         "AND j.location LIKE :location "
+        "${hasArea ? 'AND j.area LIKE :area ' : ''}"
+        "${hasContract ? 'AND j.contract_type = :contract ' : ''}"
         "ORDER BY j.published_at DESC, j.job_id DESC",
-        {'query': '%${query ?? ''}%', 'location': '%${location ?? ''}%'},
+        {
+          'query': '%${query ?? ''}%',
+          'location': '%${location ?? ''}%',
+          if (hasArea) 'area': '%${area!.trim()}%',
+          if (hasContract) 'contract': contractType,
+        },
       );
 
       return result.rows.map((row) => row.assoc()).toList();
@@ -402,8 +421,8 @@ class DatabaseService {
         "c.company_name, c.trade_name, c.business_area, c.city, c.state, "
         "c.phone AS company_phone, c.description AS company_description, "
         "a.email AS company_email, "
-        "EXISTS (SELECT 1 FROM applications ap "
-        "WHERE ap.job_id = j.job_id AND ap.user_id = :user) AS applied "
+        "(SELECT ap.status FROM applications ap "
+        "WHERE ap.job_id = j.job_id AND ap.user_id = :user) AS application_status "
         "FROM jobs j JOIN companies c ON c.company_id = j.company_id "
         "JOIN accounts a ON a.account_id = c.account_id "
         "WHERE j.job_id = :id",
@@ -416,13 +435,15 @@ class DatabaseService {
   }
 
   /// Saves the user's application to the job (`applications`). Applying
-  /// twice is ignored: the UNIQUE (user_id, job_id) keeps a single row.
+  /// twice is ignored (the UNIQUE (user_id, job_id) keeps a single row) and
+  /// so is applying to a job that isn't open.
   static Future<void> applyToJob({required int userId, required int jobId}) async {
     final conn = await connect();
 
     try {
       await conn.execute(
-        'INSERT IGNORE INTO applications (user_id, job_id) VALUES (:user, :job)',
+        "INSERT IGNORE INTO applications (user_id, job_id) "
+        "SELECT :user, job_id FROM jobs WHERE job_id = :job AND status = 'open'",
         {'user': userId, 'job': jobId},
       );
     } finally {
@@ -574,6 +595,97 @@ class DatabaseService {
     }
   }
 
+  /// Rewrites the job's fields. The company id in the WHERE keeps a company
+  /// from editing someone else's job.
+  static Future<void> updateJob({
+    required int jobId,
+    required int companyId,
+    required String title,
+    String? area,
+    required String location,
+    required String workMode,
+    required String description,
+    required String contractType,
+    required int salaryMin,
+    required int salaryMax,
+    String? workload,
+    String? requirements,
+    String? benefits,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'UPDATE jobs SET title = :title, area = :area, location = :location, '
+        'work_mode = :mode, description = :description, '
+        'contract_type = :contract, salary_min = :min, salary_max = :max, '
+        'workload = :workload, requirements = :requirements, '
+        'benefits = :benefits '
+        'WHERE job_id = :id AND company_id = :company',
+        {
+          'id': jobId,
+          'company': companyId,
+          'title': title,
+          'area': area,
+          'location': location,
+          'mode': workMode,
+          'description': description,
+          'contract': contractType,
+          'min': salaryMin,
+          'max': salaryMax,
+          'workload': workload,
+          'requirements': requirements,
+          'benefits': benefits,
+        },
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Opens, pauses or closes ('open', 'paused', 'closed') one of the
+  /// company's jobs.
+  static Future<void> setJobStatus({
+    required int jobId,
+    required int companyId,
+    required String status,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'UPDATE jobs SET status = :status '
+        'WHERE job_id = :id AND company_id = :company',
+        {'id': jobId, 'company': companyId, 'status': status},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// The company's answer to an application: 'under_review', 'approved' or
+  /// 'rejected'. Only applications to the company's own jobs can change.
+  static Future<void> setApplicationStatus({
+    required int jobId,
+    required int userId,
+    required int companyId,
+    required String status,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'UPDATE applications ap JOIN jobs j ON j.job_id = ap.job_id '
+        'SET ap.status = :status '
+        'WHERE ap.job_id = :job AND ap.user_id = :user '
+        'AND j.company_id = :company',
+        {'job': jobId, 'user': userId, 'company': companyId, 'status': status},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
   /// Every job the company published (any status), newest first, with how
   /// many (active) users applied to each one.
   static Future<List<Map<String, String?>>> getCompanyJobs(int companyId) async {
@@ -582,7 +694,8 @@ class DatabaseService {
     try {
       final result = await conn.execute(
         "SELECT CAST(job_id AS CHAR) AS id, title, description, location, "
-        "work_mode, contract_type, status, "
+        "area, work_mode, contract_type, status, salary_min, salary_max, "
+        "workload, requirements, benefits, "
         "CONCAT('R\$ ', FORMAT(salary_min, 0, 'de_DE'), ' – ', "
         "FORMAT(salary_max, 0, 'de_DE')) AS salary, "
         "(SELECT COUNT(*) FROM applications ap "
@@ -593,6 +706,173 @@ class DatabaseService {
         {'id': companyId},
       );
       return [for (final row in result.rows) row.assoc()];
+    } finally {
+      await conn.close();
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // Chat. A chat is between a user and a company, never user-user or
+  // company-company, and only while the company has approved one of that
+  // user's applications. Every query below is written from the point of
+  // view of the signed-in side ([asCompany] + its profile [id]) and joins
+  // the *other* kind of profile as the partner, so a same-kind pair can't
+  // even be expressed; the send is one atomic INSERT ... SELECT that only
+  // inserts when the approval exists.
+  // ---------------------------------------------------------------------
+
+  /// SQL pieces for one side of the chat. `me` is the signed-in profile
+  /// (`:id`), `p` the partner (`:partner` when it's a single one) and
+  /// [linked] holds when an application links them (used with the aliases
+  /// `ap` applications and `j` jobs).
+  static ({
+    String meTable,
+    String meKey,
+    String partnerTable,
+    String partnerKey,
+    String partnerName,
+    String linked,
+  })
+  _chatSide(bool asCompany) => asCompany
+      ? (
+          meTable: 'companies',
+          meKey: 'company_id',
+          partnerTable: 'users',
+          partnerKey: 'user_id',
+          partnerName: 'p.name',
+          linked: 'ap.user_id = p.user_id AND j.company_id = :id',
+        )
+      : (
+          meTable: 'users',
+          meKey: 'user_id',
+          partnerTable: 'companies',
+          partnerKey: 'company_id',
+          partnerName: "COALESCE(NULLIF(p.trade_name, ''), p.company_name)",
+          linked: 'ap.user_id = :id AND j.company_id = p.company_id',
+        );
+
+  /// The signed-in side's chats and every message in them. Partners are the
+  /// other side's profiles with an approved application to/from this one,
+  /// plus anyone already talked to (history stays after an approval is
+  /// taken back; `can_send` then is '0').
+  static Future<
+    ({
+      List<Map<String, String?>> partners,
+      List<Map<String, String?>> messages,
+    })
+  >
+  getChat({required bool asCompany, required int id}) async {
+    final side = _chatSide(asCompany);
+    final approved =
+        'EXISTS (SELECT 1 FROM applications ap JOIN jobs j ON j.job_id = ap.job_id '
+        "WHERE ${side.linked} AND ap.status = 'approved')";
+    final conn = await connect();
+
+    try {
+      final partners = await conn.execute(
+        'SELECT CAST(p.${side.partnerKey} AS CHAR) AS partner_id, '
+        '${side.partnerName} AS name, '
+        '(SELECT j.title FROM applications ap JOIN jobs j ON j.job_id = ap.job_id '
+        "WHERE ${side.linked} AND ap.status = 'approved' "
+        'ORDER BY ap.applied_at DESC, ap.application_id DESC LIMIT 1) AS subtitle, '
+        '$approved AS can_send, '
+        '(SELECT COUNT(*) FROM messages m WHERE m.sender_id = p.account_id '
+        'AND m.receiver_id = me.account_id AND m.is_read = FALSE) AS unread '
+        'FROM ${side.partnerTable} p '
+        'JOIN accounts pa ON pa.account_id = p.account_id AND pa.is_active = TRUE '
+        'CROSS JOIN (SELECT account_id FROM ${side.meTable} '
+        'WHERE ${side.meKey} = :id) me '
+        'WHERE $approved '
+        'OR EXISTS (SELECT 1 FROM messages m '
+        'WHERE (m.sender_id = p.account_id AND m.receiver_id = me.account_id) '
+        'OR (m.sender_id = me.account_id AND m.receiver_id = p.account_id))',
+        {'id': id},
+      );
+
+      final messages = await conn.execute(
+        'SELECT CAST(m.message_id AS CHAR) AS id, '
+        'CAST(p.${side.partnerKey} AS CHAR) AS partner_id, '
+        'm.sender_id = me.account_id AS mine, m.message AS body, '
+        'm.sent_at, m.is_read '
+        'FROM messages m '
+        'CROSS JOIN (SELECT account_id FROM ${side.meTable} '
+        'WHERE ${side.meKey} = :id) me '
+        'JOIN ${side.partnerTable} p ON p.account_id = '
+        'IF(m.sender_id = me.account_id, m.receiver_id, m.sender_id) '
+        'WHERE m.sender_id = me.account_id OR m.receiver_id = me.account_id '
+        'ORDER BY m.sent_at, m.message_id',
+        {'id': id},
+      );
+
+      return (
+        partners: [for (final r in partners.rows) r.assoc()],
+        messages: [for (final r in messages.rows) r.assoc()],
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Sends [text] from the signed-in side to the partner profile
+  /// [partnerId] (a company when a user is signed in, a user when a company
+  /// is). Throws [ChatNotAllowedException] unless the company approved one
+  /// of the user's applications; both accounts must also be active.
+  static Future<Map<String, String?>> sendChatMessage({
+    required bool asCompany,
+    required int id,
+    required int partnerId,
+    required String text,
+  }) async {
+    final side = _chatSide(asCompany);
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        'INSERT INTO messages (sender_id, receiver_id, message) '
+        'SELECT me.account_id, p.account_id, :text '
+        'FROM (SELECT x.account_id FROM ${side.meTable} x '
+        'JOIN accounts a ON a.account_id = x.account_id AND a.is_active = TRUE '
+        'WHERE x.${side.meKey} = :id) me '
+        'CROSS JOIN (SELECT * FROM ${side.partnerTable} '
+        'WHERE ${side.partnerKey} = :partner) p '
+        'JOIN accounts pa ON pa.account_id = p.account_id AND pa.is_active = TRUE '
+        'WHERE EXISTS (SELECT 1 FROM applications ap '
+        'JOIN jobs j ON j.job_id = ap.job_id '
+        "WHERE ${side.linked} AND ap.status = 'approved')",
+        {'id': id, 'partner': partnerId, 'text': text},
+      );
+      if (result.affectedRows == BigInt.zero) throw const ChatNotAllowedException();
+
+      final sent = await conn.execute(
+        'SELECT CAST(message_id AS CHAR) AS id, sent_at FROM messages '
+        'WHERE message_id = :id',
+        {'id': result.lastInsertID.toInt()},
+      );
+      return sent.rows.first.assoc();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Marks as read what the partner sent to the signed-in side.
+  static Future<void> markChatRead({
+    required bool asCompany,
+    required int id,
+    required int partnerId,
+  }) async {
+    final side = _chatSide(asCompany);
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'UPDATE messages m '
+        'JOIN ${side.meTable} x ON x.account_id = m.receiver_id '
+        'AND x.${side.meKey} = :id '
+        'JOIN ${side.partnerTable} p ON p.account_id = m.sender_id '
+        'AND p.${side.partnerKey} = :partner '
+        'SET m.is_read = TRUE WHERE m.is_read = FALSE',
+        {'id': id, 'partner': partnerId},
+      );
     } finally {
       await conn.close();
     }

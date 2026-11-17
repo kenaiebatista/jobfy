@@ -239,7 +239,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         acceptedTerms: _acceptedTerms,
                         footer: _loginLink(l10n),
                         onRegistered: (company) {
-                          context.read<UserSessionController>().startCompany(company.companyId);
+                          context.read<UserSessionController>().startCompany(company.companyId, name: company.displayName);
                           context.go('/company');
                         },
                       )
