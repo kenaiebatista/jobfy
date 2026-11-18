@@ -2,6 +2,7 @@ import 'package:jobfy/core/database/database_service.dart';
 import 'package:jobfy/features/jobs/data/datasources/job_data_source.dart';
 import 'package:jobfy/features/jobs/data/datasources/job_mysql_data_source.dart';
 import '../../domain/entities/user_profile_entity.dart';
+import '../../domain/recommend_jobs.dart';
 import '../models/user_profile_model.dart';
 import 'user_data_source.dart';
 
@@ -31,6 +32,7 @@ class UserMysqlDataSource implements UserDataSource {
     final experiences = [
       for (final e in data.experiences)
         ExperienceEntity(
+          id: e['experience_id'],
           jobTitle: e['job_title'] ?? '',
           companyName: e['company_name'] ?? '',
           description: e['description'],
@@ -75,16 +77,7 @@ class UserMysqlDataSource implements UserDataSource {
       matchScore: 0,
       profileViews: 0,
       skills: skills,
-      recommendedJobs: [
-        for (final j in jobs.take(3))
-          JobMatchEntity(
-            title: j.title,
-            company: j.company,
-            location: j.location,
-            type: j.type,
-            salary: j.salary,
-          ),
-      ],
+      recommendedJobs: recommendJobs(jobs, skills),
       activities: [
         for (final a in data.recentApplications)
           ActivityEntity(
@@ -132,6 +125,43 @@ class UserMysqlDataSource implements UserDataSource {
   @override
   Future<void> deleteAccount(String userId) {
     return DatabaseService.deactivateAccount(int.parse(userId));
+  }
+
+  @override
+  Future<void> addSkill(String userId, String name, SkillLevel level) {
+    return DatabaseService.addUserSkill(
+      userId: int.parse(userId),
+      skillName: name.trim(),
+      level: level.name,
+    );
+  }
+
+  @override
+  Future<void> removeSkill(String userId, String name) {
+    return DatabaseService.removeUserSkill(userId: int.parse(userId), skillName: name);
+  }
+
+  @override
+  Future<void> addExperience(String userId, ExperienceEntity experience) {
+    String day(DateTime d) =>
+        '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+    final description = experience.description?.trim();
+    return DatabaseService.addExperience(
+      userId: int.parse(userId),
+      jobTitle: experience.jobTitle,
+      companyName: experience.companyName,
+      description: description == null || description.isEmpty ? null : description,
+      startDate: day(experience.startDate),
+      endDate: experience.endDate == null ? null : day(experience.endDate!),
+    );
+  }
+
+  @override
+  Future<void> deleteExperience(String userId, String experienceId) {
+    return DatabaseService.deleteExperience(
+      userId: int.parse(userId),
+      experienceId: int.parse(experienceId),
+    );
   }
 
   static String _formatDate(DateTime? d) {

@@ -19,4 +19,7 @@ abstract class JobDataSource {
   Future<JobDetailsModel?> getJobDetails(String jobId, {String? userId});
 
   Future<void> applyToJob(String jobId, String userId);
+
+  /// The user gives up the application (a pending or approved one).
+  Future<void> withdrawApplication(String jobId, String userId);
 }

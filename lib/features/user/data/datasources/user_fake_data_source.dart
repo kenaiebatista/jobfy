@@ -1,5 +1,6 @@
 import '../../domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/jobs/data/datasources/job_data_source.dart';
+import '../../domain/recommend_jobs.dart';
 import 'package:jobfy/features/jobs/data/datasources/job_mysql_data_source.dart';
 import 'user_data_source.dart';
 import '../models/user_profile_model.dart';
@@ -12,6 +13,14 @@ class UserFakeDataSource implements UserDataSource {
   final JobDataSource _jobs;
 
   UserFakeDataSource([JobDataSource? jobs]) : _jobs = jobs ?? JobMysqlDataSource();
+
+  static const _baseSkills = [
+    UserSkillEntity(name: 'Flutter', level: SkillLevel.advanced),
+    UserSkillEntity(name: 'Dart', level: SkillLevel.advanced),
+    UserSkillEntity(name: 'Firebase', level: SkillLevel.intermediate),
+    UserSkillEntity(name: 'UI/UX'),
+    UserSkillEntity(name: 'REST APIs', level: SkillLevel.intermediate),
+  ];
 
   /// Edits from the settings screen, kept until the app restarts.
   static UserProfileModel? _saved;
@@ -28,19 +37,7 @@ class UserFakeDataSource implements UserDataSource {
     // without recommendations.
     List<JobMatchEntity> recommendedJobs = [];
     try {
-      final jobs = await _jobs.searchJobs();
-      recommendedJobs = jobs
-          .take(3)
-          .map(
-            (j) => JobMatchEntity(
-              title: j.title,
-              company: j.company,
-              location: j.location,
-              type: j.type,
-              salary: j.salary,
-            ),
-          )
-          .toList();
+      recommendedJobs = recommendJobs(await _jobs.searchJobs(), _baseSkills);
     } catch (_) {}
 
     return UserProfileModel(
@@ -53,13 +50,7 @@ class UserFakeDataSource implements UserDataSource {
       applications: 12,
       matchScore: 89,
       profileViews: 234,
-      skills: const [
-        UserSkillEntity(name: 'Flutter', level: SkillLevel.advanced),
-        UserSkillEntity(name: 'Dart', level: SkillLevel.advanced),
-        UserSkillEntity(name: 'Firebase', level: SkillLevel.intermediate),
-        UserSkillEntity(name: 'UI/UX'),
-        UserSkillEntity(name: 'REST APIs', level: SkillLevel.intermediate),
-      ],
+      skills: _baseSkills,
       recommendedJobs: recommendedJobs,
       activities: const [
         ActivityEntity(
@@ -113,5 +104,73 @@ class UserFakeDataSource implements UserDataSource {
   Future<void> deleteAccount(String userId) async {
     await Future.delayed(const Duration(milliseconds: 400));
     _saved = null;
+  }
+
+  /// Applies [change] to the profile and keeps it (until the app restarts).
+  Future<void> _edit(String userId, UserProfileEntity Function(UserProfileEntity) change) async {
+    final p = change(await getUserProfile(userId));
+    _saved = UserProfileModel(
+      id: p.id,
+      name: p.name,
+      email: p.email,
+      role: p.role,
+      location: p.location,
+      profileCompletion: p.profileCompletion,
+      applications: p.applications,
+      matchScore: p.matchScore,
+      profileViews: p.profileViews,
+      skills: p.skills,
+      recommendedJobs: p.recommendedJobs,
+      activities: p.activities,
+      cpf: p.cpf,
+      gender: p.gender,
+      phone: p.phone,
+      birthDate: p.birthDate,
+      educationLevel: p.educationLevel,
+      experiences: p.experiences,
+    );
+  }
+
+  @override
+  Future<void> addSkill(String userId, String name, SkillLevel level) {
+    final key = name.trim().toLowerCase();
+    return _edit(userId, (p) {
+      // Same name in any case is the same skill (like the database), so it keeps
+      // the name it was first saved with.
+      final existing = p.skills.where((s) => s.name.toLowerCase() == key);
+      return p.copyWith(skills: [
+        ...p.skills.where((s) => s.name.toLowerCase() != key),
+        UserSkillEntity(name: existing.isEmpty ? name.trim() : existing.first.name, level: level),
+      ]);
+    });
+  }
+
+  @override
+  Future<void> removeSkill(String userId, String name) {
+    return _edit(userId, (p) => p.copyWith(skills: [
+          for (final s in p.skills)
+            if (s.name != name) s,
+        ]));
+  }
+
+  @override
+  Future<void> addExperience(String userId, ExperienceEntity experience) {
+    final saved = ExperienceEntity(
+      id: 'exp_${DateTime.now().microsecondsSinceEpoch}',
+      jobTitle: experience.jobTitle,
+      companyName: experience.companyName,
+      description: experience.description,
+      startDate: experience.startDate,
+      endDate: experience.endDate,
+    );
+    return _edit(userId, (p) => p.copyWith(experiences: [...p.experiences, saved]));
+  }
+
+  @override
+  Future<void> deleteExperience(String userId, String experienceId) {
+    return _edit(userId, (p) => p.copyWith(experiences: [
+          for (final e in p.experiences)
+            if (e.id != experienceId) e,
+        ]));
   }
 }

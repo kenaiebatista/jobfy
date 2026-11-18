@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 class JobMatchCard extends StatefulWidget {
   final JobMatchEntity job;
 
-  const JobMatchCard({super.key, required this.job});
+  /// Opens the job's details.
+  final VoidCallback? onTap;
+
+  const JobMatchCard({super.key, required this.job, this.onTap});
 
   @override
   State<JobMatchCard> createState() => _JobMatchCardState();
@@ -27,9 +30,12 @@ class _JobMatchCardState extends State<JobMatchCard> {
     final colors = context.colors;
     final matchColor = _matchColor(context);
     return MouseRegion(
+      cursor: widget.onTap == null ? MouseCursor.defer : SystemMouseCursors.click,
       onEnter: (_) => setState(() => _hovered = true),
       onExit: (_) => setState(() => _hovered = false),
-      child: AnimatedContainer(
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -125,6 +131,7 @@ class _JobMatchCardState extends State<JobMatchCard> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

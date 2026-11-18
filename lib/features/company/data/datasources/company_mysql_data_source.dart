@@ -7,16 +7,12 @@ import '../models/candidate_model.dart';
 import '../models/company_model.dart';
 import '../models/job_model.dart';
 import 'company_data_source.dart';
-import 'company_fake_data_source.dart';
 
 /// Company data straight from the Jobfy MySQL database through
 /// [DatabaseService]. Stand-in until the Go backend
 /// ([CompanyRemoteDataSource]) is deployed.
 ///
-/// Rating candidates still uses [CompanyFakeDataSource].
 class CompanyMysqlDataSource implements CompanyDataSource {
-  final CompanyFakeDataSource _notYetInDatabase = CompanyFakeDataSource();
-
   @override
   Future<CompanyEntity> registerCompany(CompanyEntity company, String password) async {
     String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
@@ -69,6 +65,42 @@ class CompanyMysqlDataSource implements CompanyDataSource {
       state: row['state'],
       description: row['description'],
     );
+  }
+
+  @override
+  Future<void> updateCompany(CompanyEntity company) async {
+    String? opt(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
+    final zip = company.zipCode?.replaceAll(RegExp(r'\D'), '');
+    try {
+      await DatabaseService.updateCompanyAccount(
+        companyId: int.parse(company.companyId),
+        email: company.email.trim(),
+        tradeName: opt(company.tradeName),
+        phone: opt(company.phone),
+        businessArea: opt(company.businessArea),
+        zipCode: opt(zip),
+        address: opt(company.address),
+        city: opt(company.city),
+        state: opt(company.state)?.toUpperCase(),
+        description: opt(company.description),
+      );
+    } on EmailAlreadyInUseException {
+      throw const ApiStatusException(409, 'email');
+    }
+  }
+
+  @override
+  Future<bool> changePassword(String companyId, String currentPassword, String newPassword) {
+    return DatabaseService.changeCompanyPassword(
+      companyId: int.parse(companyId),
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
+  @override
+  Future<void> deleteAccount(String companyId) {
+    return DatabaseService.deactivateCompanyAccount(int.parse(companyId));
   }
 
   @override
@@ -149,8 +181,4 @@ class CompanyMysqlDataSource implements CompanyDataSource {
     final rows = await DatabaseService.getJobCandidates(int.parse(jobId));
     return [for (final r in rows) CandidateModel.fromJson(r)];
   }
-
-  @override
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) =>
-      _notYetInDatabase.rateCandidate(candidateId, rating, comment: comment);
 }

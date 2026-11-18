@@ -18,7 +18,15 @@ class CompanySidebar extends StatelessWidget {
   /// Called when an entry is picked, e.g. to close the drawer.
   final VoidCallback? onNavTap;
 
-  const CompanySidebar({super.key, required this.current, this.onNavTap});
+  /// Unread chat messages, shown on the Messages entry.
+  final int unreadMessages;
+
+  const CompanySidebar({
+    super.key,
+    required this.current,
+    this.onNavTap,
+    this.unreadMessages = 0,
+  });
 
   static const double width = ProfileSidebar.width;
 
@@ -114,6 +122,7 @@ class CompanySidebar extends StatelessWidget {
                       icon: Icons.chat_bubble_outline,
                       label: l10n.navMessages,
                       isSelected: current == CompanySection.messages,
+                      badge: unreadMessages,
                       onTap: () {
                         onNavTap?.call();
                         context.go('/messages');

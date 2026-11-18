@@ -10,6 +10,7 @@ import '../models/job_listing_model.dart';
 ///   GET  /jobs?query=&location=&area=&contract_type=  -> `List<JobListingModel>`
 ///   GET  /jobs/{id}?user_id=     -> JobDetailsModel (404 if missing)
 ///   POST /jobs/{id}/apply  {user_id} -> 204
+///   POST /jobs/{id}/withdraw  {user_id} -> 204
 class JobRemoteDataSource implements JobDataSource {
   final ApiClient _client;
 
@@ -42,6 +43,11 @@ class JobRemoteDataSource implements JobDataSource {
       if (e.statusCode == 404) return null;
       rethrow;
     }
+  }
+
+  @override
+  Future<void> withdrawApplication(String jobId, String userId) {
+    return _client.post('/jobs/$jobId/withdraw', body: {'user_id': userId});
   }
 
   @override

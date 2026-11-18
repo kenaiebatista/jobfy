@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../../domain/entities/job_details_entity.dart';
 import '../../domain/usecases/apply_to_job_usecase.dart';
 import '../../domain/usecases/get_job_details_usecase.dart';
+import '../../domain/usecases/withdraw_application_usecase.dart';
 
 enum JobDetailsStatus { loading, loaded, notFound, error }
 
@@ -9,8 +10,13 @@ enum JobDetailsStatus { loading, loaded, notFound, error }
 class JobDetailsController extends ChangeNotifier {
   final GetJobDetailsUsecase _getJobDetailsUsecase;
   final ApplyToJobUsecase _applyToJobUsecase;
+  final WithdrawApplicationUsecase _withdrawApplicationUsecase;
 
-  JobDetailsController(this._getJobDetailsUsecase, this._applyToJobUsecase);
+  JobDetailsController(
+    this._getJobDetailsUsecase,
+    this._applyToJobUsecase,
+    this._withdrawApplicationUsecase,
+  );
 
   JobDetailsStatus _status = JobDetailsStatus.loading;
   JobDetailsEntity? _job;
@@ -31,6 +37,26 @@ class JobDetailsController extends ChangeNotifier {
       _status = JobDetailsStatus.error;
     }
     notifyListeners();
+  }
+
+  /// Gives up [userId]'s application to the loaded job. Returns false on error.
+  Future<bool> withdraw(String userId) async {
+    final job = _job;
+    if (job == null || !job.canWithdraw) return false;
+
+    _isApplying = true;
+    notifyListeners();
+    var ok = true;
+    try {
+      await _withdrawApplicationUsecase(job.id, userId);
+      _job = job.copyWith(applicationStatus: 'withdrawn');
+    } catch (e) {
+      debugPrint('Could not withdraw from job ${job.id}: $e');
+      ok = false;
+    }
+    _isApplying = false;
+    notifyListeners();
+    return ok;
   }
 
   /// Sends [userId]'s application to the loaded job. Returns false on error.

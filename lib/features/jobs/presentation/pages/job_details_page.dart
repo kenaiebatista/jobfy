@@ -7,6 +7,7 @@ import 'package:jobfy/features/jobs/domain/entities/job_details_entity.dart';
 import 'package:jobfy/features/jobs/domain/repositories/job_repository.dart';
 import 'package:jobfy/features/jobs/domain/usecases/apply_to_job_usecase.dart';
 import 'package:jobfy/features/jobs/domain/usecases/get_job_details_usecase.dart';
+import 'package:jobfy/features/jobs/domain/usecases/withdraw_application_usecase.dart';
 import 'package:jobfy/features/jobs/presentation/controllers/job_details_controller.dart';
 import 'package:jobfy/features/user/presentation/user_labels.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
@@ -39,6 +40,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
     _controller = JobDetailsController(
       GetJobDetailsUsecase(repo),
       ApplyToJobUsecase(repo),
+      WithdrawApplicationUsecase(repo),
     );
     final session = context.read<UserSessionController>();
     _controller.load(widget.jobId, userId: session.userId);
@@ -63,6 +65,41 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
       SnackBar(content: Text(ok ? l10n.jobApplySuccess : l10n.jobApplyError)),
     );
     // The dashboard counts the user's applications.
+    if (ok) session.reload();
+  }
+
+  Future<void> _withdraw() async {
+    final l10n = AppLocalizations.of(context)!;
+    final colors = context.colors;
+    final messenger = ScaffoldMessenger.of(context);
+    final session = context.read<UserSessionController>();
+    final userId = session.userId;
+    if (userId == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.jobWithdraw),
+        content: Text(l10n.jobWithdrawConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.dialogCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: colors.danger),
+            child: Text(l10n.jobWithdraw),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final ok = await _controller.withdraw(userId);
+    messenger.showSnackBar(
+      SnackBar(content: Text(ok ? l10n.jobWithdrawSuccess : l10n.jobWithdrawError)),
+    );
     if (ok) session.reload();
   }
 
@@ -95,6 +132,7 @@ class _JobDetailsPageState extends State<JobDetailsPage> {
                   job: job!,
                   isApplying: _controller.isApplying,
                   onApply: _apply,
+                  onWithdraw: _withdraw,
                 );
             }
           },
@@ -107,11 +145,13 @@ class _JobDetails extends StatelessWidget {
   final JobDetailsEntity job;
   final bool isApplying;
   final VoidCallback onApply;
+  final VoidCallback onWithdraw;
 
   const _JobDetails({
     required this.job,
     required this.isApplying,
     required this.onApply,
+    required this.onWithdraw,
   });
 
   @override
@@ -215,7 +255,7 @@ class _JobDetails extends StatelessWidget {
                   ],
                 ),
               ),
-              if (job.hasApplied) _ApplicationStatus(status: job.applicationStatus!),
+              if (job.applicationStatus != null) _ApplicationStatus(status: job.applicationStatus!),
               SizedBox(
                 width: double.infinity,
                 height: 48,
@@ -236,6 +276,21 @@ class _JobDetails extends StatelessWidget {
                   ),
                 ),
               ),
+              if (job.canWithdraw)
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: OutlinedButton.icon(
+                    onPressed: isApplying ? null : onWithdraw,
+                    icon: const Icon(Icons.undo, size: 18),
+                    label: Text(l10n.jobWithdraw),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: colors.danger,
+                      side: BorderSide(color: colors.danger.withValues(alpha: 0.5)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:jobfy/core/network/api_client.dart';
+import 'package:jobfy/core/network/api_exception.dart';
 import '../../domain/entities/company_entity.dart';
 import 'company_data_source.dart';
 import '../models/candidate_model.dart';
@@ -10,13 +11,16 @@ import '../models/job_model.dart';
 /// Expected contract (Go backend, JSON, snake_case fields):
 ///   POST /companies   {..., password}                  -> CompanyModel
 ///   GET  /companies/{companyId}                        -> CompanyModel
+///   PUT  /companies/{companyId}                        {same fields as the sign-up body}
+///   PUT  /companies/{companyId}/password               {current_password, new_password}
+///                                                      (403 when the current one is wrong)
+///   DELETE /companies/{companyId}
 ///   GET  /companies/{companyId}/jobs                   -> `List<JobModel>`
 ///   POST /companies/{companyId}/jobs                   -> JobModel
 ///   PUT  /companies/{companyId}/jobs/{jobId}           {same body as POST}
 ///   PUT  /companies/{companyId}/jobs/{jobId}/status    {status: open|paused|closed}
 ///   PUT  /companies/{companyId}/jobs/{jobId}/candidates/{userId} {status: under_review|approved|rejected}
 ///   GET  /jobs/{jobId}/candidates                      -> `List<CandidateModel>`
-///   POST /candidates/{id}/ratings   {rating, comment}
 class CompanyRemoteDataSource implements CompanyDataSource {
   final ApiClient _client;
 
@@ -48,6 +52,44 @@ class CompanyRemoteDataSource implements CompanyDataSource {
   Future<CompanyEntity> getCompany(String companyId) async {
     final json = await _client.get('/companies/$companyId') as Map<String, dynamic>;
     return CompanyModel.fromJson(json);
+  }
+
+  @override
+  Future<void> updateCompany(CompanyEntity company) async {
+    final body = CompanyModel(
+      companyId: company.companyId,
+      companyName: company.companyName,
+      cnpj: company.cnpj,
+      email: company.email,
+      phone: company.phone,
+      tradeName: company.tradeName,
+      businessArea: company.businessArea,
+      zipCode: company.zipCode,
+      address: company.address,
+      city: company.city,
+      state: company.state,
+      description: company.description,
+    ).toJson();
+    await _client.put('/companies/${company.companyId}', body: body);
+  }
+
+  @override
+  Future<bool> changePassword(String companyId, String currentPassword, String newPassword) async {
+    try {
+      await _client.put('/companies/$companyId/password', body: {
+        'current_password': currentPassword,
+        'new_password': newPassword,
+      });
+      return true;
+    } on ApiStatusException catch (e) {
+      if (e.statusCode == 403) return false;
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(String companyId) async {
+    await _client.delete('/companies/$companyId');
   }
 
   @override
@@ -123,13 +165,5 @@ class CompanyRemoteDataSource implements CompanyDataSource {
     return json
         .map((c) => CandidateModel.fromJson(c as Map<String, dynamic>))
         .toList();
-  }
-
-  @override
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) {
-    return _client.post('/candidates/$candidateId/ratings', body: {
-      'rating': rating,
-      if (comment != null) 'comment': comment,
-    });
   }
 }

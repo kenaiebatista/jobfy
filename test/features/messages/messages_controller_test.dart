@@ -66,6 +66,10 @@ class _InMemoryChat implements MessagesDataSource {
   Future<void> markAsRead({required ChatParticipant me, required String partnerId}) async {
     readCalls.add(partnerId);
   }
+
+  @override
+  Future<int> countUnread(ChatParticipant me) async =>
+      conversations.values.fold<int>(0, (sum, c) => sum + c.unread);
 }
 
 MessagesController _controller(_InMemoryChat source, {bool company = false}) {

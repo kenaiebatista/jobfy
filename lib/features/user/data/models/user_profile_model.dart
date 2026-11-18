@@ -84,6 +84,7 @@ Gender? _genderFromJson(String? value) => Gender.values.asNameMap()[value];
 
 ExperienceEntity _experienceFromJson(Map<String, dynamic> json) =>
     ExperienceEntity(
+      id: json['id']?.toString(),
       jobTitle: json['job_title'] as String,
       companyName: json['company_name'] as String,
       description: json['description'] as String?,
@@ -92,6 +93,7 @@ ExperienceEntity _experienceFromJson(Map<String, dynamic> json) =>
     );
 
 JobMatchEntity _jobMatchFromJson(Map<String, dynamic> json) => JobMatchEntity(
+      id: json['id']?.toString(),
       title: json['title'] as String,
       company: json['company'] as String,
       location: json['location'] as String,

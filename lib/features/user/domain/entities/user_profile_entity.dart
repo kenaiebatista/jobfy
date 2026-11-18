@@ -1,4 +1,6 @@
 class JobMatchEntity {
+  /// `jobs.job_id`, to open the job's details. Null when unknown.
+  final String? id;
   final String title;
   final String company;
   final String location;
@@ -8,6 +10,7 @@ class JobMatchEntity {
   final String salary;
 
   const JobMatchEntity({
+    this.id,
     required this.title,
     required this.company,
     required this.location,
@@ -69,6 +72,8 @@ class UserSkillEntity {
 
 /// A row of `experiences`. [endDate] null means it's the current job.
 class ExperienceEntity {
+  /// `experiences.experience_id`; null until it is saved.
+  final String? id;
   final String jobTitle;
   final String companyName;
   final String? description;
@@ -76,6 +81,7 @@ class ExperienceEntity {
   final DateTime? endDate;
 
   const ExperienceEntity({
+    this.id,
     required this.jobTitle,
     required this.companyName,
     this.description,
@@ -133,6 +139,8 @@ class UserProfileEntity {
     String? email,
     String? phone,
     EducationLevel? educationLevel,
+    List<UserSkillEntity>? skills,
+    List<ExperienceEntity>? experiences,
   }) {
     return UserProfileEntity(
       id: id,
@@ -144,7 +152,7 @@ class UserProfileEntity {
       applications: applications,
       matchScore: matchScore,
       profileViews: profileViews,
-      skills: skills,
+      skills: skills ?? this.skills,
       recommendedJobs: recommendedJobs,
       activities: activities,
       cpf: cpf,
@@ -152,7 +160,7 @@ class UserProfileEntity {
       phone: phone ?? this.phone,
       birthDate: birthDate,
       educationLevel: educationLevel ?? this.educationLevel,
-      experiences: experiences,
+      experiences: experiences ?? this.experiences,
     );
   }
 }

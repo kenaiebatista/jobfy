@@ -293,7 +293,7 @@ class _SkillsRow extends StatelessWidget {
             ],
           );
     final addButton = TextButton.icon(
-      onPressed: () {},
+      onPressed: () => context.go('/settings'),
       icon: const Icon(Icons.add, size: 16),
       label: Text(l10n.addSkill, style: const TextStyle(fontSize: 13)),
       style: TextButton.styleFrom(foregroundColor: colors.accent),
@@ -409,7 +409,10 @@ class _JobsSection extends StatelessWidget {
           ),
           ...jobs.map((j) => Padding(
                 padding: const EdgeInsets.only(top: 12),
-                child: JobMatchCard(job: j),
+                child: JobMatchCard(
+                  job: j,
+                  onTap: j.id == null ? null : () => context.go('/jobs/${j.id}'),
+                ),
               )),
         ],
       ),

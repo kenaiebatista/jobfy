@@ -76,6 +76,11 @@ class MessagesFakeDataSource implements MessagesDataSource {
   }
 
   @override
+  Future<int> countUnread(ChatParticipant me) async {
+    return _conversations.fold<int>(0, (sum, c) => sum + c.unread);
+  }
+
+  @override
   Future<void> markAsRead({required ChatParticipant me, required String partnerId}) async {
     final i = _conversations.indexWhere((c) => c.id == partnerId);
     if (i < 0) return;

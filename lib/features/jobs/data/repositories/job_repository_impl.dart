@@ -38,4 +38,9 @@ class JobRepositoryImpl implements JobRepository {
 
   @override
   Future<void> applyToJob(String jobId, String userId) => _dataSource.applyToJob(jobId, userId);
+
+  @override
+  Future<void> withdrawApplication(String jobId, String userId) {
+    return _dataSource.withdrawApplication(jobId, userId);
+  }
 }

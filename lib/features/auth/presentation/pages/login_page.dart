@@ -24,7 +24,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _rememberMe = false;
   bool _isCompany = false;
 
   late final AuthController _authController;
@@ -191,23 +190,6 @@ class _LoginPageState extends State<LoginPage> {
                   prefixIcon: const Icon(Icons.lock_outline, size: 18),
                 ),
                 onSubmitted: (_) => _handleLogin(),
-              ),
-              Row(
-                spacing: 8,
-                children: [
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: Checkbox(
-                      value: _rememberMe,
-                      onChanged: (v) => setState(() => _rememberMe = v!),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ),
-                  Text(l10n.rememberMe, style: const TextStyle(fontSize: 13)),
-                ],
               ),
               if (_authController.errorCode != null)
                 Container(

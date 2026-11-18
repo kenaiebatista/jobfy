@@ -79,6 +79,11 @@ class MessagesMysqlDataSource implements MessagesDataSource {
   }
 
   @override
+  Future<int> countUnread(ChatParticipant me) {
+    return DatabaseService.countUnreadMessages(asCompany: me.isCompany, id: int.parse(me.id));
+  }
+
+  @override
   Future<void> markAsRead({required ChatParticipant me, required String partnerId}) {
     return DatabaseService.markChatRead(
       asCompany: me.isCompany,

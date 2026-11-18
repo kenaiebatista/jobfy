@@ -60,6 +60,41 @@ class CompanyFakeDataSource implements CompanyDataSource {
         );
   }
 
+  static String _password = 'jobfy123';
+
+  @override
+  Future<void> updateCompany(CompanyEntity company) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _company = CompanyModel(
+      companyId: company.companyId,
+      companyName: company.companyName,
+      cnpj: company.cnpj,
+      email: company.email,
+      phone: company.phone,
+      tradeName: company.tradeName,
+      businessArea: company.businessArea,
+      zipCode: company.zipCode,
+      address: company.address,
+      city: company.city,
+      state: company.state,
+      description: company.description,
+    );
+  }
+
+  @override
+  Future<bool> changePassword(String companyId, String currentPassword, String newPassword) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (currentPassword != _password) return false;
+    _password = newPassword;
+    return true;
+  }
+
+  @override
+  Future<void> deleteAccount(String companyId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _company = null;
+  }
+
   @override
   Future<List<JobEntity>> getCompanyJobs(String companyId) async => List.of(_jobs);
 
@@ -142,10 +177,5 @@ class CompanyFakeDataSource implements CompanyDataSource {
   Future<List<CandidateEntity>> getJobCandidates(String jobId) async {
     await Future.delayed(const Duration(milliseconds: 400));
     return List.of(_candidatesMock);
-  }
-
-  @override
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) async {
-    await Future.delayed(const Duration(milliseconds: 300));
   }
 }

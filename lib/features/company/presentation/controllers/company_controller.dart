@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:jobfy/features/company/domain/entities/company_entity.dart';
-import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_job_candidates_usecase.dart';
@@ -21,7 +20,6 @@ class CompanyController extends ChangeNotifier {
   final SetJobStatusUsecase _setJobStatusUsecase;
   final SetCandidateStatusUsecase _setCandidateStatusUsecase;
   final GetJobCandidatesUsecase _getJobCandidatesUsecase;
-  final RateCandidateUsecase _rateCandidateUsecase;
 
   CompanyController({
     required GetCompanyUsecase getCompanyUsecase,
@@ -31,15 +29,13 @@ class CompanyController extends ChangeNotifier {
     required SetJobStatusUsecase setJobStatusUsecase,
     required SetCandidateStatusUsecase setCandidateStatusUsecase,
     required GetJobCandidatesUsecase getJobCandidatesUsecase,
-    required RateCandidateUsecase rateCandidateUsecase,
   })  : _getCompanyUsecase = getCompanyUsecase,
         _getCompanyJobsUsecase = getCompanyJobsUsecase,
         _publishJobUsecase = publishJobUsecase,
         _updateJobUsecase = updateJobUsecase,
         _setJobStatusUsecase = setJobStatusUsecase,
         _setCandidateStatusUsecase = setCandidateStatusUsecase,
-        _getJobCandidatesUsecase = getJobCandidatesUsecase,
-        _rateCandidateUsecase = rateCandidateUsecase;
+        _getJobCandidatesUsecase = getJobCandidatesUsecase;
 
   CompanyStatus _status = CompanyStatus.idle;
   bool _isPublishing = false;
@@ -178,18 +174,5 @@ class CompanyController extends ChangeNotifier {
     }
     _isLoadingCandidates = false;
     notifyListeners();
-  }
-
-  Future<bool> rateCandidate(String candidateId, double rating, {String? comment}) async {
-    try {
-      await _rateCandidateUsecase(candidateId, rating, comment: comment);
-      _error = null;
-      notifyListeners();
-      return true;
-    } catch (_) {
-      _error = 'companyCandidateRateError';
-      notifyListeners();
-      return false;
-    }
   }
 }

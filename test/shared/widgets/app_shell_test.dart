@@ -6,6 +6,7 @@ import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/settings/settings_controller.dart';
 import 'package:jobfy/core/theme/app_theme.dart';
 import 'package:jobfy/features/company/presentation/widgets/company_sidebar.dart';
+import 'package:jobfy/features/messages/domain/entities/conversation_entity.dart';
 import 'package:jobfy/features/user/data/datasources/user_fake_data_source.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/usecases/get_user_profile_usecase.dart';
@@ -22,6 +23,8 @@ import '../../helpers/empty_job_data_source.dart';
 /// frame stays put while navigating: only the page changes.
 const _wide = Size(1400, 900);
 const _phone = Size(400, 800);
+
+Future<int> _noUnread(ChatParticipant me) async => 0;
 
 UserSessionController _session({required bool company}) {
   final session = UserSessionController(
@@ -71,7 +74,8 @@ GoRouter _router() => GoRouter(
       initialLocation: '/jobs',
       routes: [
         ShellRoute(
-          builder: (_, state, child) => AppShell(location: state.uri.path, child: child),
+          builder: (_, state, child) =>
+              AppShell(location: state.uri.path, countUnread: _noUnread, child: child),
           routes: [
             for (final path in ['/jobs', '/resume'])
               GoRoute(
@@ -95,7 +99,7 @@ void main() {
 
   testWidgets('user, wide: sidebar docked on the left, top bar beside it, no arrow or menu button', (tester) async {
     setSize(tester, _wide);
-    await tester.pumpWidget(_app(_session(company: false), home: const AppShell(location: '/jobs', child: Text('page'))));
+    await tester.pumpWidget(_app(_session(company: false), home: AppShell(location: '/jobs', countUnread: _noUnread, child: const Text('page'))));
     await tester.pumpAndSettle();
 
     final sidebar = tester.widget<ProfileSidebar>(find.byType(ProfileSidebar));
@@ -111,7 +115,7 @@ void main() {
 
   testWidgets('company, wide: its sidebar with the name, same frame and top bar', (tester) async {
     setSize(tester, _wide);
-    await tester.pumpWidget(_app(_session(company: true), home: const AppShell(location: '/messages', child: Text('page'))));
+    await tester.pumpWidget(_app(_session(company: true), home: AppShell(location: '/messages', countUnread: _noUnread, child: const Text('page'))));
     await tester.pumpAndSettle();
 
     final sidebar = tester.widget<CompanySidebar>(find.byType(CompanySidebar));
@@ -125,7 +129,7 @@ void main() {
   for (final company in [false, true]) {
     testWidgets('phone, ${company ? 'company' : 'user'}: the menu button is at the left of the top bar and opens the sidebar', (tester) async {
       setSize(tester, _phone);
-      await tester.pumpWidget(_app(_session(company: company), home: const AppShell(location: '/jobs', child: Text('page'))));
+      await tester.pumpWidget(_app(_session(company: company), home: AppShell(location: '/jobs', countUnread: _noUnread, child: const Text('page'))));
       await tester.pumpAndSettle();
 
       final sidebar = company ? find.byType(CompanySidebar) : find.byType(ProfileSidebar);
@@ -140,6 +144,31 @@ void main() {
       expect(tester.getTopLeft(sidebar).dx, 0);
     });
   }
+
+  for (final company in [false, true]) {
+    testWidgets('${company ? 'company' : 'user'}: unread chat messages show on the sidebar and on the top bar chat button', (tester) async {
+      setSize(tester, _wide);
+      await tester.pumpWidget(_app(
+        _session(company: company),
+        home: AppShell(location: '/x', countUnread: (_) async => 3, child: const Text('page')),
+      ));
+      await tester.pumpAndSettle();
+
+      final sidebar = company ? find.byType(CompanySidebar) : find.byType(ProfileSidebar);
+      expect(find.descendant(of: sidebar, matching: find.text('3')), findsOneWidget);
+      expect(find.widgetWithText(Badge, '3'), findsOneWidget); // on the chat button
+      expect(find.byTooltip('Messages'), findsOneWidget);
+    });
+  }
+
+  testWidgets('no unread messages: no badge', (tester) async {
+    setSize(tester, _wide);
+    await tester.pumpWidget(_app(_session(company: false), home: AppShell(location: '/x', countUnread: _noUnread, child: const Text('page'))));
+    await tester.pumpAndSettle();
+
+    expect(find.widgetWithText(Badge, '0'), findsNothing);
+    expect(find.descendant(of: find.byType(ProfileSidebar), matching: find.text('0')), findsNothing);
+  });
 
   testWidgets('navigating swaps only the page: sidebar and top bar stay, the highlight moves', (tester) async {
     setSize(tester, _wide);

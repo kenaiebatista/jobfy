@@ -758,6 +758,49 @@ class AppLocalizationsPt extends AppLocalizations {
   String get registerAsCompany => 'Sou empresa';
 
   @override
+  String get jobWithdraw => 'Desistir da candidatura';
+
+  @override
+  String get jobWithdrawConfirm =>
+      'Desistir desta candidatura? A empresa deixa de ver você entre os candidatos e o chat com ela fecha. Você pode se candidatar de novo depois.';
+
+  @override
+  String get jobWithdrawSuccess => 'Você desistiu da candidatura.';
+
+  @override
+  String get jobWithdrawError =>
+      'Não foi possível cancelar a candidatura. Tente novamente.';
+
+  @override
+  String get settingsCompanyDataDescription =>
+      'Atualize os dados da empresa que os candidatos veem.';
+
+  @override
+  String get settingsCompanyPasswordDescription =>
+      'Troque a senha de acesso da empresa.';
+
+  @override
+  String get settingsDeleteCompanyConfirm =>
+      'Tem certeza que quer excluir a conta da empresa? As vagas serão encerradas e vocês não poderão mais entrar.';
+
+  @override
+  String get companyZipCodeInvalid => 'O CEP deve ter 8 números.';
+
+  @override
+  String get companyStateInvalid => 'Use a sigla com 2 letras.';
+
+  @override
+  String get settingsSkillsDescription =>
+      'Adicione ou remova suas habilidades e escolha o nível de cada uma.';
+
+  @override
+  String get settingsExperiencesDescription =>
+      'Suas experiências aparecem no seu currículo. Trabalho voluntário também conta!';
+
+  @override
+  String get settingsRemove => 'Remover';
+
+  @override
   String get messagesSearchHint => 'Buscar conversas...';
 
   @override
@@ -1827,6 +1870,49 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get registerAsCompany => 'Sou empresa';
+
+  @override
+  String get jobWithdraw => 'Desistir da candidatura';
+
+  @override
+  String get jobWithdrawConfirm =>
+      'Desistir desta candidatura? A empresa deixa de ver você entre os candidatos e o chat com ela fecha. Você pode se candidatar de novo depois.';
+
+  @override
+  String get jobWithdrawSuccess => 'Você desistiu da candidatura.';
+
+  @override
+  String get jobWithdrawError =>
+      'Não foi possível cancelar a candidatura. Tente novamente.';
+
+  @override
+  String get settingsCompanyDataDescription =>
+      'Atualize os dados da empresa que os candidatos veem.';
+
+  @override
+  String get settingsCompanyPasswordDescription =>
+      'Troque a senha de acesso da empresa.';
+
+  @override
+  String get settingsDeleteCompanyConfirm =>
+      'Tem certeza que quer excluir a conta da empresa? As vagas serão encerradas e vocês não poderão mais entrar.';
+
+  @override
+  String get companyZipCodeInvalid => 'O CEP deve ter 8 números.';
+
+  @override
+  String get companyStateInvalid => 'Use a sigla com 2 letras.';
+
+  @override
+  String get settingsSkillsDescription =>
+      'Adicione ou remova suas habilidades e escolha o nível de cada uma.';
+
+  @override
+  String get settingsExperiencesDescription =>
+      'Suas experiências aparecem no seu currículo. Trabalho voluntário também conta!';
+
+  @override
+  String get settingsRemove => 'Remover';
 
   @override
   String get messagesSearchHint => 'Buscar conversas...';

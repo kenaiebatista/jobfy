@@ -12,4 +12,13 @@ abstract class UserRepository {
   });
 
   Future<void> deleteAccount(String userId);
+
+  Future<void> addSkill(String userId, String name, SkillLevel level);
+
+  Future<void> removeSkill(String userId, String name);
+
+  Future<void> addExperience(String userId, ExperienceEntity experience);
+
+  Future<void> deleteExperience(String userId, String experienceId);
+
 }

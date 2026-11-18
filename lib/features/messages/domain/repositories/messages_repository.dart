@@ -12,4 +12,7 @@ abstract class MessagesRepository {
   });
 
   Future<void> markAsRead({required ChatParticipant me, required String partnerId});
+
+  /// How many messages [me] has not read yet, over all chats.
+  Future<int> countUnread(ChatParticipant me);
 }

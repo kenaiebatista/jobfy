@@ -5,6 +5,7 @@ import 'package:jobfy/features/jobs/data/models/job_listing_model.dart';
 import 'package:jobfy/features/jobs/data/repositories/job_repository_impl.dart';
 import 'package:jobfy/features/jobs/domain/usecases/apply_to_job_usecase.dart';
 import 'package:jobfy/features/jobs/domain/usecases/get_job_details_usecase.dart';
+import 'package:jobfy/features/jobs/domain/usecases/withdraw_application_usecase.dart';
 import 'package:jobfy/features/jobs/presentation/controllers/job_details_controller.dart';
 
 /// Keeps the applications in memory, like the `applications` table would.
@@ -48,7 +49,14 @@ class _TestJobDataSource implements JobDataSource {
   }
 
   @override
-  Future<void> applyToJob(String jobId, String userId) async => applications.add((jobId, userId));
+  Future<void> applyToJob(String jobId, String userId) async {
+    // Like the database: applying again starts over only after withdrawing.
+    if (answer == 'withdrawn') answer = null;
+    applications.add((jobId, userId));
+  }
+
+  @override
+  Future<void> withdrawApplication(String jobId, String userId) async => answer = 'withdrawn';
 }
 
 void main() {
@@ -58,7 +66,11 @@ void main() {
   setUp(() {
     source = _TestJobDataSource();
     final repo = JobRepositoryImpl(source);
-    controller = JobDetailsController(GetJobDetailsUsecase(repo), ApplyToJobUsecase(repo));
+    controller = JobDetailsController(
+      GetJobDetailsUsecase(repo),
+      ApplyToJobUsecase(repo),
+      WithdrawApplicationUsecase(repo),
+    );
   });
 
   test('loads the job details from the row', () async {
@@ -103,6 +115,31 @@ void main() {
 
     expect(controller.job!.hasApplied, isTrue);
     expect(controller.job!.applicationStatus, 'approved');
+  });
+
+  test('withdrawing gives up the application and allows applying again', () async {
+    await controller.load('1', userId: '7');
+    expect(await controller.withdraw('7'), isFalse); // nothing to withdraw yet
+
+    await controller.apply('7');
+    expect(controller.job!.canWithdraw, isTrue);
+
+    expect(await controller.withdraw('7'), isTrue);
+    expect(controller.job!.applicationStatus, 'withdrawn');
+    expect(controller.job!.hasApplied, isFalse); // not an active application
+    expect(controller.job!.canWithdraw, isFalse);
+
+    expect(await controller.apply('7'), isTrue); // applies again
+    expect(controller.job!.applicationStatus, 'under_review');
+  });
+
+  test('a rejected application can not be withdrawn', () async {
+    source.applications.add(('1', '7'));
+    source.answer = 'rejected';
+    await controller.load('1', userId: '7');
+
+    expect(controller.job!.canWithdraw, isFalse);
+    expect(await controller.withdraw('7'), isFalse);
   });
 
   test('a closed job takes no applications', () async {

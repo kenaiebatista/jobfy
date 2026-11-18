@@ -9,6 +9,14 @@ abstract class CompanyDataSource {
 
   Future<CompanyEntity> getCompany(String companyId);
 
+  Future<void> updateCompany(CompanyEntity company);
+
+  /// Returns false when [currentPassword] is wrong.
+  Future<bool> changePassword(String companyId, String currentPassword, String newPassword);
+
+  /// Closes the account; the company can no longer sign in and its jobs close.
+  Future<void> deleteAccount(String companyId);
+
   Future<List<JobEntity>> getCompanyJobs(String companyId);
 
   Future<void> publishJob(NewJobEntity job);
@@ -27,6 +35,4 @@ abstract class CompanyDataSource {
 
   /// Who applied to the job.
   Future<List<CandidateEntity>> getJobCandidates(String jobId);
-
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment});
 }

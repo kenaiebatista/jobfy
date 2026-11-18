@@ -7,6 +7,21 @@ import 'package:jobfy/features/settings/domain/entities/user_preferences_entity.
 import 'package:jobfy/features/settings/domain/usecases/get_user_preferences_usecase.dart';
 import 'package:jobfy/features/settings/domain/usecases/save_user_preferences_usecase.dart';
 import 'package:jobfy/features/settings/presentation/controllers/account_settings_controller.dart';
+import 'package:jobfy/features/settings/presentation/controllers/company_account_controller.dart';
+import 'package:jobfy/features/settings/presentation/controllers/profile_details_controller.dart';
+import 'package:jobfy/features/settings/presentation/widgets/company_account_form.dart';
+import 'package:jobfy/features/company/data/repositories/company_repository_impl.dart';
+import 'package:jobfy/features/company/domain/entities/company_entity.dart';
+import 'package:jobfy/features/company/domain/repositories/company_repository.dart';
+import 'package:jobfy/features/company/domain/usecases/change_company_password_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/delete_company_account_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
+import 'package:jobfy/features/company/domain/usecases/update_company_usecase.dart';
+import 'package:jobfy/features/settings/presentation/widgets/profile_details_sections.dart';
+import 'package:jobfy/features/user/domain/usecases/add_experience_usecase.dart';
+import 'package:jobfy/features/user/domain/usecases/add_skill_usecase.dart';
+import 'package:jobfy/features/user/domain/usecases/delete_experience_usecase.dart';
+import 'package:jobfy/features/user/domain/usecases/remove_skill_usecase.dart';
 import 'package:jobfy/features/user/data/repositories/user_repository_impl.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/user/domain/repositories/user_repository.dart';
@@ -24,13 +39,17 @@ import 'package:provider/provider.dart';
 /// [SettingsController]; the account card, password and account deletion
 /// go to the database through the user repository; notification, privacy
 /// and job preference toggles are kept on the device. A signed-in company
-/// has no user profile, so it only gets the app preferences and logout.
+/// has no user profile: it edits its data, password and account, and gets
+/// the app preferences.
 class SettingsPage extends StatefulWidget {
   /// Where account changes are saved. Defaults to [UserRepositoryImpl]
   /// (MySQL/fake/remote per AppConfig); tests pass their own.
   final UserRepository? userRepository;
 
-  const SettingsPage({super.key, this.userRepository});
+  /// Same for a company's data, password and account.
+  final CompanyRepository? companyRepository;
+
+  const SettingsPage({super.key, this.userRepository, this.companyRepository});
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -38,6 +57,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late final AccountSettingsController _controller;
+  late final ProfileDetailsController _details;
+  late final CompanyAccountController _company;
 
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
@@ -61,14 +82,33 @@ class _SettingsPageState extends State<SettingsPage> {
       ChangePasswordUsecase(userRepository),
       DeleteAccountUsecase(userRepository),
     );
+    _details = ProfileDetailsController(
+      AddSkillUsecase(userRepository),
+      RemoveSkillUsecase(userRepository),
+      AddExperienceUsecase(userRepository),
+      DeleteExperienceUsecase(userRepository),
+    );
+    final companyRepository = widget.companyRepository ?? CompanyRepositoryImpl();
+    _company = CompanyAccountController(
+      GetCompanyUsecase(companyRepository),
+      UpdateCompanyUsecase(companyRepository),
+      ChangeCompanyPasswordUsecase(companyRepository),
+      DeleteCompanyAccountUsecase(companyRepository),
+    );
     _controller.loadPreferences();
     final session = context.read<UserSessionController>();
-    if (!session.isCompanySignedIn) session.ensureLoaded();
+    if (session.isCompanySignedIn) {
+      _company.load(session.companyId!);
+    } else {
+      session.ensureLoaded();
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _details.dispose();
+    _company.dispose();
     _nameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
@@ -120,8 +160,13 @@ class _SettingsPageState extends State<SettingsPage> {
     final changed = await showDialog<bool>(
       context: context,
       builder: (_) => _ChangePasswordDialog(
-        controller: _controller,
-        userId: userId,
+        listenable: _controller,
+        isSaving: () => _controller.isChangingPassword,
+        onSubmit: (current, next) => _controller.changePassword(
+          userId: userId,
+          currentPassword: current,
+          newPassword: next,
+        ),
       ),
     );
     if (changed == true && mounted) {
@@ -129,14 +174,15 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _deleteAccount(String userId) async {
+  /// Asks before closing an account; true when the user confirmed.
+  Future<bool> _confirmDelete(String message) async {
     final l10n = AppLocalizations.of(context)!;
     final colors = context.colors;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.settingsDeleteAccount),
-        content: Text(l10n.settingsDeleteAccountConfirm),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -150,9 +196,63 @@ class _SettingsPageState extends State<SettingsPage> {
         ],
       ),
     );
-    if (confirmed != true || !mounted) return;
+    return confirmed == true && mounted;
+  }
 
+  Future<void> _saveCompany(CompanyEntity updated) async {
+    final l10n = AppLocalizations.of(context)!;
+    final result = await _company.save(updated);
+    if (!mounted) return;
+    switch (result) {
+      case SaveProfileResult.saved:
+        _showSnack(l10n.settingsSaved);
+      case SaveProfileResult.emailInUse:
+        _showSnack(l10n.authErrorEmailInUse);
+      case SaveProfileResult.failed:
+        _showSnack(l10n.settingsSaveError);
+    }
+  }
+
+  Future<void> _changeCompanyPassword(String companyId) async {
+    final changed = await showDialog<bool>(
+      context: context,
+      builder: (_) => _ChangePasswordDialog(
+        listenable: _company,
+        isSaving: () => _company.isChangingPassword,
+        onSubmit: (current, next) => _company.changePassword(
+          companyId: companyId,
+          currentPassword: current,
+          newPassword: next,
+        ),
+      ),
+    );
+    if (changed == true && mounted) {
+      _showSnack(AppLocalizations.of(context)!.settingsPasswordChanged);
+    }
+  }
+
+  Future<void> _deleteCompany(String companyId) async {
+    final l10n = AppLocalizations.of(context)!;
     final session = context.read<UserSessionController>();
+    if (!await _confirmDelete(l10n.settingsDeleteCompanyConfirm)) return;
+
+    final deleted = await _company.deleteAccount(companyId);
+    if (!mounted) return;
+
+    if (deleted) {
+      _showSnack(l10n.settingsAccountDeleted);
+      context.go('/');
+      session.clear();
+    } else {
+      _showSnack(l10n.settingsDeleteError);
+    }
+  }
+
+  Future<void> _deleteAccount(String userId) async {
+    final l10n = AppLocalizations.of(context)!;
+    final session = context.read<UserSessionController>();
+    if (!await _confirmDelete(l10n.settingsDeleteAccountConfirm)) return;
+
     final deleted = await _controller.deleteAccount(userId);
     if (!mounted) return;
 
@@ -162,6 +262,21 @@ class _SettingsPageState extends State<SettingsPage> {
       session.clear();
     } else {
       _showSnack(l10n.settingsDeleteError);
+    }
+  }
+
+  /// Runs a skill/experience change, then reloads the profile so the
+  /// dashboard, the sidebar and the resume show it too.
+  Future<void> _editProfile(Future<bool> Function() change) async {
+    final l10n = AppLocalizations.of(context)!;
+    final session = context.read<UserSessionController>();
+    final ok = await change();
+    if (!mounted) return;
+    if (ok) {
+      await session.reload();
+      if (mounted) _showSnack(l10n.settingsSaved);
+    } else {
+      _showSnack(l10n.settingsSaveError);
     }
   }
 
@@ -199,9 +314,15 @@ class _SettingsPageState extends State<SettingsPage> {
       ];
 
   Widget _buildCompanySettings(AppLocalizations l10n, SettingsController settings) {
+    final colors = context.colors;
+    final companyId = context.read<UserSessionController>().companyId!;
+
     return ListenableBuilder(
-        listenable: _controller,
-        builder: (context, _) => Center(
+      listenable: Listenable.merge([_controller, _company]),
+      builder: (context, _) {
+        final company = _company.company;
+
+        return Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 720),
             child: SingleChildScrollView(
@@ -210,14 +331,45 @@ class _SettingsPageState extends State<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: 24,
                 children: [
+                  _SettingsSection(
+                    title: l10n.companySectionData,
+                    description: l10n.settingsCompanyDataDescription,
+                    child: company != null
+                        ? CompanyAccountForm(
+                            key: ValueKey(company.companyId),
+                            company: company,
+                            isSaving: _company.isSaving,
+                            onSave: _saveCompany,
+                          )
+                        : _company.loadFailed
+                            ? Text(l10n.companyLoadError, style: TextStyle(color: colors.danger))
+                            : const Center(child: CircularProgressIndicator()),
+                  ),
+                  _SettingsSection(
+                    title: l10n.settingsChangePassword,
+                    description: l10n.settingsCompanyPasswordDescription,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: OutlinedButton.icon(
+                        onPressed: () => _changeCompanyPassword(companyId),
+                        icon: const Icon(Icons.lock_reset, size: 16),
+                        label: Text(l10n.settingsChangePassword),
+                      ),
+                    ),
+                  ),
                   ..._appSections(l10n, settings),
-                  _DangerZone(isDeleting: false, onLogout: _logout),
+                  _DangerZone(
+                    isDeleting: _company.isDeleting,
+                    onLogout: _logout,
+                    onDelete: () => _deleteCompany(companyId),
+                  ),
                 ],
               ),
             ),
           ),
-        ),
         );
+      },
+    );
   }
 
   @override
@@ -261,6 +413,36 @@ class _SettingsPageState extends State<SettingsPage> {
                           onEducationChanged: (v) => setState(() => _education = v),
                           isSaving: _controller.isSavingProfile,
                           onSave: () => _saveProfile(profile),
+                        ),
+                      ),
+                      _SettingsSection(
+                        title: l10n.skillsTitle,
+                        description: l10n.settingsSkillsDescription,
+                        child: ListenableBuilder(
+                          listenable: _details,
+                          builder: (context, _) => SkillsEditor(
+                            skills: profile.skills,
+                            isBusy: _details.isBusy,
+                            onAdd: (name, level) =>
+                                _editProfile(() => _details.addSkill(profile.id, name, level)),
+                            onRemove: (name) =>
+                                _editProfile(() => _details.removeSkill(profile.id, name)),
+                          ),
+                        ),
+                      ),
+                      _SettingsSection(
+                        title: l10n.resumeExperience,
+                        description: l10n.settingsExperiencesDescription,
+                        child: ListenableBuilder(
+                          listenable: _details,
+                          builder: (context, _) => ExperiencesEditor(
+                            experiences: profile.experiences,
+                            isBusy: _details.isBusy,
+                            onAdd: (experience) => _editProfile(
+                                () => _details.addExperience(profile.id, experience)),
+                            onDelete: (id) =>
+                                _editProfile(() => _details.deleteExperience(profile.id, id)),
+                          ),
                         ),
                       ),
                       ..._appSections(l10n, settings),
@@ -905,10 +1087,17 @@ class _DangerZone extends StatelessWidget {
 }
 
 class _ChangePasswordDialog extends StatefulWidget {
-  final AccountSettingsController controller;
-  final String userId;
+  /// What the dialog rebuilds on (the controller) and how it knows a save is
+  /// in progress.
+  final Listenable listenable;
+  final bool Function() isSaving;
+  final Future<ChangePasswordResult> Function(String current, String next) onSubmit;
 
-  const _ChangePasswordDialog({required this.controller, required this.userId});
+  const _ChangePasswordDialog({
+    required this.listenable,
+    required this.isSaving,
+    required this.onSubmit,
+  });
 
   @override
   State<_ChangePasswordDialog> createState() => _ChangePasswordDialogState();
@@ -937,11 +1126,7 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     if (!_formKey.currentState!.validate()) return;
     final l10n = AppLocalizations.of(context)!;
 
-    final result = await widget.controller.changePassword(
-      userId: widget.userId,
-      currentPassword: _currentCtrl.text,
-      newPassword: _newCtrl.text,
-    );
+    final result = await widget.onSubmit(_currentCtrl.text, _newCtrl.text);
     if (!mounted) return;
 
     switch (result) {
@@ -960,9 +1145,9 @@ class _ChangePasswordDialogState extends State<_ChangePasswordDialog> {
     final colors = context.colors;
 
     return ListenableBuilder(
-      listenable: widget.controller,
+      listenable: widget.listenable,
       builder: (context, _) {
-        final saving = widget.controller.isChangingPassword;
+        final saving = widget.isSaving();
 
         return AlertDialog(
           title: Text(l10n.settingsChangePassword),

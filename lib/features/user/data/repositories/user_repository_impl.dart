@@ -65,4 +65,19 @@ class UserRepositoryImpl implements UserRepository {
   Future<void> deleteAccount(String userId) {
     return _dataSource.deleteAccount(userId);
   }
+
+  @override
+  Future<void> addSkill(String userId, String name, SkillLevel level) =>
+      _dataSource.addSkill(userId, name, level);
+
+  @override
+  Future<void> removeSkill(String userId, String name) => _dataSource.removeSkill(userId, name);
+
+  @override
+  Future<void> addExperience(String userId, ExperienceEntity experience) =>
+      _dataSource.addExperience(userId, experience);
+
+  @override
+  Future<void> deleteExperience(String userId, String experienceId) =>
+      _dataSource.deleteExperience(userId, experienceId);
 }

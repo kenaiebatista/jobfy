@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:jobfy/core/session/user_session_controller.dart';
 import 'package:jobfy/core/theme/app_breakpoints.dart';
 import 'package:jobfy/core/theme/build_context_x.dart';
 import 'package:jobfy/features/company/presentation/widgets/company_sidebar.dart';
+import 'package:jobfy/features/messages/data/repositories/messages_repository_impl.dart';
+import 'package:jobfy/features/messages/domain/entities/conversation_entity.dart';
+import 'package:jobfy/features/messages/domain/usecases/get_unread_messages_usecase.dart';
 import 'package:jobfy/features/user/domain/entities/user_profile_entity.dart';
 import 'package:jobfy/features/user/presentation/widgets/profile_sidebar.dart';
 import 'package:jobfy/l10n/app_localizations.dart';
@@ -26,7 +31,16 @@ class AppShell extends StatefulWidget {
   final String location;
   final Widget child;
 
-  const AppShell({super.key, required this.location, required this.child});
+  /// How unread chat messages are counted (for the badges). Defaults to the
+  /// chat's repository; tests pass their own.
+  final Future<int> Function(ChatParticipant me)? countUnread;
+
+  const AppShell({
+    super.key,
+    required this.location,
+    required this.child,
+    this.countUnread,
+  });
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -34,12 +48,43 @@ class AppShell extends StatefulWidget {
 
 class _AppShellState extends State<AppShell> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+  Timer? _unreadTimer;
+  int _unread = 0;
 
   @override
   void initState() {
     super.initState();
     final session = context.read<UserSessionController>();
     if (!session.isCompanySignedIn) session.ensureLoaded();
+    _refreshUnread();
+    _unreadTimer = Timer.periodic(const Duration(seconds: 5), (_) => _refreshUnread());
+  }
+
+  @override
+  void didUpdateWidget(AppShell old) {
+    super.didUpdateWidget(old);
+    // Opening or leaving a chat changes what is unread.
+    if (old.location != widget.location) _refreshUnread();
+  }
+
+  @override
+  void dispose() {
+    _unreadTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _refreshUnread() async {
+    final session = context.read<UserSessionController>();
+    final id = session.companyId ?? session.userId;
+    if (id == null) return;
+    final me = ChatParticipant(id: id, isCompany: session.isCompanySignedIn);
+    try {
+      final count = await (widget.countUnread ??
+          GetUnreadMessagesUsecase(MessagesRepositoryImpl()).call)(me);
+      if (mounted && count != _unread) setState(() => _unread = count);
+    } catch (e) {
+      debugPrint('Could not count the unread messages: $e');
+    }
   }
 
   SidebarSection _userSection(String path) {
@@ -67,13 +112,18 @@ class _AppShellState extends State<AppShell> {
     void closeDrawer() => _scaffoldKey.currentState?.closeDrawer();
 
     final Widget? sidebar = isCompany
-        ? CompanySidebar(current: _companySection(widget.location), onNavTap: closeDrawer)
+        ? CompanySidebar(
+            current: _companySection(widget.location),
+            onNavTap: closeDrawer,
+            unreadMessages: _unread,
+          )
         : profile == null
             ? null
             : ProfileSidebar(
                 profile: profile,
                 current: _userSection(widget.location),
                 onNavTap: closeDrawer,
+                unreadMessages: _unread,
               );
 
     final String initial = (isCompany ? session.companyName : profile?.name)?.trim() ?? '';
@@ -94,6 +144,7 @@ class _AppShellState extends State<AppShell> {
         _TopBar(
           showMenu: compact && sidebar != null,
           showSearch: !isCompany,
+          unread: _unread,
           initial: initial.isEmpty ? '?' : initial[0].toUpperCase(),
         ),
         Expanded(child: page),
@@ -120,15 +171,18 @@ class _AppShellState extends State<AppShell> {
   }
 }
 
-/// Logo, search (users only), theme toggle and the avatar, above every page.
+/// Logo, search (users only), theme toggle, the chat shortcut and the
+/// avatar, above every page.
 class _TopBar extends StatelessWidget {
   final bool showMenu;
   final bool showSearch;
+  final int unread;
   final String initial;
 
   const _TopBar({
     required this.showMenu,
     required this.showSearch,
+    required this.unread,
     required this.initial,
   });
 
@@ -195,12 +249,17 @@ class _TopBar extends StatelessWidget {
                 ),
               ),
           ThemeToggleButton(color: colors.textPrimary),
-          if (showSearch)
-            IconButton(
-              icon: Icon(Icons.notifications_outlined, color: colors.textPrimary),
-              onPressed: () {},
-              style: IconButton.styleFrom(backgroundColor: colors.background),
+          // Shortcut to the chat, with the unread messages on it.
+          IconButton(
+            tooltip: l10n.navMessages,
+            icon: Badge(
+              isLabelVisible: unread > 0,
+              label: Text(unread > 99 ? '99+' : '$unread'),
+              child: Icon(Icons.chat_bubble_outline, color: colors.textPrimary),
             ),
+            onPressed: () => context.go('/messages'),
+            style: IconButton.styleFrom(backgroundColor: colors.background),
+          ),
           CircleAvatar(
             radius: 18,
             backgroundColor: colors.accent,

@@ -36,4 +36,7 @@ class MessagesRepositoryImpl implements MessagesRepository {
   Future<void> markAsRead({required ChatParticipant me, required String partnerId}) {
     return _dataSource.markAsRead(me: me, partnerId: partnerId);
   }
+
+  @override
+  Future<int> countUnread(ChatParticipant me) => _dataSource.countUnread(me);
 }

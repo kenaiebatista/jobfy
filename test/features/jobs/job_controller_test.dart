@@ -55,6 +55,10 @@ class _TestJobDataSource implements JobDataSource {
 
   @override
   Future<void> applyToJob(String jobId, String userId) async {}
+
+  @override
+  Future<void> withdrawApplication(String jobId, String userId) async {}
+
 }
 
 void main() {

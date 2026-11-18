@@ -33,6 +33,17 @@ class CompanyRepositoryImpl implements CompanyRepository {
   Future<CompanyEntity> getCompany(String companyId) => _dataSource.getCompany(companyId);
 
   @override
+  Future<void> updateCompany(CompanyEntity company) => _dataSource.updateCompany(company);
+
+  @override
+  Future<bool> changePassword(String companyId, String currentPassword, String newPassword) {
+    return _dataSource.changePassword(companyId, currentPassword, newPassword);
+  }
+
+  @override
+  Future<void> deleteAccount(String companyId) => _dataSource.deleteAccount(companyId);
+
+  @override
   Future<List<JobEntity>> getCompanyJobs(String companyId) => _dataSource.getCompanyJobs(companyId);
 
   @override
@@ -61,10 +72,5 @@ class CompanyRepositoryImpl implements CompanyRepository {
   @override
   Future<List<CandidateEntity>> getJobCandidates(String jobId) {
     return _dataSource.getJobCandidates(jobId);
-  }
-
-  @override
-  Future<void> rateCandidate(String candidateId, double rating, {String? comment}) {
-    return _dataSource.rateCandidate(candidateId, rating, comment: comment);
   }
 }

@@ -12,4 +12,6 @@ abstract class JobRepository {
   Future<JobDetailsEntity?> getJobDetails(String jobId, {String? userId});
 
   Future<void> applyToJob(String jobId, String userId);
+
+  Future<void> withdrawApplication(String jobId, String userId);
 }

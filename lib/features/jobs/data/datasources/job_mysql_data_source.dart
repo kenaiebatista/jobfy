@@ -44,6 +44,11 @@ class JobMysqlDataSource implements JobDataSource {
   }
 
   @override
+  Future<void> withdrawApplication(String jobId, String userId) {
+    return DatabaseService.withdrawApplication(userId: int.parse(userId), jobId: int.parse(jobId));
+  }
+
+  @override
   Future<void> applyToJob(String jobId, String userId) {
     return DatabaseService.applyToJob(userId: int.parse(userId), jobId: int.parse(jobId));
   }

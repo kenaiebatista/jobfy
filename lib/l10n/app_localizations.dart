@@ -1505,6 +1505,78 @@ abstract class AppLocalizations {
   /// **'I\'m a company'**
   String get registerAsCompany;
 
+  /// No description provided for @jobWithdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw application'**
+  String get jobWithdraw;
+
+  /// No description provided for @jobWithdrawConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw this application? The company stops seeing you among the candidates and the chat with it closes. You can apply again later.'**
+  String get jobWithdrawConfirm;
+
+  /// No description provided for @jobWithdrawSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You withdrew your application.'**
+  String get jobWithdrawSuccess;
+
+  /// No description provided for @jobWithdrawError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not withdraw the application. Please try again.'**
+  String get jobWithdrawError;
+
+  /// No description provided for @settingsCompanyDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Update the company data that candidates see.'**
+  String get settingsCompanyDataDescription;
+
+  /// No description provided for @settingsCompanyPasswordDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the company\'s sign-in password.'**
+  String get settingsCompanyPasswordDescription;
+
+  /// No description provided for @settingsDeleteCompanyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the company account? Its jobs will be closed and you will no longer be able to sign in.'**
+  String get settingsDeleteCompanyConfirm;
+
+  /// No description provided for @companyZipCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'The ZIP code must have 8 digits.'**
+  String get companyZipCodeInvalid;
+
+  /// No description provided for @companyStateInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the 2-letter code.'**
+  String get companyStateInvalid;
+
+  /// No description provided for @settingsSkillsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add or remove your skills and pick the level of each one.'**
+  String get settingsSkillsDescription;
+
+  /// No description provided for @settingsExperiencesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your experiences show up on your resume. Volunteer work counts too!'**
+  String get settingsExperiencesDescription;
+
+  /// No description provided for @settingsRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get settingsRemove;
+
   /// No description provided for @messagesSearchHint.
   ///
   /// In en, this message translates to:

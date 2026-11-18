@@ -62,7 +62,12 @@ class JobDetailsEntity {
     this.applicationStatus,
   });
 
-  bool get hasApplied => applicationStatus != null;
+  /// An active application: after withdrawing, the user can apply again.
+  bool get hasApplied => applicationStatus != null && applicationStatus != 'withdrawn';
+
+  /// Pending or approved applications can be given up; an answered
+  /// (rejected) or withdrawn one can't.
+  bool get canWithdraw => applicationStatus == 'under_review' || applicationStatus == 'approved';
   bool get isOpen => status == 'open';
 
   /// Name shown in the app: the trade name when there is one.

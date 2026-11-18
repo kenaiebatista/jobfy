@@ -19,11 +19,15 @@ class ProfileSidebar extends StatelessWidget {
   /// Called when an entry is picked, e.g. to close the drawer.
   final VoidCallback onNavTap;
 
+  /// Unread chat messages, shown on the Messages entry.
+  final int unreadMessages;
+
   const ProfileSidebar({
     super.key,
     required this.profile,
     required this.current,
     required this.onNavTap,
+    this.unreadMessages = 0,
   });
 
   List<({IconData icon, String label, SidebarSection section, String? route})> _navItems(
@@ -182,6 +186,7 @@ class ProfileSidebar extends StatelessWidget {
           icon: item.icon,
           label: item.label,
           isSelected: current == item.section,
+          badge: item.section == SidebarSection.messages ? unreadMessages : 0,
           onTap: item.route == null
               ? () {}
               : () {
@@ -234,6 +239,9 @@ class SidebarNavItem extends StatefulWidget {
   final bool isDanger;
   final VoidCallback onTap;
 
+  /// A count shown at the end of the entry (hidden when 0).
+  final int badge;
+
   const SidebarNavItem({
     super.key,
     required this.icon,
@@ -241,6 +249,7 @@ class SidebarNavItem extends StatefulWidget {
     required this.isSelected,
     required this.onTap,
     this.isDanger = false,
+    this.badge = 0,
   });
 
   @override
@@ -296,7 +305,23 @@ class _SidebarNavItemState extends State<SidebarNavItem> {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              if (widget.isSelected)
+              if (widget.badge > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: AppColors.accent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    widget.badge > 99 ? '99+' : '${widget.badge}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              else if (widget.isSelected)
                 Container(
                   width: 5,
                   height: 5,

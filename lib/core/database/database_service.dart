@@ -209,14 +209,15 @@ class DatabaseService {
 
       // Current job (end_date NULL) first, then the most recent ones.
       final experiences = await conn.execute(
-        'SELECT job_title, company_name, description, start_date, end_date '
+        'SELECT CAST(experience_id AS CHAR) AS experience_id, job_title, '
+        'company_name, description, start_date, end_date '
         'FROM experiences WHERE user_id = :id '
         'ORDER BY end_date IS NULL DESC, start_date DESC',
         {'id': userId},
       );
 
       final count = await conn.execute(
-        'SELECT COUNT(*) FROM applications WHERE user_id = :id',
+        "SELECT COUNT(*) FROM applications WHERE user_id = :id AND status <> 'withdrawn'",
         {'id': userId},
       );
 
@@ -224,7 +225,8 @@ class DatabaseService {
         'SELECT j.title, c.company_name, ap.applied_at FROM applications ap '
         'JOIN jobs j ON j.job_id = ap.job_id '
         'JOIN companies c ON c.company_id = j.company_id '
-        'WHERE ap.user_id = :id ORDER BY ap.applied_at DESC LIMIT 5',
+        "WHERE ap.user_id = :id AND ap.status <> 'withdrawn' "
+        'ORDER BY ap.applied_at DESC LIMIT 5',
         {'id': userId},
       );
 
@@ -234,6 +236,93 @@ class DatabaseService {
         experiences: [for (final r in experiences.rows) r.assoc()],
         applications: int.parse(count.rows.first.colAt(0) ?? '0'),
         recentApplications: [for (final r in recent.rows) r.assoc()],
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Adds the skill to the user (creating it in `skills` if it's new), or
+  /// changes its level when they already have it.
+  static Future<void> addUserSkill({
+    required int userId,
+    required String skillName,
+    required String level,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.transactional((conn) async {
+        // LAST_INSERT_ID(skill_id) makes lastInsertID return the id even
+        // when the name already exists.
+        final skill = await conn.execute(
+          'INSERT INTO skills (name) VALUES (:name) '
+          'ON DUPLICATE KEY UPDATE skill_id = LAST_INSERT_ID(skill_id)',
+          {'name': skillName},
+        );
+        await conn.execute(
+          'INSERT INTO user_skills (user_id, skill_id, level) '
+          'VALUES (:user, :skill, :level) '
+          'ON DUPLICATE KEY UPDATE level = VALUES(level)',
+          {'user': userId, 'skill': skill.lastInsertID.toInt(), 'level': level},
+        );
+      });
+    } finally {
+      await conn.close();
+    }
+  }
+
+  static Future<void> removeUserSkill({required int userId, required String skillName}) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'DELETE us FROM user_skills us JOIN skills s ON s.skill_id = us.skill_id '
+        'WHERE us.user_id = :user AND s.name = :name',
+        {'user': userId, 'name': skillName},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Dates are 'YYYY-MM-DD'; a null [endDate] is the current job.
+  static Future<void> addExperience({
+    required int userId,
+    required String jobTitle,
+    required String companyName,
+    String? description,
+    required String startDate,
+    String? endDate,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'INSERT INTO experiences (user_id, job_title, company_name, '
+        'description, start_date, end_date) '
+        'VALUES (:user, :title, :company, :description, :start, :end)',
+        {
+          'user': userId,
+          'title': jobTitle,
+          'company': companyName,
+          'description': description,
+          'start': startDate,
+          'end': endDate,
+        },
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  static Future<void> deleteExperience({required int userId, required int experienceId}) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        'DELETE FROM experiences WHERE experience_id = :id AND user_id = :user',
+        {'id': experienceId, 'user': userId},
       );
     } finally {
       await conn.close();
@@ -287,15 +376,35 @@ class DatabaseService {
     required int userId,
     required String currentPassword,
     required String newPassword,
-  }) async {
+  }) {
+    return _changePassword('users', 'user_id', userId, currentPassword, newPassword);
+  }
+
+  /// Same for a company account.
+  static Future<bool> changeCompanyPassword({
+    required int companyId,
+    required String currentPassword,
+    required String newPassword,
+  }) {
+    return _changePassword('companies', 'company_id', companyId, currentPassword, newPassword);
+  }
+
+  /// [table] is 'users' or 'companies' (their profile row links to the account).
+  static Future<bool> _changePassword(
+    String table,
+    String key,
+    int id,
+    String currentPassword,
+    String newPassword,
+  ) async {
     final conn = await connect();
 
     try {
       final result = await conn.execute(
         'SELECT a.account_id, a.password_hash FROM accounts a '
-        'JOIN users u ON u.account_id = a.account_id '
-        'WHERE u.user_id = :id',
-        {'id': userId},
+        'JOIN $table p ON p.account_id = a.account_id '
+        'WHERE p.$key = :id',
+        {'id': id},
       );
       if (result.rows.isEmpty) return false;
       final row = result.rows.first.assoc();
@@ -319,14 +428,32 @@ class DatabaseService {
   /// "Deletes" the account the same way [login] understands it: sets
   /// `accounts.is_active` to FALSE, so the user can no longer sign in but
   /// their applications and history stay consistent for the companies.
-  static Future<void> deactivateAccount(int userId) async {
+  static Future<void> deactivateAccount(int userId) =>
+      _deactivate('users', 'user_id', userId);
+
+  /// Same for a company: it can no longer sign in, and its jobs leave the
+  /// list.
+  static Future<void> deactivateCompanyAccount(int companyId) async {
+    await _deactivate('companies', 'company_id', companyId);
+    final conn = await connect();
+    try {
+      await conn.execute(
+        "UPDATE jobs SET status = 'closed' WHERE company_id = :id",
+        {'id': companyId},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  static Future<void> _deactivate(String table, String key, int id) async {
     final conn = await connect();
 
     try {
       await conn.execute(
-        'UPDATE accounts a JOIN users u ON u.account_id = a.account_id '
-        'SET a.is_active = FALSE WHERE u.user_id = :id',
-        {'id': userId},
+        'UPDATE accounts a JOIN $table p ON p.account_id = a.account_id '
+        'SET a.is_active = FALSE WHERE p.$key = :id',
+        {'id': id},
       );
     } finally {
       await conn.close();
@@ -442,8 +569,31 @@ class DatabaseService {
 
     try {
       await conn.execute(
-        "INSERT IGNORE INTO applications (user_id, job_id) "
-        "SELECT :user, job_id FROM jobs WHERE job_id = :job AND status = 'open'",
+        "INSERT INTO applications (user_id, job_id) "
+        "SELECT :user, job_id FROM jobs WHERE job_id = :job AND status = 'open' "
+        // Applying again is ignored, unless the user had withdrawn: then the
+        // application starts over.
+        "ON DUPLICATE KEY UPDATE "
+        "applied_at = IF(applications.status = 'withdrawn', NOW(), applications.applied_at), "
+        "status = IF(applications.status = 'withdrawn', 'under_review', applications.status)",
+        {'user': userId, 'job': jobId},
+      );
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// The user gives up the application (it stays in the history as
+  /// 'withdrawn'; the company can no longer answer it and the chat closes).
+  /// Only a pending or approved application can be withdrawn.
+  static Future<void> withdrawApplication({required int userId, required int jobId}) async {
+    final conn = await connect();
+
+    try {
+      await conn.execute(
+        "UPDATE applications SET status = 'withdrawn' "
+        "WHERE user_id = :user AND job_id = :job "
+        "AND status IN ('under_review', 'approved')",
         {'user': userId, 'job': jobId},
       );
     } finally {
@@ -545,6 +695,58 @@ class DatabaseService {
         {'id': companyId},
       );
       return result.rows.isEmpty ? null : result.rows.first.assoc();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// Saves what the company can change about itself (the legal name and the
+  /// CNPJ stay) and its login email. Throws [EmailAlreadyInUseException]
+  /// when the email belongs to another account.
+  static Future<void> updateCompanyAccount({
+    required int companyId,
+    required String email,
+    String? tradeName,
+    String? phone,
+    String? businessArea,
+    String? zipCode,
+    String? address,
+    String? city,
+    String? state,
+    String? description,
+  }) async {
+    final conn = await connect();
+
+    try {
+      await conn.transactional((conn) async {
+        await conn.execute(
+          'UPDATE companies SET trade_name = :trade, phone = :phone, '
+          'business_area = :area, zip_code = :zip, address = :address, '
+          'city = :city, state = :state, description = :description '
+          'WHERE company_id = :id',
+          {
+            'id': companyId,
+            'trade': tradeName,
+            'phone': phone,
+            'area': businessArea,
+            'zip': zipCode,
+            'address': address,
+            'city': city,
+            'state': state,
+            'description': description,
+          },
+        );
+        await conn.execute(
+          'UPDATE accounts a JOIN companies c ON c.account_id = a.account_id '
+          'SET a.email = :email WHERE c.company_id = :id',
+          {'id': companyId, 'email': email},
+        );
+      });
+    } on MySQLServerException catch (e) {
+      if (e.errorCode == _duplicateEntry) {
+        throw const EmailAlreadyInUseException();
+      }
+      rethrow;
     } finally {
       await conn.close();
     }
@@ -701,7 +903,8 @@ class DatabaseService {
         "(SELECT COUNT(*) FROM applications ap "
         "JOIN users u ON u.user_id = ap.user_id "
         "JOIN accounts a ON a.account_id = u.account_id "
-        "WHERE ap.job_id = jobs.job_id AND a.is_active = TRUE) AS candidates "
+        "WHERE ap.job_id = jobs.job_id AND ap.status <> 'withdrawn' "
+        "AND a.is_active = TRUE) AS candidates "
         "FROM jobs WHERE company_id = :id ORDER BY published_at DESC, job_id DESC",
         {'id': companyId},
       );
@@ -849,6 +1052,27 @@ class DatabaseService {
         {'id': result.lastInsertID.toInt()},
       );
       return sent.rows.first.assoc();
+    } finally {
+      await conn.close();
+    }
+  }
+
+  /// How many messages the signed-in side has not read yet, over all chats.
+  static Future<int> countUnreadMessages({required bool asCompany, required int id}) async {
+    final side = _chatSide(asCompany);
+    final conn = await connect();
+
+    try {
+      final result = await conn.execute(
+        'SELECT COUNT(*) FROM messages m '
+        'JOIN ${side.meTable} x ON x.account_id = m.receiver_id '
+        'AND x.${side.meKey} = :id '
+        'JOIN ${side.partnerTable} p ON p.account_id = m.sender_id '
+        'JOIN accounts pa ON pa.account_id = p.account_id AND pa.is_active = TRUE '
+        'WHERE m.is_read = FALSE',
+        {'id': id},
+      );
+      return int.parse(result.rows.first.colAt(0) ?? '0');
     } finally {
       await conn.close();
     }

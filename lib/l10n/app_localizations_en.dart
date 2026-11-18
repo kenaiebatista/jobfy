@@ -752,6 +752,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerAsCompany => 'I\'m a company';
 
   @override
+  String get jobWithdraw => 'Withdraw application';
+
+  @override
+  String get jobWithdrawConfirm =>
+      'Withdraw this application? The company stops seeing you among the candidates and the chat with it closes. You can apply again later.';
+
+  @override
+  String get jobWithdrawSuccess => 'You withdrew your application.';
+
+  @override
+  String get jobWithdrawError =>
+      'Could not withdraw the application. Please try again.';
+
+  @override
+  String get settingsCompanyDataDescription =>
+      'Update the company data that candidates see.';
+
+  @override
+  String get settingsCompanyPasswordDescription =>
+      'Change the company\'s sign-in password.';
+
+  @override
+  String get settingsDeleteCompanyConfirm =>
+      'Are you sure you want to delete the company account? Its jobs will be closed and you will no longer be able to sign in.';
+
+  @override
+  String get companyZipCodeInvalid => 'The ZIP code must have 8 digits.';
+
+  @override
+  String get companyStateInvalid => 'Use the 2-letter code.';
+
+  @override
+  String get settingsSkillsDescription =>
+      'Add or remove your skills and pick the level of each one.';
+
+  @override
+  String get settingsExperiencesDescription =>
+      'Your experiences show up on your resume. Volunteer work counts too!';
+
+  @override
+  String get settingsRemove => 'Remove';
+
+  @override
   String get messagesSearchHint => 'Search conversations...';
 
   @override

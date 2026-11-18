@@ -758,6 +758,49 @@ class AppLocalizationsEs extends AppLocalizations {
   String get registerAsCompany => 'Soy empresa';
 
   @override
+  String get jobWithdraw => 'Retirar postulación';
+
+  @override
+  String get jobWithdrawConfirm =>
+      '¿Retirar esta postulación? La empresa deja de verte entre los candidatos y el chat con ella se cierra. Puedes postularte de nuevo después.';
+
+  @override
+  String get jobWithdrawSuccess => 'Retiraste tu postulación.';
+
+  @override
+  String get jobWithdrawError =>
+      'No se pudo retirar la postulación. Inténtalo de nuevo.';
+
+  @override
+  String get settingsCompanyDataDescription =>
+      'Actualiza los datos de la empresa que ven los candidatos.';
+
+  @override
+  String get settingsCompanyPasswordDescription =>
+      'Cambia la contraseña de acceso de la empresa.';
+
+  @override
+  String get settingsDeleteCompanyConfirm =>
+      '¿Seguro que quieres eliminar la cuenta de la empresa? Sus empleos se cerrarán y no podrán volver a entrar.';
+
+  @override
+  String get companyZipCodeInvalid => 'El código postal debe tener 8 dígitos.';
+
+  @override
+  String get companyStateInvalid => 'Usa la sigla de 2 letras.';
+
+  @override
+  String get settingsSkillsDescription =>
+      'Agrega o quita tus habilidades y elige el nivel de cada una.';
+
+  @override
+  String get settingsExperiencesDescription =>
+      'Tus experiencias aparecen en tu currículum. ¡El trabajo voluntario también cuenta!';
+
+  @override
+  String get settingsRemove => 'Quitar';
+
+  @override
   String get messagesSearchHint => 'Buscar conversaciones...';
 
   @override

@@ -8,7 +8,6 @@ import 'package:jobfy/features/company/domain/usecases/get_company_jobs_usecase.
 import 'package:jobfy/features/company/domain/usecases/get_company_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/get_job_candidates_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/publish_job_usecase.dart';
-import 'package:jobfy/features/company/domain/usecases/rate_candidate_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/set_candidate_status_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/set_job_status_usecase.dart';
 import 'package:jobfy/features/company/domain/usecases/update_job_usecase.dart';
@@ -29,7 +28,6 @@ String companyErrorMessage(AppLocalizations l10n, String code) => switch (code) 
       'companyJobStatusError' => l10n.companyJobStatusError,
       'companyCandidateStatusError' => l10n.companyCandidateStatusError,
       'companyCandidateFilterError' => l10n.companyCandidateFilterError,
-      'companyCandidateRateError' => l10n.companyCandidateRateError,
       'companyMessageSendError' => l10n.companyMessageSendError,
       _ => code,
     };
@@ -60,7 +58,6 @@ class _CompanyPageState extends State<CompanyPage> {
       setJobStatusUsecase: SetJobStatusUsecase(repo),
       setCandidateStatusUsecase: SetCandidateStatusUsecase(repo),
       getJobCandidatesUsecase: GetJobCandidatesUsecase(repo),
-      rateCandidateUsecase: RateCandidateUsecase(repo),
     );
     // The router only opens this page with a signed-in company.
     final companyId = context.read<UserSessionController>().companyId;

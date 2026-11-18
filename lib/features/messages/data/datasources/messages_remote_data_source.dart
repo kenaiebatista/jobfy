@@ -12,6 +12,7 @@ import 'messages_data_source.dart';
 ///   POST /chat/conversations/{partnerId}/messages {role, id, text}
 ///                                                 -> MessageModel (403 = chat not open)
 ///   PUT  /chat/conversations/{partnerId}/read     {role, id}
+///   GET  /chat/unread?role=&id=                   -> {count}
 class MessagesRemoteDataSource implements MessagesDataSource {
   final ApiClient _client;
 
@@ -44,6 +45,12 @@ class MessagesRemoteDataSource implements MessagesDataSource {
       if (e.statusCode == 403) throw const MessageNotAllowedException();
       rethrow;
     }
+  }
+
+  @override
+  Future<int> countUnread(ChatParticipant me) async {
+    final json = await _client.get('/chat/unread', query: _who(me)) as Map<String, dynamic>;
+    return int.tryParse('${json['count']}') ?? 0;
   }
 
   @override
